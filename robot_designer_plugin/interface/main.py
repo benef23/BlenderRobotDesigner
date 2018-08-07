@@ -66,7 +66,7 @@ class UserInterface(bpy.types.Panel):
     @LogFunction
     def draw(self, context):
         from ..operators import gui
-        from . import files, model, segments, geometries, sensors, muscles
+        from . import files, model, segments, geometries, sensors, muscles, evolutionaryalgorithm
         layout = self.layout
 
         layout.label("HBP Neurorobotics RobotDesigner", icon_value=PluginManager.get_icon('hbp'))
@@ -88,6 +88,8 @@ class UserInterface(bpy.types.Panel):
             muscles.draw(layout, context)
         # elif control == 'markers':
         #     markers.draw(layout, context)
+        elif control == 'evolutionaryalgorithm':  # realize implementation of interface\evolutionaryalgorithm. Also import (line 70)
+            evolutionaryalgorithm.draw(layout, context)
         elif control == 'files':
             files.draw(layout, context)
         elif control == 'tools':
