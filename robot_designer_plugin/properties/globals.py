@@ -49,11 +49,9 @@ from ..operators.segments import SelectSegment, UpdateSegments
 from ..operators.muscles import SelectMuscle
 from ..core.property import PropertyGroupHandlerBase, PropertyHandler
 
-
 class RDSelectedObjects(PropertyGroupHandlerBase):
     def __init__(self):
         self.visible = PropertyHandler()
-
 
 class RDGlobals(PropertyGroupHandlerBase):
     """
@@ -117,8 +115,8 @@ class RDGlobals(PropertyGroupHandlerBase):
 
         hide_geometry = global_properties.display_mesh_selection.get(context.scene)
         geometry_name = [obj.name for obj in bpy.data.objects if
-                         not obj.parent_bone is None and
-                         obj.type == 'MESH']
+                     not obj.parent_bone is None and
+                     obj.type == 'MESH']
 
         for mesh in geometry_name:
             obj = bpy.data.objects[mesh]
@@ -251,6 +249,7 @@ class RDGlobals(PropertyGroupHandlerBase):
                    ('muscles', 'Muscles', 'Attach muscles to the robot'),
                    # ('markers', 'Markers', 'Assign markers to bones'),
                    # ('controller', 'Controller', 'Modify controller parameter'),
+                   ('evolutionaryalgorithm', 'EA', 'Define parameters'),   # Evolutionary Algorithm tab
                    ('tools', 'Tools', 'Tools'),
                    ('files', 'Files', 'Export Armature')],
         ))
@@ -314,12 +313,12 @@ class RDGlobals(PropertyGroupHandlerBase):
                     'List only bones without connected meshes in menu', 'ARMATURE_DATA', 3)]))
 
         self.storage_mode = PropertyHandler(EnumProperty(items=[('temporary', 'Non-persistant GIT',
-                                                                 'Stores/retrieves files from GIT temporary' +
-                                                                 ' repository'),
+                                                           'Stores/retrieves files from GIT temporary' +
+                                                           ' repository'),
                                                                 ('git', 'Persitant GIT',
-                                                                 'Stores/retrieves files from persistent GIT repository'),
+                                                           'Stores/retrieves files from persistent GIT repository'),
                                                                 ('local', 'Local',
-                                                                 'Stores/retrieves from local hard disk')]))
+                                                           'Stores/retrieves from local hard disk')]))
         self.git_url = PropertyHandler(StringProperty(name='GIT URL'))
         self.git_repository = PropertyHandler(StringProperty(name='GIT Repository'))
 
@@ -345,7 +344,7 @@ class RDGlobals(PropertyGroupHandlerBase):
 
         self.display_muscle_selection = PropertyHandler(EnumProperty(
             items=[('all', 'All', 'Show all muscles'),
-                   #       ('MYOROBOTICS', 'Myorobotics', 'Show only Myorobotics Muscles'),
+            #       ('MYOROBOTICS', 'Myorobotics', 'Show only Myorobotics Muscles'),
                    ('MILLARD_EQUIL', 'Millard Equilibrium 2012', 'Show only Millard Equilibrium 2012 Muscles'),
                    ('MILLARD_ACCEL', 'Millard Acceleration 2012', 'Show only Millard Acceleration 2012 Muscles'),
                    ('THELEN', 'Thelen 2003', 'Show only Thelen 2003 Muscles'),
@@ -353,8 +352,59 @@ class RDGlobals(PropertyGroupHandlerBase):
                    ('none', "None", "Show no muscles")],
             update=self.display_muscles))
 
-        self.muscle_dim = PropertyHandler(
-            FloatProperty(name="Muscle Dimension:", default=0.05, update=self.muscle_dim_update))
+        self.muscle_dim = PropertyHandler(FloatProperty(name="Muscle Dimension:", default=0.05, update=self.muscle_dim_update))
+	
+# evolutionary alorithms
+        self.typeoptimization = PropertyHandler(EnumProperty(
+           items=[('joints', 'Joints position', 'EA to joints'),
+            ('meshes', 'Geometry nodes position', 'EA to meshes')]
+        ))
+
+        self.visualresult = PropertyHandler(EnumProperty(  # types of Evolutionary algorithms
+           items=[('best', 'Best model', 'Only best robot'),
+            ('all', 'All models', 'Get all robots of the simulation')]
+        ))
+
+        self.toolbox = PropertyHandler(EnumProperty(
+           items=[('on', 'On', 'Toolbox on'),
+            ('off', 'Off', 'Toolbox off')]
+        ))
+
+        self.encoding = PropertyHandler(EnumProperty(
+           items=[('real', 'Evolution Strategies', 'Real encoding for EA'),
+            ('binary', 'Genetic Algorithm', 'Binary encoding for EA')]
+        ))
+
+        self.num_adaptions = PropertyHandler(IntProperty(name="Adaptability steps", default=1, min=0, max=50))
+
+        self.adaption_rate = PropertyHandler(FloatProperty(name="Adaptability rate", default=0.6, min=0, max=1, precision=1))
+
+        self.model_to_simulate = PropertyHandler(CollectionProperty(
+            type=bpy.types.PropertyGroup
+        ))
+
+        self.population_size = PropertyHandler(IntProperty(name="Initial population size", default=1, min=1, max=1))
+
+
+        self.mutation_rate_bin = PropertyHandler(FloatProperty(name="Mutation rate", default=0.01, min=0, max=1,
+                                                           precision=3))
+
+        self.mutation_rate_real = PropertyHandler(FloatProperty(name="Mutation rate", default=0.2, min=0, max=1,
+                                                           precision=3))
+
+        self.mutation_deviation = PropertyHandler(FloatProperty(name="Mutation deviation", default=0.2, min=0,
+                                                           precision=5))
+
+        self.max_generation = PropertyHandler(IntProperty(name="Number of generations", default=100, min=1))
+
+        self.offspring_size = PropertyHandler(IntProperty(name="Offspring per generation", default=80, min=2))
+
+        self.selection_rate = PropertyHandler(FloatProperty(name="Selection rate", default=0.7, min=0.1, max=1))
+
+        self.offsetlateral = PropertyHandler(FloatProperty(name="Offsprings instance offset", default=15.0, min=1.0))
+
+        self.offsetfront = PropertyHandler(FloatProperty(name="Generations instance offset", default=20.0, min=1.0))
+
 
 
 global_properties = RDGlobals()
