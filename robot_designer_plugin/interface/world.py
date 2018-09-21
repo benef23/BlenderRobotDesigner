@@ -60,20 +60,22 @@ def draw(layout, context):
 
     # General Properties
     box = layout.box()
-    box.label(text="Active Specification")
+    box.label(text="World Specification")
     global_properties.world_s_name.prop(bpy.context.scene, box)
     global_properties.gravity.prop(bpy.context.scene, box)
 
     # Light Probperties
     box1 = box.box()
-    box1.label(text="Light")
-    #todo change to dropdown just like adding a sensor
+    # todo change to dropdown just like adding a sensor
     global_properties.light_s_name.prop(bpy.context.scene, box1)
     global_properties.cast_shadows.prop(bpy.context.scene, box1)
-    global_properties.difuse.prop(bpy.context.scene, box1)
-    global_properties.specular.prop(bpy.context.scene, box1)
+    row = box1.row()
+    col1 = row.column()
+    col2 = row.column()
+    global_properties.difuse.prop(bpy.context.scene, col1)
+    global_properties.specular.prop(bpy.context.scene, col2)
 
     # Included Models
     box2 = box.box()
     box2.label(text="Insert robot models here via dropdown menu ")
-    #todo list all added robots
+    # todo add robots and list all added robots (similar to include robots)
