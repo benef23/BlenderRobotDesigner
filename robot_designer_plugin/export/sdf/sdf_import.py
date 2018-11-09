@@ -723,7 +723,8 @@ class Importer(object):
         model_name = bpy.context.active_object.name
         model_type = bpy.context.active_object.type
         bpy.context.active_object.RobotEditor.modelMeta.model_folder = os.path.basename(os.path.dirname(self.file_path))
-        bpy.context.active_object.location = robot_location
+        # import to 3D cursor location
+        bpy.context.active_object.location = bpy.context.scene.cursor_location
         bpy.context.active_object.rotation_euler = robot_rotation
 
         self.logger.debug('model_name: %s', model_name)

@@ -40,6 +40,8 @@ Sphinx-autodoc tag
 
 # System imports
 from math import degrees, radians
+import re
+import string
 
 # Blender imports
 import bpy
@@ -74,7 +76,7 @@ class SelectSegment(RDOperator):
         model = bpy.context.active_object
 
         for b in model.data.bones:
-           b.select = False
+            b.select = False
 
         # Alternative to do this:
         # mode = context.mode
@@ -107,18 +109,39 @@ class SelectSegment(RDOperator):
 class RenameSegment(RDOperator):
     """
     :term:`operator` for renaming an active bone
-
-
     """
     bl_idname = config.OPERATOR_PREFIX + "rename_segment"
     bl_label = "Rename active segment"
 
     new_name = StringProperty(name="Enter new name:")
 
-
     @RDOperator.OperatorLogger
     def execute(self, context):
-        context.active_bone.name = self.new_name
+
+        #######################################################################
+        #######################################################################
+        # Check if segment name is already in use
+        armatures = [obj for obj in context.scene.objects if obj.type == 'ARMATURE']
+        isBaseSegmentNameAlreadyUsed = False
+        for arm in armatures:
+            for b in arm.data.bones:
+                if b.name == self.new_name:
+                    isBaseSegmentNameAlreadyUsed = True
+
+        # Change new name to avoid conflict in file
+        if isBaseSegmentNameAlreadyUsed:
+            # Increment mulitpliticity counter in name if it already had a "_1" appended
+            searchObj = re.search('_\d{1,}\Z', self.new_name, re.I)
+            if searchObj:
+                foundNumber = int(float(searchObj.group()[1:]))
+                self.new_name = self.new_name.rstrip(string.digits) + str(foundNumber + 1)
+            else:
+                self.new_name = self.new_name + "_1"
+            self.execute(context)
+        else:
+            #######################################################################
+            #######################################################################
+            context.active_bone.name = self.new_name
         return {'FINISHED'}
 
     def invoke(self, context, event):
@@ -134,8 +157,6 @@ class RenameSegment(RDOperator):
 class InsertNewParentSegment(RDOperator):
     """
     :term:`operator` for create new parent segment for the currently selected segment.
-
-
     """
     bl_idname = config.OPERATOR_PREFIX + "createparentbone"
     bl_label = "Create new parent Bone"
@@ -148,44 +169,66 @@ class InsertNewParentSegment(RDOperator):
 
     @RDOperator.OperatorLogger
     def execute(self, context):
-        current_segment_name = context.active_bone.name
-        parent_segment_name = context.active_bone.parent.name if context.active_bone.parent else ""
 
-        self.logger.info("%s %s", current_segment_name, parent_segment_name)
+        #######################################################################
+        #######################################################################
+        # Check if segment name is already in use
+        armatures = [obj for obj in context.scene.objects if obj.type == 'ARMATURE']
+        isBaseSegmentNameAlreadyUsed = False
+        for arm in armatures:
+            for b in arm.data.bones:
+                if b.name == self.segment_name:
+                    isBaseSegmentNameAlreadyUsed = True
 
-        bpy.ops.pose.select_all(action="DESELECT") #todo make an operator that switches context
+        # Change new name to avoid conflict in file
+        if isBaseSegmentNameAlreadyUsed:
+            # Increment mulitpliticity counter in name if it already had a "_1" appended
+            searchObj = re.search('_\d{1,}\Z', self.segment_name, re.I)
+            if searchObj:
+                foundNumber = int(float(searchObj.group()[1:]))
+                self.segment_name = self.segment_name.rstrip(string.digits) + str(foundNumber + 1)
+            else:
+                self.segment_name = self.segment_name + "_1"
+            self.execute(context)
+        else:
+            #######################################################################
+            #######################################################################
+            current_segment_name = context.active_bone.name
+            parent_segment_name = context.active_bone.parent.name if context.active_bone.parent else ""
 
-        CreateNewSegment.run(segment_name=self.segment_name)
-        new_segment_name = context.active_bone.name
+            self.logger.info("%s %s", current_segment_name, parent_segment_name)
 
-        if parent_segment_name:
-            AssignParentSegment.run(parent_name=parent_segment_name)
+            bpy.ops.pose.select_all(action="DESELECT") #todo make an operator that switches context
 
-        SelectSegment.run(segment_name=current_segment_name)
-        AssignParentSegment.run(parent_name=new_segment_name)
+            CreateNewSegment.run(segment_name=self.segment_name)
+            new_segment_name = context.active_bone.name
 
+            if parent_segment_name:
+                AssignParentSegment.run(parent_name=parent_segment_name)
 
+            SelectSegment.run(segment_name=current_segment_name)
+            AssignParentSegment.run(parent_name=new_segment_name)
 
-        # rearrange parent pointers accordingly in edit mode
-        #current_mode = context.object.mode
+            # rearrange parent pointers accordingly in edit mode
+            # current_mode = context.object.mode
 
-        # bpy.ops.object.mode_set(mode='EDIT', toggle=False)
-        #
-        # new_editbone = context.active_bone
-        # if context.active_bone.parent:
-        #     parent_name = context.active_bone.parent.name
-        #     parent_editbone = context.active_object.data.edit_bones[parent_name]
-        # else:
-        #     parent_editbone = None
-        #
-        # new_editbone.parent = parent_editbone
-        #
-        # current_editbone = context.active_object.data.edit_bones[current_segment_name]
-        # current_editbone.parent = new_editbone
-        #
-        # bpy.ops.object.mode_set(mode=current_mode, toggle=False)
+            # bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+            #
+            # new_editbone = context.active_bone
+            # if context.active_bone.parent:
+            #     parent_name = context.active_bone.parent.name
+            #     parent_editbone = context.active_object.data.edit_bones[parent_name]
+            # else:
+            #     parent_editbone = None
+            #
+            # new_editbone.parent = parent_editbone
+            #
+            # current_editbone = context.active_object.data.edit_bones[current_segment_name]
+            # current_editbone.parent = new_editbone
+            #
+            # bpy.ops.object.mode_set(mode=current_mode, toggle=False)
 
-        UpdateSegments.run(segment_name=self.segment_name, recurse=True)
+            UpdateSegments.run(segment_name=self.segment_name, recurse=True)
 
         return {'FINISHED'}
 
@@ -197,8 +240,6 @@ class InsertNewParentSegment(RDOperator):
 class AssignParentSegment(RDOperator):
     """
     :term:`operator` for assigning a parent to a segment.
-
-
     """
     bl_idname = config.OPERATOR_PREFIX + "assignparentbone"
     bl_label = "Assign parent bone"
@@ -212,14 +253,18 @@ class AssignParentSegment(RDOperator):
     @RDOperator.OperatorLogger
     def execute(self, context):
         # arm = context.active_object
-        current_segment_name = context.active_bone.name
+        # current_segment_name = context.active_bone.name
+        current_segment_name = bpy.context.active_bone.name
 
         current_mode = bpy.context.object.mode
         bpy.ops.object.mode_set(mode='EDIT', toggle=False)
-        new_parent_editbone = context.active_object.data.edit_bones[
-            self.parent_name]
-        current_editbone = context.active_object.data.edit_bones[
-            current_segment_name]
+        new_parent_editbone = context.active_object.data.edit_bones[self.parent_name]
+        current_editbone = context.active_object.data.edit_bones[current_segment_name]
+
+        ##########
+        # new_parent_editbone. current_editbone.matrix_world - new_parent_editbone.matrix_world
+        ##########
+
         current_editbone.parent = new_parent_editbone
         bpy.ops.object.mode_set(mode=current_mode, toggle=False)
 
@@ -262,17 +307,15 @@ class ImportBlenderArmature(RDOperator):
         bone.RobotEditor.Euler.gamma.value = round(degrees(euler[2]), 0)
         bone.RobotEditor.RD_Bone = True
 
-
     @RDOperator.OperatorLogger
     def execute(self, context):
         armature = bpy.context.active_object
         # Done via names because I get crashes if I keep references. Perhaps due to angling pointers inside kept references?
-        selected_bone_names = [ str(b.name) for b in armature.data.bones ]
+        selected_bone_names = [str(b.name) for b in armature.data.bones]
         for bname in selected_bone_names:
-            SelectSegment.run(bname) # required by property update callback.
+            SelectSegment.run(bname)  # required by property update callback.
             self.execute_on_bone(armature.data.bones[bname])
         return {'FINISHED'}
-
 
 
 @RDOperator.Preconditions(ModelSelected, AtLeastOneSegmentSelected, NotEditMode)
@@ -302,8 +345,7 @@ class ConvertVertexMapSkinning(RDOperator):
         return bone_with_largest_weight == bone.name
 
     def allow_connect_to_that_bone(self, bone, obj):
-        return obj.parent_bone == bone.name or (
-        bone.name in obj.vertex_groups and self.allow_connect_to_that_bone_because_vertex_weight(bone, obj))
+        return obj.parent_bone == bone.name or (bone.name in obj.vertex_groups and self.allow_connect_to_that_bone_because_vertex_weight(bone, obj))
 
     def stop_vertex_group_from_interfering(self, armature, obj, context):
         try:
@@ -313,24 +355,23 @@ class ConvertVertexMapSkinning(RDOperator):
             pass
 
     def execute_on_bone(self, bone, armature, context):
-        meshes_to_connect = [ ch for ch in armature.children if self.allow_connect_to_that_bone(bone, ch) ]
+        meshes_to_connect = [ch for ch in armature.children if self.allow_connect_to_that_bone(bone, ch)]
         for obj in meshes_to_connect:
             self.logger.debug("Attempt to attach geometry %s to %s", obj.name, bone.name)
             self.stop_vertex_group_from_interfering(armature, obj, context)
             # We just use the operators that we already have.
             # Assign geometry operates on selected items - one bone and one mesh.
             SelectGeometry.run(geometry_name=obj.name)
-            AssignGeometry.run(attach_collision_geometry=(global_properties.mesh_type=='COLLISION'))
+            AssignGeometry.run(attach_collision_geometry=(global_properties.mesh_type == 'COLLISION'))
 
     @RDOperator.OperatorLogger
     def execute(self, context):
         armature = bpy.context.active_object
-        bone_names = [ str(b.name) for b in armature.data.bones if b.select ]
+        bone_names = [str(b.name) for b in armature.data.bones if b.select]
         for bname in bone_names:
             SelectSegment.run(bname)  # required by property update callback.
             self.execute_on_bone(armature.data.bones[bname], armature, context)
         return {'FINISHED'}
-
 
 
 @RDOperator.Preconditions(ModelSelected, SingleSegmentSelected)
@@ -338,8 +379,6 @@ class ConvertVertexMapSkinning(RDOperator):
 class DeleteSegment(RDOperator):
     """
     :term:`operator` for deleting a the selected segment *ALL* of its children.
-
-
     """
     bl_idname = config.OPERATOR_PREFIX + "deletebone"
     bl_label = "Delete segment and ALL its children"
@@ -349,7 +388,6 @@ class DeleteSegment(RDOperator):
     @RDOperator.OperatorLogger
     def execute(self, context):
         if self.confirmation:
-
             current_mode = context.object.mode
             bpy.ops.object.mode_set(mode='EDIT', toggle=False)
             for bone in context.active_object.data.edit_bones:
@@ -421,65 +459,87 @@ class CreateNewSegment(RDOperator):
 
     # model_name = StringProperty()
     segment_name = StringProperty(name="Enter new segment name:")
-    #parent_name = StringProperty(default="")
+    # parent_name = StringProperty(default="")
 
     @classmethod
-    def run(cls, segment_name):#, parent_name=""):
+    def run(cls, segment_name):  # , parent_name=""):
         return super().run(**cls.pass_keywords())
 
     @RDOperator.OperatorLogger
     @RDOperator.Postconditions(ModelSelected, SingleSegmentSelected)
     def execute(self, context):
-        current_mode = bpy.context.object.mode
-        selected_segments = [i for i in context.active_object.data.bones if i.select]
 
+        #######################################################################
+        #######################################################################
+        # Check if segment name is already in use
+        armatures = [obj for obj in context.scene.objects if obj.type == 'ARMATURE']
+        isBaseSegmentNameAlreadyUsed = False
+        for arm in armatures:
+            for b in arm.data.bones:
+                if b.name == self.segment_name:
+                    isBaseSegmentNameAlreadyUsed = True
 
-        # if not self.parent_name:
-        #     try:
-        #         parentBoneName = context.active_bone.name
-        #     except:
-        #         parentBoneName = None
-        # else:
-        #     if self.parent_name in context.active_object:
-        #         parentBoneName = self.parent_name
-        #     else:
-        #         parentBoneName = None
-
-        if len(selected_segments):
-            parent_name = selected_segments[0].name
+        # Change new name to avoid conflict in file
+        if isBaseSegmentNameAlreadyUsed:
+            # Increment mulitpliticity counter in name if it already had a "_1" appended
+            searchObj = re.search('_\d{1,}\Z', self.segment_name, re.I)
+            if searchObj:
+                foundNumber = int(float(searchObj.group()[1:]))
+                self.segment_name = self.segment_name.rstrip(string.digits) + str(foundNumber + 1)
+            else:
+                self.segment_name = self.segment_name + "_1"
+            self.execute(context)
         else:
-            parent_name = ""
+            #######################################################################
+            #######################################################################
+            current_mode = bpy.context.object.mode
+            selected_segments = [i for i in context.active_object.data.bones if i.select]
 
-        bpy.ops.object.mode_set(mode='EDIT', toggle=False)
-        bone = context.active_object.data.edit_bones.new(self.segment_name)
-        segment_name = self.segment_name
-        bone.head = (0, 0, 0)  # Dummy
-        bone.tail = (0, 0, 1)  # Dummy
-        bone.lock = True
+            # if not self.parent_name:
+            #     try:
+            #         parentBoneName = context.active_bone.name
+            #     except:
+            #         parentBoneName = None
+            # else:
+            #     if self.parent_name in context.active_object:
+            #         parentBoneName = self.parent_name
+            #     else:
+            #         parentBoneName = None
 
-        if parent_name:
-            self.logger.debug(parent_name)
-            bone.parent = context.active_object.data.edit_bones[parent_name]
+            if len(selected_segments):
+                parent_name = selected_segments[0].name
+            else:
+                parent_name = ""
 
-        bpy.ops.object.mode_set(mode='POSE', toggle=False)
+            bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+            bone = context.active_object.data.edit_bones.new(self.segment_name)
+            segment_name = self.segment_name
+            bone.head = (0, 0, 0)  # Dummy
+            bone.tail = (0, 0, 1)  # Dummy
+            bone.lock = True
 
-        SelectSegment.run(segment_name=segment_name)
+            if parent_name:
+                self.logger.debug(parent_name)
+                bone.parent = context.active_object.data.edit_bones[parent_name]
 
-        context.active_bone.RobotEditor.RD_Bone = True
+            bpy.ops.object.mode_set(mode='POSE', toggle=False)
 
-        if not parent_name:
-            context.active_bone.RobotEditor.Euler.alpha.value = 90.0
-            context.active_bone.RobotEditor.DH.alpha.value = 90.0
+            SelectSegment.run(segment_name=segment_name)
 
-        bpy.ops.pose.constraint_add(type='LIMIT_ROTATION')
-        bpy.context.object.pose.bones[segment_name].constraints[
-            0].name = 'RobotEditorConstraint'
-        bpy.ops.object.mode_set(mode=current_mode, toggle=False)
+            context.active_bone.RobotEditor.RD_Bone = True
 
-        self.logger.info("Current mode after: %s (%s)", bpy.context.object.mode, current_mode)
-        self.logger.debug("Segment created. (%s -> %s)", parent_name, self.segment_name)
+            if not parent_name:
+                context.active_bone.RobotEditor.Euler.alpha.value = 90.0
+                context.active_bone.RobotEditor.DH.alpha.value = 90.0
 
-        UpdateSegments.run(recurse=True, segment_name=self.segment_name)
+            bpy.ops.pose.constraint_add(type='LIMIT_ROTATION')
+            bpy.context.object.pose.bones[segment_name].constraints[0].name = 'RobotEditorConstraint'
+            bpy.ops.object.mode_set(mode=current_mode, toggle=False)
+
+            self.logger.info("Current mode after: %s (%s)", bpy.context.object.mode, current_mode)
+            self.logger.debug("Segment created. (%s -> %s)", parent_name, self.segment_name)
+
+            UpdateSegments.run(recurse=True, segment_name=self.segment_name)
 
         return {'FINISHED'}
 
@@ -519,7 +579,6 @@ class CreateNewSegment(RDOperator):
 #     print("createBone done")
 
 
-
 @PluginManager.register_class
 class UpdateSegments(RDOperator):
     """
@@ -533,11 +592,10 @@ class UpdateSegments(RDOperator):
     segment_name = StringProperty(default="")
     recurse = BoolProperty(default=True)
 
-
     @RDOperator.Postconditions(ModelSelected)
     @RDOperator.OperatorLogger
-    #    @RDOperator.Postconditions(ModelSelected)
-    #    @Preconditions(ModelSelected)
+    # @RDOperator.Postconditions(ModelSelected)
+    # @Preconditions(ModelSelected)
     def execute(self, context):
         current_mode = bpy.context.object.mode
         self.logger.debug("UpdateSegments: recurse=%s, bone=%s", str(self.recurse), str(self.segment_name))
@@ -562,23 +620,21 @@ class UpdateSegments(RDOperator):
 
         bpy.ops.object.mode_set(mode='EDIT', toggle=False)
 
-        editbone = bpy.data.armatures[armature_data_name].edit_bones[
-            bpy.data.armatures[armature_data_name].bones[segment_name].name]
+        editbone = bpy.data.armatures[armature_data_name].edit_bones[bpy.data.armatures[armature_data_name].bones[segment_name].name]
         editbone.use_inherit_rotation = True
 
         # Express desired matrix in frame of the Armature
         if editbone.parent is not None:
             transform = editbone.parent.matrix.copy()
             matrix = transform * matrix
-
-        # Adjust bone properties to match RD transform specs.
-        # Try to move it around rigidly. Keep length.
-        pos = matrix.to_translation()
-        axis, roll = _mat3_to_vec_roll(matrix.to_3x3())
-        length = editbone.length
-        editbone.head = pos # Changes length.
-        editbone.tail = pos + length * axis
-        editbone.roll = roll
+            # Adjust bone properties to match RD transform specs.
+            # Try to move it around rigidly. Keep length.
+            pos = matrix.to_translation()
+            axis, roll = _mat3_to_vec_roll(matrix.to_3x3())
+            length = editbone.length
+            editbone.head = pos  # Changes length.
+            editbone.tail = pos + length * axis
+            editbone.roll = roll
 
         bpy.ops.object.mode_set(mode=current_mode, toggle=False)
 
@@ -597,10 +653,8 @@ class UpdateSegments(RDOperator):
         if jointMode == 'REVOLUTE':
             if 'RobotEditorConstraint' not in pose_bone.constraints:
                 bpy.ops.pose.constraint_add(type='LIMIT_ROTATION')
-                bpy.context.object.pose.bones[segment_name].constraints[
-                    0].name = 'RobotEditorConstraint'
-            constraint = \
-                [i for i in pose_bone.constraints if i.type == 'LIMIT_ROTATION'][0]
+                bpy.context.object.pose.bones[segment_name].constraints[0].name = 'RobotEditorConstraint'
+            constraint = [i for i in pose_bone.constraints if i.type == 'LIMIT_ROTATION'][0]
             constraint.name = 'RobotEditorConstraint'
             constraint.owner_space = 'LOCAL'
             constraint.use_limit_x = True
@@ -622,7 +676,7 @@ class UpdateSegments(RDOperator):
                 constraint.min_z = radians(min_rot)
                 constraint.max_z = radians(max_rot)
         elif 'RobotEditorConstraint' in pose_bone.constraints:
-          pose_bone.constraints.remove(pose_bone.constraints['RobotEditorConstraint'])
+            pose_bone.constraints.remove(pose_bone.constraints['RobotEditorConstraint'])
 
         # -------------------------------------------------------
         bpy.ops.object.mode_set(mode=current_mode, toggle=False)

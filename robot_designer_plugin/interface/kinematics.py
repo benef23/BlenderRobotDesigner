@@ -38,6 +38,7 @@
 import bpy
 from ..properties.globals import global_properties
 
+
 def draw(layout, context):
     """
     Draw method that builds the part of the GUI responsible for the bone submenu.
@@ -74,7 +75,7 @@ def draw(layout, context):
     axis_row.prop(context.active_bone.RobotEditor, "axis_revert")
 
     # Only show joint if not root bone
-    if not context.active_bone.parent == None:
+    if context.active_bone.parent is not None:
         layout.label("Joint Type:")
         layout.prop(context.active_bone.RobotEditor, "jointMode", expand=True)
         joint_column = layout.column(align=True)
@@ -91,6 +92,3 @@ def draw(layout, context):
             joint_column.prop(context.active_bone.RobotEditor.d, "offset", slider=False)
             joint_column.prop(context.active_bone.RobotEditor.d, "min", slider=False)
             joint_column.prop(context.active_bone.RobotEditor.d, "max", slider=False)
-
-
-

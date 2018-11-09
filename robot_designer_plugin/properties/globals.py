@@ -49,11 +49,13 @@ from ..operators.segments import SelectSegment, UpdateSegments
 from ..operators.muscles import SelectMuscle
 from ..core.property import PropertyGroupHandlerBase, PropertyHandler
 
+
 class RDSelectedObjects(PropertyGroupHandlerBase):
 
     def __init__(self):
 
         self.visible = PropertyHandler()
+
 
 class RDGlobals(PropertyGroupHandlerBase):
     """
@@ -79,7 +81,6 @@ class RDGlobals(PropertyGroupHandlerBase):
         segment_name = context.active_bone.name
 
         UpdateSegments.run(model_name=model_name, segment_name=segment_name)
-
 
     @staticmethod
     def updateBoneName(self, context):
@@ -134,15 +135,12 @@ class RDGlobals(PropertyGroupHandlerBase):
             else:
                 obj.hide = True
 
-
     @staticmethod
     def display_muscles(self, context):
         """
         Hides/Shows muscles in dependence of the respective Global property
         """
-
         hide_muscles = global_properties.display_muscle_selection.get(context.scene)
-
 
         muscle_names = [obj.name for obj in bpy.data.objects if
          bpy.data.objects[obj.name].RobotEditor.muscles.robotName != '']
@@ -152,7 +150,7 @@ class RDGlobals(PropertyGroupHandlerBase):
             if hide_muscles == 'all':
                 obj.hide = False
            # elif hide_muscles == 'MYOROBOTICS' and obj.RobotEditor.muscles.muscleType == 'MYOROBOTICS':
-           #     obj.hide = False
+           #    obj.hide = False
             elif hide_muscles == 'MILLARD_EQUIL' and obj.RobotEditor.muscles.muscleType == 'MILLARD_EQUIL':
                 obj.hide = False
             elif hide_muscles == 'MILLARD_ACCEL' and obj.RobotEditor.muscles.muscleType == 'MILLARD_ACCEL':
@@ -188,21 +186,19 @@ class RDGlobals(PropertyGroupHandlerBase):
         """
         print("in the function")
         active_model = self.model_name
-        for muscle in [obj.name for obj in bpy.data.objects
-            if bpy.data.objects[obj.name].RobotEditor.muscles.robotName == active_model]:
+        for muscle in [obj.name for obj in bpy.data.objects if bpy.data.objects[obj.name].RobotEditor.muscles.robotName == active_model]:
                 bpy.data.objects[muscle].data.bevel_depth = self.muscle_dim
                 print("changeing ----")
 
-
-
-
-
-
     def __init__(self):
-
         # Holds the current selected kinematics model (armature) name
         self.model_name = PropertyHandler(StringProperty(name='Name', update=self.name_update))
         self.old_name = PropertyHandler(StringProperty(name='Name'))
+
+        # Holds the currently selected module, that should be added to a given robot
+        self.new_module_name = PropertyHandler(StringProperty())
+        self.new_module_bone_name = PropertyHandler(StringProperty())
+        self.selected_parent_bone_name = PropertyHandler(StringProperty())
 
         # Holds the name of the currently selected segment (Bone)
         self.segment_name = PropertyHandler(StringProperty(update=self.updateBoneName))
@@ -218,6 +214,7 @@ class RDGlobals(PropertyGroupHandlerBase):
             items=[('armatures', 'Robot', 'Modify the Robot'),
                    ('bones', 'Segments', 'Modify segements'),
                    ('meshes', 'Geometries', 'Assign meshes to segments'),
+                   ('modules', 'Modules', 'Import modular robot parts'),
                    ('sensors', 'Sensors', 'Assign sensors to the robot'),
                    ('muscles', 'Muscles', 'Assign muscles to the robot'),
                    # ('markers', 'Markers', 'Assign markers to bones'),
@@ -233,7 +230,7 @@ class RDGlobals(PropertyGroupHandlerBase):
         ))
 
         self.sensor_type = PropertyHandler(EnumProperty(
-            items=[('CAMERA_SENSOR','Cameras', 'Edit camera sensors'),
+            items=[('CAMERA_SENSOR', 'Cameras', 'Edit camera sensors'),
                    ('LASER_SENSOR', 'Laser scanners', 'Edit laser scanners')]
                    # ('POSITION', 'Position sensors', 'Edit position sensors')]
         ))
@@ -243,7 +240,6 @@ class RDGlobals(PropertyGroupHandlerBase):
         self.physics_type = PropertyHandler(EnumProperty(items=[('PHYSICS_FRAME', 'Mass object', 'Mass object')]))
 
         self.display_physics_selection = PropertyHandler(BoolProperty(name="Show Physics Frames", description="Show or hide physics frames", default=True, update=self.display_physics))
-
 
         # Holds the selection to list connected or unassigned meshes in dropdown menus
         self.list_meshes = PropertyHandler(EnumProperty(
@@ -314,7 +310,6 @@ class RDGlobals(PropertyGroupHandlerBase):
             update=self.display_muscles))
 
         self.muscle_dim = PropertyHandler(FloatProperty(name="Muscle Dimension:", default=0.05, update=self.muscle_dim_update))
-
 
 
 global_properties = RDGlobals()

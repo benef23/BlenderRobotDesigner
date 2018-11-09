@@ -43,6 +43,8 @@ Sphinx-autodoc tag
 # import os
 # import sys
 # import math
+import re
+import string
 
 # ######
 # Blender imports
@@ -55,6 +57,7 @@ from bpy.props import StringProperty
 from ..core import config, PluginManager, RDOperator, Condition
 from .helpers import ModelSelected, NotEditMode, ObjectMode
 from ..properties.globals import global_properties
+
 
 @RDOperator.Preconditions(ModelSelected)
 @PluginManager.register_class
@@ -79,12 +82,10 @@ class SelectCoordinateFrame(RDOperator):
 
         return super().run(**cls.pass_keywords())
 
-
     @RDOperator.OperatorLogger
     @RDOperator.Postconditions(ModelSelected)
     def execute(self, context):
-        for bone in [i.name for i in bpy.data.armatures[
-            context.active_object.data.name].bones]:
+        for bone in [i.name for i in bpy.data.armatures[context.active_object.data.name].bones]:
             if self.mesh_name != 'None':
                 context.active_object.pose.bones[bone].custom_shape = \
                     bpy.data.objects[self.mesh_name]
@@ -115,13 +116,11 @@ class RebuildModel(RDOperator):
 
         return super().run(**cls.pass_keywords())
 
-
     @RDOperator.OperatorLogger
     @RDOperator.Postconditions(ModelSelected)
     def execute(self, context):
         from . import rigid_bodies, segments, dynamics
-        mesh_names = [obj.name for obj in context.scene.objects if
-                      obj.type == 'MESH' and obj.parent_bone]
+        mesh_names = [obj.name for obj in context.scene.objects if obj.type == 'MESH' and obj.parent_bone]
         # first, meshes
         # build dictionary which stores the mapping of meshes to bones
         meshes_bones_dictionary = dict()
@@ -172,6 +171,7 @@ class RebuildModel(RDOperator):
 
         return {'FINISHED'}
 
+
 @PluginManager.register_class
 class SelectModel(RDOperator):
     """
@@ -190,7 +190,6 @@ class SelectModel(RDOperator):
     def run(cls, model_name=""):
         return super().run(**cls.pass_keywords())
 
-
     @RDOperator.OperatorLogger
     @RDOperator.Postconditions(ModelSelected)
     def execute(self, context):
@@ -204,10 +203,81 @@ class SelectModel(RDOperator):
         global_properties.old_name.set(context.scene, self.model_name)
         # not so sure if this is needed at all
 
+        global_properties.new_module_name.set(context.scene, self.model_name)
+
         if len(context.active_object.data.bones) > 0:
             baseBoneName = context.active_object.data.bones[0].name
             segments.SelectSegment.run(segment_name=baseBoneName)
         return {'FINISHED'}
+
+
+@RDOperator.Preconditions(ModelSelected)
+@PluginManager.register_class
+class SelectModuleToAdd(RDOperator):
+    """
+    :ref:`operator` for adding a robot module to the currently selected base robot
+
+    **Preconditions:**
+
+    **RDOperator.Postconditions:**
+    """
+    bl_idname = config.OPERATOR_PREFIX + "addmodule"
+    bl_label = "Join new module"
+
+    module_name = StringProperty()
+    """
+    confirm = BoolProperty(name="Are you sure?",
+                                             description="Adds a robot module to the selected robot",
+                                             default=False)
+    """
+
+    @classmethod
+    def run(cls):
+        return super().run(**cls.pass_keywords())
+
+    @RDOperator.OperatorLogger
+    @RDOperator.Postconditions(ModelSelected)
+    def execute(self, context):
+        from . import segments
+        from ..properties.globals import global_properties
+        # Keep all objects in scene selected
+        self.logger.debug("Selected Module to add to robot: " + self.module_name)
+        module_object = bpy.data.objects[self.module_name]
+        global_properties.new_module_bone_name.set(context.scene, module_object.data.bones[0].name)
+        global_properties.new_module_name.set(context.scene, self.module_name)
+
+        return {'FINISHED'}
+
+
+@RDOperator.Preconditions(ModelSelected)
+@PluginManager.register_class
+class SelectParentBone(RDOperator):
+    """
+    :ref:`operator` for adding a robot module to the currently selected base robot
+
+    **Preconditions:**
+
+    **RDOperator.Postconditions:**
+    """
+    bl_idname = config.OPERATOR_PREFIX + "selectparentbone"
+    bl_label = "Select parent bone"
+
+    parent_segment_name = StringProperty()
+
+    @classmethod
+    def run(cls):
+        return super().run(**cls.pass_keywords())
+
+    @RDOperator.OperatorLogger
+    @RDOperator.Postconditions(ModelSelected)
+    def execute(self, context):
+        from . import segments
+        from ..properties.globals import global_properties
+
+        global_properties.selected_parent_bone_name.set(context.scene, self.parent_segment_name)
+
+        return {'FINISHED'}
+
 
 @RDOperator.Preconditions(ModelSelected)
 @PluginManager.register_class
@@ -229,16 +299,40 @@ class RenameModel(RDOperator):
         """
         Run this operator
         """
-
         return super().run(**cls.pass_keywords())
 
 
     @RDOperator.OperatorLogger
     @RDOperator.Postconditions(ModelSelected)
     def execute(self, context):
-        # oldName = context.active_object.name
-        # context.active_object.name = self.newName
-        # bpy.data.armatures[oldName].name = self.newName
+
+        #######################################################################
+        #######################################################################
+
+        # Check if robot name is already in use
+        armatures = [obj for obj in context.scene.objects if obj.type == 'ARMATURE']
+        isRobotNameAlreadyUsed = False
+        for arm in armatures:
+            if arm.name == self.newName:
+                isRobotNameAlreadyUsed = True
+
+        # Change new name to avoid conflict in file
+        if isRobotNameAlreadyUsed:
+            # Increment mulitpliticity counter in name if it already had a "_1" appended
+            searchObj = re.search('_\d{1,}\Z', self.newName, re.I)
+            if searchObj:
+                foundNumber = int(float(searchObj.group()[1:]))
+                self.newName = self.newName.rstrip(string.digits) + str(foundNumber + 1)
+            else:
+                self.newName = self.newName + "_1"
+            self.execute(context)
+
+        #######################################################################
+        #######################################################################
+
+        oldName = context.active_object.name
+        context.active_object.name = self.newName
+        bpy.data.armatures[oldName].name = self.newName
 
         global_properties.model_name.set(context.scene, self.newName)
 
@@ -269,26 +363,32 @@ class JoinModels(RDOperator):
         """
         Run this operator
         """
-
         return super().run(**cls.pass_keywords())
-
 
     @RDOperator.OperatorLogger
     @RDOperator.Postconditions(ModelSelected)
     def execute(self, context):
         from . import segments
         sourceArmName = context.active_object.name
-        sourceParentBoneName = context.active_object.data.bones[0].name
         SelectModel.run(model_name=self.targetArmatureName)
         bpy.data.objects[sourceArmName].select = True
 
+        # Check if both base bones have the same name and fix that.
+        # if context.active_object.data.bones[0].name == self.targetArmatureName:
+        #     context.active_object.data.bones[0].name = context.active_object.data.bones[0].name + "_1"
+
+        sourceParentBoneName = context.active_object.data.bones[0].name
+
         bpy.ops.object.join()
         segments.SelectSegment.run(segment_name=sourceParentBoneName)
-        segments.AssignParentSegment.run(parentName=context.active_object.data.bones[0].name)
+        # segments.AssignParentSegment.run(parentName=context.active_object.data.bones[0].name)
 
-        # Might be swapped! todo check double
+        segments.AssignParentSegment.run(parent_name=sourceParentBoneName)
+
+        # Might be swapped! TODO check double
         segments.UpdateSegments.run(segment_name=sourceParentBoneName, recurse=True)
         return {'FINISHED'}
+
 
 @RDOperator.Preconditions(ObjectMode)
 @PluginManager.register_class
@@ -319,17 +419,68 @@ class CreateNewModel(RDOperator):
     @RDOperator.Postconditions(ModelSelected)
     def execute(self, context):
         from . import segments
-        model_data = bpy.data.armatures.new(self.model_name)
-        model_object = bpy.data.objects.new(self.model_name, model_data)
-        model_object.data = model_data
-        model_data.show_names = True
-        model_data.show_axes = True
-        model_data.draw_type = 'STICK'
-        scene = bpy.context.scene
-        scene.objects.link(model_object)
-        SelectModel.run(model_name=self.model_name)
-        if self.base_segment_name:
-            segments.CreateNewSegment.run(segment_name=self.base_segment_name)
+
+        #######################################################################
+        #######################################################################
+
+        # Check if robot name is already in use
+        armatures = [obj for obj in context.scene.objects if obj.type == 'ARMATURE']
+        isRobotNameAlreadyUsed = False
+        isBaseSegmentNameAlreadyUsed = False
+        for arm in armatures:
+            if arm.name == self.model_name:
+                isRobotNameAlreadyUsed = True
+            for b in arm.data.bones:
+                if b.name == self.base_segment_name:
+                    isBaseSegmentNameAlreadyUsed = True
+
+        #######################################################################
+        #######################################################################
+
+        # Only create the new arm if there is no robot yet with the same name
+        if isRobotNameAlreadyUsed:
+            import logging
+            gui_logger = logging.getLogger('GUI')
+            gui_logger.setLevel(logging.DEBUG)
+            gui_logger.error("Please create a new unique armature name")
+
+            # Increment mulitpliticity counter in name if it already had a "_1" appended
+            searchObj = re.search('_\d{1,}\Z', self.model_name, re.I)
+            if searchObj:
+                foundNumber = int(float(searchObj.group()[1:]))
+                self.model_name = self.model_name.rstrip(string.digits) + str(foundNumber + 1)
+            else:
+                self.model_name = self.model_name + "_1"
+
+            self.execute(context)
+        elif isBaseSegmentNameAlreadyUsed:
+            import logging
+            gui_logger = logging.getLogger('GUI')
+            gui_logger.setLevel(logging.DEBUG)
+            gui_logger.error("Please create a new unique base segment name")
+
+            # Increment mulitpliticity counter in name if it already had a "_1" appended
+            searchObj = re.search('_\d{1,}\Z', self.base_segment_name, re.I)
+            if searchObj:
+                foundNumber = int(float(searchObj.group()[1:]))
+                self.base_segment_name = self.base_segment_name.rstrip(string.digits) + str(foundNumber + 1)
+            else:
+                self.base_segment_name = self.base_segment_name + "_1"
+
+            self.execute(context)
+        else:
+            model_data = bpy.data.armatures.new(self.model_name)
+            model_object = bpy.data.objects.new(self.model_name, model_data)
+            model_object.data = model_data
+            model_data.show_names = True
+            model_data.show_axes = True
+            model_data.draw_type = 'STICK'
+            scene = bpy.context.scene
+            scene.objects.link(model_object)
+            SelectModel.run(model_name=self.model_name)
+            if self.base_segment_name:
+                segments.CreateNewSegment.run(segment_name=self.base_segment_name)
+
         return {'FINISHED'}
 
     def invoke(self, context, event):

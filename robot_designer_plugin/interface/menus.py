@@ -326,7 +326,7 @@ class ModelMenu(bpy.types.Menu, BaseMenu):
     """
 
     bl_idname = OPERATOR_PREFIX + "armaturemenu"
-    bl_label = "Selecht Model"
+    bl_label = "Select Model"
 
     @RDOperator.OperatorLogger
     def draw(self, context):

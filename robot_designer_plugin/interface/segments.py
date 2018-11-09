@@ -47,6 +47,7 @@ from ..operators import segments
 from ..core.pluginmanager import PluginManager
 from ..properties.globals import global_properties
 
+
 def draw(layout, context):
     """
     Draws the user interface for modifying segments.
@@ -75,7 +76,7 @@ def draw(layout, context):
             row = box.row()
             if context.active_bone.RobotEditor.RD_Bone:
                 row.label("Edit:")
-                global_properties.segment_tab.prop(bpy.context.scene,row,expand=True)
+                global_properties.segment_tab.prop(bpy.context.scene, row, expand=True)
                 tab = global_properties.segment_tab.get(bpy.context.scene)
                 if tab == "kinematics":
                     kinematics.draw(box, context)

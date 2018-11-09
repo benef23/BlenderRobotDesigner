@@ -1,0 +1,306 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+	<model name="gripper_angular_wrist">
+		<pose>0.0 0.0 0.0 1.5707963705062866 0.0 0.0</pose>
+		<link name="base">
+			<pose>0.0 0.0 0.0 1.5707963705062866 -0.0 0.0</pose>
+			<inertial>
+				<mass>1.0</mass>
+				<pose>0 0 0 0 0 0</pose>
+				<inertia>
+					<ixx>1.0</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>1.0</iyy>
+					<iyz>0.0</iyz>
+					<izz>1.0</izz>
+				</inertia>
+			</inertial>
+			<collision name="COL__SCHUNK-1009735_G0_COL">
+				<pose>0.0 0.0 0.0 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular_wrist/meshes/collisions/COL__SCHUNK-1009735_G0_COL.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<visual name="VIS__SCHUNK-1009735_G0">
+				<pose>0.0 0.0 0.0 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular_wrist/meshes/visual/VIS__SCHUNK-1009735_G0.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+			<visual name="VIS__SCHUNK-9957615_T2">
+				<pose>0.0 2.682224052947726e-22 1.77635686587003e-15 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular_wrist/meshes/visual/VIS__SCHUNK-9957615_T2.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+			<visual name="VIS__SCHUNK-1009598_S17">
+				<pose>0.0 2.682224052947726e-22 1.77635686587003e-15 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular_wrist/meshes/visual/VIS__SCHUNK-1009598_S17.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+			<visual name="VIS__SCHUNK-1009598_S16">
+				<pose>0.0 2.682224052947726e-22 1.77635686587003e-15 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular_wrist/meshes/visual/VIS__SCHUNK-1009598_S16.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+			<visual name="VIS__SCHUNK-1009599_S15">
+				<pose>0.0 2.682224052947726e-22 1.77635686587003e-15 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular_wrist/meshes/visual/VIS__SCHUNK-1009599_S15.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+			<visual name="VIS__SCHUNK-1009530_R14">
+				<pose>0.0 2.682224052947726e-22 1.77635686587003e-15 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular_wrist/meshes/visual/VIS__SCHUNK-1009530_R14.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+			<visual name="VIS__SCHUNK-1009598_S13">
+				<pose>0.0 2.682224052947726e-22 1.77635686587003e-15 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular_wrist/meshes/visual/VIS__SCHUNK-1009598_S13.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+			<visual name="VIS__SCHUNK-1009598_S12">
+				<pose>0.0 2.682224052947726e-22 1.77635686587003e-15 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular_wrist/meshes/visual/VIS__SCHUNK-1009598_S12.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+			<visual name="VIS__SCHUNK-1009599_S11">
+				<pose>0.0 2.682224052947726e-22 1.77635686587003e-15 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular_wrist/meshes/visual/VIS__SCHUNK-1009599_S11.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+			<visual name="VIS__SCHUNK-1009540_R10">
+				<pose>0.0 2.682224052947726e-22 1.77635686587003e-15 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular_wrist/meshes/visual/VIS__SCHUNK-1009540_R10.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+			<visual name="VIS__SCHUNK-1010073_B6">
+				<pose>0.0 2.682224052947726e-22 1.77635686587003e-15 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular_wrist/meshes/visual/VIS__SCHUNK-1010073_B6.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+			<visual name="VIS__SCHUNK-1010072_B8">
+				<pose>0.0 2.682224052947726e-22 1.77635686587003e-15 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular_wrist/meshes/visual/VIS__SCHUNK-1010072_B8.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<link name="wrist">
+			<pose>0.0 -5.0268098209e-09 0.114999999329 1.5707963705062866 -0.0 0.0</pose>
+			<inertial>
+				<mass>1.0</mass>
+				<pose>0 0 0 0 0 0</pose>
+				<inertia>
+					<ixx>1.0</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>1.0</iyy>
+					<iyz>0.0</iyz>
+					<izz>1.0</izz>
+				</inertia>
+			</inertial>
+			<visual name="VIS__SCHUNK-9905503_T1">
+				<pose>0.0 -0.11499999932944771 1.77635686587003e-15 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular_wrist/meshes/visual/VIS__SCHUNK-9905503_T1.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+			<visual name="VIS__SCHUNK-5521119_F7">
+				<pose>0.0 -0.11499999932944771 1.77635686587003e-15 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular_wrist/meshes/visual/VIS__SCHUNK-5521119_F7.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+			<visual name="VIS__SCHUNK-5521119_F5">
+				<pose>0.0 -0.11499999932944771 1.77635686587003e-15 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular_wrist/meshes/visual/VIS__SCHUNK-5521119_F5.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+			<visual name="VIS__SCHUNK-5521117_A4">
+				<pose>0.0 -0.11499999932944771 1.77635686587003e-15 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular_wrist/meshes/visual/VIS__SCHUNK-5521117_A4.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+			<visual name="VIS__SCHUNK-1009525_G3">
+				<pose>0.0 -0.11499999932944771 1.77635686587003e-15 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular_wrist/meshes/visual/VIS__SCHUNK-1009525_G3.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+			<visual name="VIS__SCHUNK-1009497_Z9">
+				<pose>0.0 -0.11499999932944771 1.77635686587003e-15 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular_wrist/meshes/visual/VIS__SCHUNK-1009497_Z9.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<link name="finger1">
+			<pose>0.0280000005364 -5.90103764699e-09 0.134999999925 1.5707963705062866 -0.0 0.0</pose>
+			<inertial>
+				<mass>1.0</mass>
+				<pose>0 0 0 0 0 0</pose>
+				<inertia>
+					<ixx>1.0</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>1.0</iyy>
+					<iyz>0.0</iyz>
+					<izz>1.0</izz>
+				</inertia>
+			</inertial>
+			<collision name="COL_Finger1_COL">
+				<pose>-0.02799999457597724 -0.13499999247491345 1.6579724900790943e-15 1.5099581673894136e-07 3.141592502593994 -1.5099578831723193e-07</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular_wrist/meshes/collisions/COL_Finger1_COL.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<visual name="VIS_Finger1_VIS">
+				<pose>-0.02799999457597724 -0.13499999247491345 1.6579724900790943e-15 1.5099581673894136e-07 3.141592502593994 -1.5099578831723193e-07</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular_wrist/meshes/visual/VIS_Finger1_VIS.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<link name="finger2">
+			<pose>-0.0280000005364 -5.90103764699e-09 0.134999999925 1.5707963705062866 -0.0 0.0</pose>
+			<inertial>
+				<mass>1.0</mass>
+				<pose>0 0 0 0 0 0</pose>
+				<inertia>
+					<ixx>1.0</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>1.0</iyy>
+					<iyz>0.0</iyz>
+					<izz>1.0</izz>
+				</inertia>
+			</inertial>
+			<collision name="COL_Finger2_COL">
+				<pose>0.02799999755620952 -0.13499999247491345 1.6579724900790943e-15 0.0 8.742274104633907e-08 -8.593264766432185e-08</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular_wrist/meshes/collisions/COL_Finger2_COL.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<visual name="VIS_Finger2_VIS">
+				<pose>0.02799999755620952 -0.13499999247491345 1.6579724900790943e-15 0.0 8.742274104633907e-08 -8.593264766432185e-08</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular_wrist/meshes/visual/VIS_Finger2_VIS.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<joint name="wrist" type="revolute">
+			<parent>base</parent>
+			<child>wrist</child>
+			<axis>
+				<xyz>0.0 1.0 0.0</xyz>
+				<limit>
+					<lower>-1.5707963267948966</lower>
+					<upper>1.5707963267948966</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="finger1" type="revolute">
+			<parent>wrist</parent>
+			<child>finger1</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>-0.7853981633974483</lower>
+					<upper>0.12217304763960307</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="finger2" type="revolute">
+			<parent>wrist</parent>
+			<child>finger2</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>-0.10471975511965978</lower>
+					<upper>0.7853981633974483</upper>
+				</limit>
+			</axis>
+		</joint>
+	</model>
+</sdf>

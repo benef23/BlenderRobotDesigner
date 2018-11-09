@@ -1,0 +1,7 @@
+wheel
+pyxb==1.2.5
+gitpython
+gitdb
+sphinx
+sphinx-autodoc-typehints
+hbp-sphinx-theme

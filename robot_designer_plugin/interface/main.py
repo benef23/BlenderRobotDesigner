@@ -67,7 +67,7 @@ class UserInterface(bpy.types.Panel):
 
     def draw(self, context):
         from ..operators import gui
-        from . import files, model, segments, geometries, sensors, muscles
+        from . import files, model, segments, geometries, sensors, muscles, modules
         layout = self.layout
 
         layout.label("HBP Neurorobotics RobotDesigner", icon_value=PluginManager.get_icon('hbp'))
@@ -83,9 +83,11 @@ class UserInterface(bpy.types.Panel):
             segments.draw(layout, context)
         elif control == 'meshes':
             geometries.draw(layout, context)
+        elif control == 'modules':
+            modules.draw(layout, context)
         elif control == 'sensors':
-            sensors.draw(layout,context)
-        if control == 'muscles':
+            sensors.draw(layout, context)
+        elif control == 'muscles':
             muscles.draw(layout, context)
         # elif control == 'markers':
         #     markers.draw(layout, context)

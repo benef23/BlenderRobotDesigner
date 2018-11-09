@@ -1,0 +1,1241 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+	<model name="gripper_arm">
+		<pose>0.0 0.0 0.0 0.0 0.0 0.0</pose>
+		<link name="base_link">
+			<pose>0.0 0.0 0.0 0.0 -0.0 0.0</pose>
+			<inertial>
+				<mass>1000.0</mass>
+				<pose>0.0 0.0 0.0 0.0 -0.0 0.0</pose>
+				<inertia>
+					<ixx>100.0</ixx>
+					<ixy>0.0</ixy>
+					<ixz>1.0</ixz>
+					<iyy>100.0</iyy>
+					<iyz>1.0</iyz>
+					<izz>100.0</izz>
+				</inertia>
+			</inertial>
+		</link>
+		<link name="hollie_006_wrist_lat_rot">
+			<pose>-5.55111512313e-17 0.0 0.10000000149 0.0 -0.0 0.0</pose>
+			<inertial>
+				<mass>9.999999747378752e-06</mass>
+				<pose>-2.9802322387695312e-08 -1.4156103134155273e-07 2.60770320892334e-07 -2.3092635524071467e-14 -1.4210853021136109e-14 -6.705523247774181e-08</pose>
+				<inertia>
+					<ixx>0.009999999776482582</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>0.009999999776482582</iyy>
+					<iyz>0.0</iyz>
+					<izz>0.009999999776482582</izz>
+				</inertia>
+			</inertial>
+			<collision name="COL_hollhollie_006_wrist_lat_rot_Coll">
+				<pose>-2.086162567138672e-07 8.530914783477783e-07 -0.03199789673089981 -1.1394178756063411e-07 5.1209660512085975e-08 -6.705522537231445e-08</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/collisions/COL_hollhollie_006_wrist_lat_rot_Coll.dae</uri>
+						<scale>1.0 1.0 1.0</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<visual name="VIS_hollhollie_006_wrist_lat_rot">
+				<pose>-2.086162567138672e-07 8.493661880493164e-07 -0.03199789673089981 -1.1149174383717764e-07 5.256789137320084e-08 -6.705522537231445e-08</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/visual/VIS_hollhollie_006_wrist_lat_rot.dae</uri>
+						<scale>1.0 1.0 1.0</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<link name="hollie_007_wrist_lat_rot">
+			<pose>2.84532620748e-06 -0.0131281446666 0.10000000149 0.0 -0.0 0.0</pose>
+			<inertial>
+				<mass>9.999999747378752e-06</mass>
+				<pose>-7.371022547886241e-08 -6.705522537231445e-08 2.60770320892334e-07 -2.037034108829782e-14 -0.0 -6.705523247774181e-08</pose>
+				<inertia>
+					<ixx>0.009999999776482582</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>0.009999999776482582</iyy>
+					<iyz>0.0</iyz>
+					<izz>0.009999999776482582</izz>
+				</inertia>
+			</inertial>
+			<collision name="COL_hollhollie_007_wrist_lat_rot_Coll">
+				<pose>-1.9291951502964366e-07 0.013130072504281998 2.2873282432556152e-06 3.141590118408203 2.745721019437042e-07 -5.438923835754395e-07</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/collisions/COL_hollhollie_007_wrist_lat_rot_Coll.dae</uri>
+						<scale>1.0 1.0 1.0</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<visual name="VIS_hollhollie_007_wrist_lat_rot">
+				<pose>-1.6311719264194835e-07 0.013130132108926773 2.2873282432556152e-06 3.141590118408203 2.8396095785865327e-07 -5.438923835754395e-07</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/visual/VIS_hollhollie_007_wrist_lat_rot.dae</uri>
+						<scale>1.0 1.0 1.0</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<link name="hollie_008_thumb_lat_rot">
+			<pose>0.0168995532633 0.013113413006 0.10000000149 0.0 0.2617993950843811 1.5707963705062866</pose>
+			<inertial>
+				<mass>9.999999747378752e-06</mass>
+				<pose>-1.56611235091475e-09 2.0209796502967947e-07 -3.972369597704528e-07 -4.551914400963142e-15 -1.514991510020991e-08 1.0833685060163134e-08</pose>
+				<inertia>
+					<ixx>0.009999999776482582</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>0.009999999776482582</iyy>
+					<iyz>0.0</iyz>
+					<izz>0.009999999776482582</izz>
+				</inertia>
+			</inertial>
+			<collision name="COL_hollhollie_008_thumb_lat_rot_Coll">
+				<pose>2.960801168683247e-07 -7.934859240776859e-07 0.0244183000177145 -2.756714593488141e-06 3.1415884494781494 -3.0796370538155315e-06</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/collisions/COL_hollhollie_008_thumb_lat_rot_Coll.dae</uri>
+						<scale>1.0 0.9999998807907104 1.0000001192092896</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<visual name="VIS_hollhollie_008_thumb_lat_rot">
+				<pose>2.0667314970523876e-07 -8.530905688530765e-07 0.024418195709586143 -2.5480987915216247e-06 3.1415886878967285 -2.5411547994735884e-06</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/visual/VIS_hollhollie_008_thumb_lat_rot.dae</uri>
+						<scale>1.0 0.9999999403953552 1.0000001192092896</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<link name="hand_Thumb_Helper_link">
+			<pose>0.0169021550484 0.0250099974728 0.14438989067 3.141592502593994 -1.308996856212616 1.5707963705062866</pose>
+			<inertial>
+				<mass>9.999999747378752e-06</mass>
+				<pose>2.968755730137218e-08 -2.994529779698496e-07 -1.0618963131037162e-07 1.6193691010357725e-07 1.0903884373192341e-07 8.940696005765858e-08</pose>
+				<inertia>
+					<ixx>0.009999999776482582</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>0.009999999776482582</iyy>
+					<iyz>0.0</iyz>
+					<izz>0.009999999776482582</izz>
+				</inertia>
+			</inertial>
+		</link>
+		<link name="hollie_009_thumb_base_rot">
+			<pose>0.0169021550484 0.0250099974728 0.14438989067 1.8834040528657996 0.5706020396818418 -2.9687588385590917</pose>
+			<inertial>
+				<mass>9.999999747378752e-06</mass>
+				<pose>-1.0263629945939101e-07 0.001709595089778304 -9.985538440560049e-08 -1.3594736003597063e-07 -8.574178700371249e-09 2.2351733264258655e-07</pose>
+				<inertia>
+					<ixx>0.009999999776482582</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>0.009999999776482582</iyy>
+					<iyz>0.0</iyz>
+					<izz>0.009999999776482582</izz>
+				</inertia>
+			</inertial>
+			<collision name="COL_hollhollie_009_thumb_base_rot_Coll">
+				<pose>1.425663981535763e-06 0.000481705938000232 -2.486454775407765e-07 -3.141589879989624 2.8299865562075865e-07 7.152555667744309e-07</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/collisions/COL_hollhollie_009_thumb_base_rot_Coll.dae</uri>
+						<scale>1.0000004768371582 0.9999999403953552 1.0000003576278687</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<visual name="VIS_hollhollie_009_thumb_base_rot">
+				<pose>9.539490974930231e-07 0.0004817487788386643 -2.784477146633435e-07 -3.1415903568267822 4.384605745144654e-07 9.387727573084703e-07</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/visual/VIS_hollhollie_009_thumb_base_rot.dae</uri>
+						<scale>1.0 0.9999999403953552 1.0000001192092896</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<link name="hollie_010_thumb_tip_rot">
+			<pose>-0.0233005965751 0.0179941886787 0.118187221637 -1.8834040230614328 -0.5706018960040801 0.17283375985160754</pose>
+			<inertial>
+				<mass>9.999999747378752e-06</mass>
+				<pose>-1.1750019979217541e-07 2.7762540412368253e-05 -1.6699402749509318e-07 1.1390864784743826e-07 -2.6658746321572835e-08 2.7894353493707058e-14</pose>
+				<inertia>
+					<ixx>0.009999999776482582</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>0.009999999776482582</iyy>
+					<iyz>0.0</iyz>
+					<izz>0.009999999776482582</izz>
+				</inertia>
+			</inertial>
+			<collision name="COL_hollhollie_010_thumb_Coll">
+				<pose>-5.803673843729484e-07 6.662495707132621e-06 4.88661044073524e-07 3.1415908336639404 2.2098390672908863e-07 1.8477435332897585e-06</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/collisions/COL_hollhollie_010_thumb_Coll.dae</uri>
+						<scale>1.0000004768371582 1.0 1.0000004768371582</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<visual name="VIS_hollhollie_010_thumb">
+				<pose>-6.851411740171898e-07 6.677396868326468e-06 4.2905639929813333e-07 3.141590118408203 2.7136485414303024e-07 2.0712609511974733e-06</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/visual/VIS_hollie_010.dae</uri>
+						<scale>1.0000001192092896 0.9999998807907104 1.0000001192092896</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<link name="hollie_011_thumb_topsegment_bf_rot">
+			<pose>0.00157030957789 0.0223284129777 0.134387269844 -1.8834040230614328 -0.5706018960040802 0.17283375985160754</pose>
+			<inertial>
+				<mass>9.999999747378752e-06</mass>
+				<pose>0.03537161648273468 -0.4802376925945282 1.9517899751663208 -1.8833998441696167 -0.5706018209457397 -1.345599889755249</pose>
+				<inertia>
+					<ixx>0.009999999776482582</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>0.009999999776482582</iyy>
+					<iyz>0.0</iyz>
+					<izz>0.009999999776482582</izz>
+				</inertia>
+			</inertial>
+			<collision name="COL_hollhollie_011_thumb_topsegment_bf_rot_Coll">
+				<pose>-5.657574675410615e-08 2.0726616867250414e-07 -6.707963251528781e-08 3.1415910720825195 1.8785800648402073e-07 1.5646216979803285e-06</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/collisions/COL_hollhollie_011_thumb_topsegment_bf_rot_Coll.dae</uri>
+						<scale>1.0000004768371582 1.0000001192092896 1.0000005960464478</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<visual name="VIS_hollhollie_011_thumb_topsegment_bf_rot">
+				<pose>-5.983536510711929e-08 1.8863971718019457e-07 -3.727730657487882e-08 3.141590118408203 9.255084876258479e-08 1.713633309918805e-06</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/visual/VIS_hollhollie_011_thumb_topsegment_bf_rot.dae</uri>
+						<scale>0.9999998807907104 0.9999997019767761 1.000000238418579</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<link name="hand_f1_link">
+			<pose>2.84532620742e-06 -0.0131281446666 0.10000000149 0.0 -0.0 0.0</pose>
+			<inertial>
+				<mass>9.999999747378752e-06</mass>
+				<pose>-4.39079030911671e-08 -7.450580596923828e-08 2.60770320892334e-07 -2.2590783749416345e-14 -1.4210853021136109e-14 -7.450581307466564e-08</pose>
+				<inertia>
+					<ixx>0.009999999776482582</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>0.009999999776482582</iyy>
+					<iyz>0.0</iyz>
+					<izz>0.009999999776482582</izz>
+				</inertia>
+			</inertial>
+		</link>
+		<link name="hand_f2_link">
+			<pose>2.84532620736e-06 -0.0131281446666 0.10000000149 0.0 -0.0 0.0</pose>
+			<inertial>
+				<mass>9.999999747378752e-06</mass>
+				<pose>-4.39079030911671e-08 4.0978193283081055e-08 1.4156103134155273e-07 -7.047660557631206e-15 -1.4210853021136109e-14 -7.450581307466564e-08</pose>
+				<inertia>
+					<ixx>0.009999999776482582</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>0.009999999776482582</iyy>
+					<iyz>0.0</iyz>
+					<izz>0.009999999776482582</izz>
+				</inertia>
+			</inertial>
+		</link>
+		<link name="hand_f3_link">
+			<pose>2.8453262073e-06 -0.0131281446666 0.10000000149 0.0 -0.0 0.0</pose>
+			<inertial>
+				<mass>9.999999747378752e-06</mass>
+				<pose>-4.39079030911671e-08 -7.82310962677002e-08 1.4156103134155273e-07 -5.271304141747429e-15 -0.0 -7.450581307466564e-08</pose>
+				<inertia>
+					<ixx>0.009999999776482582</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>0.009999999776482582</iyy>
+					<iyz>0.0</iyz>
+					<izz>0.009999999776482582</izz>
+				</inertia>
+			</inertial>
+		</link>
+		<link name="hollie_012_indexfing_lr_rot">
+			<pose>0.0249971981586 -0.0131264066384 0.210000000894 1.570796251296997 -1.570796251296997 0.0</pose>
+			<inertial>
+				<mass>9.999999747378752e-06</mass>
+				<pose>-2.0974674441731622e-07 -1.2699521789727442e-07 8.031608267344836e-09 3.725296515710852e-09 1.2568585816552513e-07 -2.423698219899961e-07</pose>
+				<inertia>
+					<ixx>0.009999999776482582</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>0.009999999776482582</iyy>
+					<iyz>0.0</iyz>
+					<izz>0.009999999776482582</izz>
+				</inertia>
+			</inertial>
+			<collision name="COL_hollhollie_012_indexfing_lr_rot_Coll">
+				<pose>2.865870740720311e-08 -5.450151547847781e-07 0.013210215605795383 4.470348002882929e-08 3.637777012954757e-07 -2.548476061292604e-07</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/collisions/COL_hollhollie_012_indexfing_lr_rot_Coll.dae</uri>
+						<scale>1.0 1.000000238418579 1.0</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<visual name="VIS_hollhollie_012_indexfing_lr_rot">
+				<pose>2.8658712736273628e-08 -4.258058652339969e-07 0.013210211880505085 5.215405707303944e-08 3.637777012954757e-07 -2.548476061292604e-07</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/visual/VIS_hollhollie_012_indexfing_lr_rot.dae</uri>
+						<scale>1.0 1.0000001192092896 1.0</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<link name="hollie_013_indexfing_bf_rot">
+			<pose>0.0249971981586 -0.0131264066384 0.210000000894 -1.1920928955078128e-07 -1.570796251296997 0.0</pose>
+			<inertial>
+				<mass>9.999999747378752e-06</mass>
+				<pose>1.4791893931942468e-07 6.034922961362099e-08 -3.708207074737402e-08 4.4703554635816545e-08 2.9331221185202594e-07 1.3483570171501924e-07</pose>
+				<inertia>
+					<ixx>0.009999999776482582</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>0.009999999776482582</iyy>
+					<iyz>0.0</iyz>
+					<izz>0.009999999776482582</izz>
+				</inertia>
+			</inertial>
+			<collision name="COL_hollhollie_013_indexfing_bf_rot_Coll">
+				<pose>-4.4812750843448157e-07 2.1681142925444874e-07 -6.688430431722736e-08 -2.8125944027124206e-06 2.870733055715391e-07 1.5789796137255507e-08</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/collisions/COL_hollhollie_013_indexfing_bf_rot_Coll.dae</uri>
+						<scale>1.0 1.0000001192092896 1.000000238418579</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<visual name="VIS_hollhollie_013_indexfing_bf_rot">
+				<pose>-4.4812750843448157e-07 9.760213259824013e-08 -7.279680858118809e-09 -2.4549658519390505e-06 2.9331221185202594e-07 1.3483570171501924e-07</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/visual/VIS_hollhollie_013_indexfing_bf_rot.dae</uri>
+						<scale>1.0 1.0000001192092896 1.0000001192092896</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<link name="hollie_014_indexfing_midsegment_bf_rot">
+			<pose>0.0249969182348 -0.0131265160826 0.258039999753 -1.192092895507813e-07 -1.570796251296997 0.0</pose>
+			<inertial>
+				<mass>9.999999747378752e-06</mass>
+				<pose>-2.99115896496005e-07 3.408624138501182e-08 -8.518404115420708e-08 -1.8626387543463352e-08 2.933121834303165e-07 1.3483570171501924e-07</pose>
+				<inertia>
+					<ixx>0.009999999776482582</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>0.009999999776482582</iyy>
+					<iyz>0.0</iyz>
+					<izz>0.009999999776482582</izz>
+				</inertia>
+			</inertial>
+			<collision name="COL_hollhollie_014_indexfing_midsegment_bf_rot_Coll">
+				<pose>-6.069731028901515e-08 -4.427509168181132e-07 -1.1498642038532125e-07 -3.118068434559973e-06 2.933121834303165e-07 1.3483570171501924e-07</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/collisions/COL_hollhollie_014_indexfing_midsegment_bf_rot_Coll.dae</uri>
+						<scale>1.0 1.0 1.0</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<visual name="VIS_hollhollie_014_indexfing_midsegment_bf_rot">
+				<pose>-6.069731028901515e-08 -3.7942098174426064e-07 -8.518409089219858e-08 -2.998858690261841e-06 2.8707327714982966e-07 1.5789797913612347e-08</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/visual/VIS_hollhollie_014_indexfing_midsegment_bf_rot.dae</uri>
+						<scale>1.0 1.0000001192092896 1.0000001192092896</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<link name="hollie_015_indexfing_topsegment_bf_rot">
+			<pose>0.0249967667356 -0.0131265753155 0.284040000289 -1.192092895507813e-07 -1.570796251296997 0.0</pose>
+			<inertial>
+				<mass>9.999999747378752e-06</mass>
+				<pose>-2.6931354568660026e-07 6.8960707721998915e-06 -3.255321012751722e-10 -2.235166363107055e-08 2.933121834303165e-07 1.3483570171501924e-07</pose>
+				<inertia>
+					<ixx>0.009999999776482582</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>0.009999999776482582</iyy>
+					<iyz>0.0</iyz>
+					<izz>0.009999999776482582</izz>
+				</inertia>
+			</inertial>
+			<collision name="COL_hollhollie_015_indexfing_topsegment_bf_rot_Coll">
+				<pose>-2.693135741083097e-07 7.000378900556825e-06 -4.175580272658408e-07 -2.4065370780590456e-06 2.9331221185202594e-07 1.3483571592587396e-07</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/collisions/COL_hollhollie_015_indexfing_topsegment_bf_rot_Coll.dae</uri>
+						<scale>1.0000001192092896 1.0000001192092896 1.000000238418579</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<visual name="VIS_hollhollie_015_indexfing_topsegment_bf_rot">
+				<pose>-2.693135741083097e-07 6.9407742557814345e-06 -3.877557332998549e-07 -2.644956111907959e-06 2.9331221185202594e-07 1.3483571592587396e-07</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/visual/VIS_hollhollie_015_indexfing_topsegment_bf_rot.dae</uri>
+						<scale>1.0000001192092896 1.0000001192092896 1.0000001192092896</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<link name="hollie_016_midfing_lr_rot">
+			<pose>2.84532620736e-06 -0.0131281446666 0.210000000894 1.570796251296997 -1.570796251296997 0.0</pose>
+			<inertial>
+				<mass>9.999999747378752e-06</mass>
+				<pose>-2.0862941596533346e-07 -1.0510400727525848e-07 -7.24241733252029e-09 7.450585925994346e-09 1.2568585816552513e-07 -2.423698219899961e-07</pose>
+				<inertia>
+					<ixx>0.009999999776482582</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>0.009999999776482582</iyy>
+					<iyz>0.0</iyz>
+					<izz>0.009999999776482582</izz>
+				</inertia>
+			</inertial>
+			<collision name="COL_hollhollie_016_midfing_lr_rot_Coll">
+				<pose>-4.4706115431836224e-07 -1.2383795819914667e-06 0.013210099190473557 1.3411040811206476e-07 3.637777012954757e-07 -2.548476061292604e-07</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/collisions/COL_hollhollie_016_midfing_lr_rot_Coll.dae</uri>
+						<scale>1.0 1.0000003576278687 1.0</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<visual name="VIS_hollhollie_016_midfing_lr_rot">
+				<pose>-4.4706115431836224e-07 -1.178774937216076e-06 0.013210106641054153 1.415609887089886e-07 3.637777012954757e-07 -2.548476061292604e-07</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/visual/VIS_hollhollie_016_midfing_lr_rot.dae</uri>
+						<scale>1.0 1.000000238418579 1.0</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<link name="hollie_017_midfing_bf_rot">
+			<pose>2.84532620736e-06 -0.0131281446666 0.210000000894 -1.1920928955078128e-07 -1.570796251296997 0.0</pose>
+			<inertial>
+				<mass>9.999999747378752e-06</mass>
+				<pose>2.9802187384575518e-08 6.05357826088948e-08 -1.0510375858530097e-07 -7.450576333667414e-08 2.9331221185202594e-07 1.3483570171501924e-07</pose>
+				<inertia>
+					<ixx>0.009999999776482582</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>0.009999999776482582</iyy>
+					<iyz>0.0</iyz>
+					<izz>0.009999999776482582</izz>
+				</inertia>
+			</inertial>
+			<collision name="COL_hollhollie_017_midfing_bf_rot_Coll">
+				<pose>-8.940713058791516e-08 2.3934967430250254e-07 -8.501618253831111e-07 5.215406986280868e-07 2.870733055715391e-07 1.5789794360898668e-08</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/collisions/COL_hollhollie_017_midfing_bf_rot_Coll.dae</uri>
+						<scale>1.0 1.0 1.000000238418579</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<visual name="VIS_hollhollie_017_midfing_bf_rot">
+				<pose>-8.940713058791516e-08 1.797450295271119e-07 -7.905571806077205e-07 4.060566993757675e-07 2.870733055715391e-07 1.5789794360898668e-08</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/visual/VIS_hollhollie_017_midfing_bf_rot.dae</uri>
+						<scale>1.0 1.0 1.000000238418579</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<link name="hollie_018_midfing_midsegment_bf_rot">
+			<pose>2.55374860322e-06 -0.0131282586672 0.260040000081 -1.192092895507813e-07 -1.570796251296997 0.0</pose>
+			<inertial>
+				<mass>9.999999747378752e-06</mass>
+				<pose>2.980221225357127e-08 6.305055535449355e-07 1.4646705182030928e-08 -1.496177404192167e-08 2.933121834303165e-07 1.3483570171501924e-07</pose>
+				<inertia>
+					<ixx>0.009999999776482582</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>0.009999999776482582</iyy>
+					<iyz>0.0</iyz>
+					<izz>0.009999999776482582</izz>
+				</inertia>
+			</inertial>
+			<collision name="COL_hollhollie_018_midfing_midsegment_bf_rot_Coll">
+				<pose>-1.4007092659085174e-06 1.2675302514253417e-06 -4.3238816260782187e-07 -1.341710174074251e-07 3.0578996756958077e-07 3.7292758747753396e-07</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/collisions/COL_hollhollie_018_midfing_midsegment_bf_rot_Coll.dae</uri>
+						<scale>1.0 1.0 1.0000003576278687</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<visual name="VIS_hollhollie_018_midfing_midsegment_bf_rot">
+				<pose>-1.4007092659085174e-06 1.2675302514253417e-06 -4.0258584022012656e-07 -1.341710174074251e-07 3.0578996756958077e-07 3.7292758747753396e-07</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/visual/VIS_hollhollie_018_midfing_midsegment_bf_rot.dae</uri>
+						<scale>1.0 1.0 1.000000238418579</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<link name="hollie_019_midfing_topsegment_bf_rot">
+			<pose>2.36728811425e-06 -0.0131283315693 0.292040001601 -1.192092895507813e-07 -1.570796251296997 0.0</pose>
+			<inertial>
+				<mass>9.999999747378752e-06</mass>
+				<pose>-2.9802428969105677e-08 6.307847797870636e-06 -5.6418695493221094e-08 -2.2412395495052806e-08 2.933121834303165e-07 1.3483570171501924e-07</pose>
+				<inertia>
+					<ixx>0.009999999776482582</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>0.009999999776482582</iyy>
+					<iyz>0.0</iyz>
+					<izz>0.009999999776482582</izz>
+				</inertia>
+			</inertial>
+			<collision name="COL_hollhollie_019_midfing_topsegment_bf_rot_Coll">
+				<pose>-2.9802460943528786e-08 6.147660315036774e-06 -8.312792942888336e-07 -4.95524261623359e-07 2.995510612890939e-07 2.538816659125587e-07</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/collisions/COL_hollhollie_019_midfing_topsegment_bf_rot_Coll.dae</uri>
+						<scale>1.0 1.0 1.0000003576278687</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<visual name="VIS_hollhollie_019_midfing_topsegment_bf_rot">
+				<pose>-2.9802460943528786e-08 6.143935024738312e-06 -8.312792942888336e-07 -4.95524261623359e-07 2.995510612890939e-07 2.538816659125587e-07</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/visual/VIS_hollhollie_019_midfing_topsegment_bf_rot.dae</uri>
+						<scale>1.0 1.0 1.000000238418579</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<link name="hollie_020_outerhand_rot">
+			<pose>-0.0183982521801 -0.00712676020344 0.13750000298 0.0 -0.0 0.0</pose>
+			<inertial>
+				<mass>9.999999747378752e-06</mass>
+				<pose>-6.332993507385254e-08 -2.682209014892578e-07 4.470348358154297e-08 2.6606381542393365e-09 2.1908446168339424e-09 -7.823110337312755e-08</pose>
+				<inertia>
+					<ixx>0.009999999776482582</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>0.009999999776482582</iyy>
+					<iyz>0.0</iyz>
+					<izz>0.009999999776482582</izz>
+				</inertia>
+			</inertial>
+			<collision name="COL_hollhollie_020_outerhand_rot_Coll">
+				<pose>0.0006994865834712982 1.4901161193847656e-08 -0.010019376873970032 3.141590118408203 3.305856477453517e-09 -3.1292435664909135e-07</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/collisions/COL_hollhollie_020_outerhand_rot_Coll.dae</uri>
+						<scale>1.0 0.9999999403953552 1.0</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<visual name="VIS_hollhollie_020_outerhand_rot">
+				<pose>0.0006995163857936859 6.705522537231445e-08 -0.010019376873970032 3.141590118408203 5.243890210948621e-09 -3.1664964694755326e-07</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/visual/VIS_hollhollie_020_outerhand_rot.dae</uri>
+						<scale>1.0 0.9999999403953552 1.0</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<link name="hand_f5_link">
+			<pose>-0.018402671429 -0.0131347617135 0.13750000298 0.0 -0.0 0.0</pose>
+			<inertial>
+				<mass>9.999999747378752e-06</mass>
+				<pose>5.587935447692871e-09 -2.2351741790771484e-08 1.6391277313232422e-07 3.031451534241114e-09 9.26851750904234e-09 -7.450580596923828e-08</pose>
+				<inertia>
+					<ixx>0.009999999776482582</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>0.009999999776482582</iyy>
+					<iyz>0.0</iyz>
+					<izz>0.009999999776482582</izz>
+				</inertia>
+			</inertial>
+		</link>
+		<link name="hand_f6_link">
+			<pose>-0.018402671429 -0.0131347617135 0.13750000298 0.0 -0.0 0.0</pose>
+			<inertial>
+				<mass>9.999999747378752e-06</mass>
+				<pose>5.587935447692871e-09 -1.601874828338623e-07 4.470348358154297e-08 2.6606024050579435e-09 2.1908732605879777e-09 4.8428763221863846e-08</pose>
+				<inertia>
+					<ixx>0.009999999776482582</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>0.009999999776482582</iyy>
+					<iyz>0.0</iyz>
+					<izz>0.009999999776482582</izz>
+				</inertia>
+			</inertial>
+		</link>
+		<link name="hand_f7_link">
+			<pose>-0.018402671429 -0.0131347617135 0.13750000298 0.0 -0.0 0.0</pose>
+			<inertial>
+				<mass>9.999999747378752e-06</mass>
+				<pose>5.587935447692871e-09 -1.5273690223693848e-07 4.470348358154297e-08 2.6606237213400163e-09 2.1908732605879777e-09 4.470347292340193e-08</pose>
+				<inertia>
+					<ixx>0.009999999776482582</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>0.009999999776482582</iyy>
+					<iyz>0.0</iyz>
+					<izz>0.009999999776482582</izz>
+				</inertia>
+			</inertial>
+		</link>
+		<link name="hollie_021_littlefinger_lr_rot">
+			<pose>-0.0437570549423 -0.0131276427711 0.193500004709 -1.570796251296997 -1.570796251296997 0.0</pose>
+			<inertial>
+				<mass>9.999999747378752e-06</mass>
+				<pose>-2.0664714384110994e-07 6.452946621493538e-08 -3.533322079363188e-09 1.0803336181197665e-07 -1.3372875855566235e-06 2.7980323125120776e-07</pose>
+				<inertia>
+					<ixx>0.009999999776482582</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>0.009999999776482582</iyy>
+					<iyz>0.0</iyz>
+					<izz>0.009999999776482582</izz>
+				</inertia>
+			</inertial>
+			<collision name="COL_hollhollie_021_littlefinger_lr_rot_Coll">
+				<pose>-6.834711143710592e-07 -1.5447959640368936e-06 -0.013210132718086243 0.3875379264354706 -8.293633868561301e-08 1.7348386904814106e-07</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/collisions/COL_hollhollie_021_littlefinger_lr_rot_Coll.dae</uri>
+						<scale>1.0 0.9999998807907104 0.9999997615814209</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<visual name="VIS_hollhollie_021_littlefinger_lr_rot">
+				<pose>-5.64261824820278e-07 -1.4553889968738076e-06 -0.013210106641054153 0.38753777742385864 -7.42058034575166e-07 2.4860872827048297e-07</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/visual/VIS_hollhollie_021_littlefinger_lr_rot.dae</uri>
+						<scale>1.0 0.9999998211860657 0.9999998211860657</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<link name="hollie_022_littlefinger_bf_rot">
+			<pose>-0.0437570549423 -0.0131276427711 0.193500004709 1.1920928955078128e-07 -1.570796251296997 0.0</pose>
+			<inertial>
+				<mass>9.999999747378752e-06</mass>
+				<pose>3.1715007509092175e-08 1.5739351511001587e-07 -3.453519070717448e-08 4.09783531551966e-08 2.2886092665430624e-07 1.2070659067831002e-06</pose>
+				<inertia>
+					<ixx>0.009999999776482582</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>0.009999999776482582</iyy>
+					<iyz>0.0</iyz>
+					<izz>0.009999999776482582</izz>
+				</inertia>
+			</inertial>
+			<collision name="COL_hollhollie_022_littlefinger_bf_rot_Coll">
+				<pose>5.085521479486488e-07 4.4796615839004517e-07 1.74081051795838e-07 -1.4901151246249356e-07 1.770504525211436e-07 -3.306007556602708e-08</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/collisions/COL_hollhollie_022_littlefinger_bf_rot_Coll.dae</uri>
+						<scale>1.0 0.9999998807907104 0.9999998807907104</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<visual name="VIS_hollhollie_022_littlefinger_bf_rot">
+				<pose>8.661800734444114e-07 4.852190613746643e-07 2.336856823603739e-07 -3.2037490882430575e-07 2.1638308567162312e-07 9.689740636531496e-07</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/visual/VIS_hollhollie_022_littlefinger_bf_rot.dae</uri>
+						<scale>1.0 0.9999998807907104 0.9999998211860657</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<link name="hollie_023_littlefinger_midsegment_bf_rot">
+			<pose>-0.043757314472 -0.0131277442417 0.238040003926 1.192092895507813e-07 -1.570796251296997 0.0</pose>
+			<inertial>
+				<mass>9.999999747378752e-06</mass>
+				<pose>-5.196279744268395e-07 8.538369797861378e-07 1.5532548580665662e-09 -2.9802082579521993e-08 1.1589050075144769e-07 1.445321004212019e-06</pose>
+				<inertia>
+					<ixx>0.009999999776482582</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>0.009999999776482582</iyy>
+					<iyz>0.0</iyz>
+					<izz>0.009999999776482582</izz>
+				</inertia>
+			</inertial>
+			<collision name="COL_hollhollie_023_littlefinger_midsegment_bf_rot_Coll">
+				<pose>-1.711720869934652e-06 1.5206640000542393e-06 2.697741763313388e-07 -4.1723231447576836e-07 5.7841230471922245e-08 8.614933477701925e-08</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/collisions/COL_hollhollie_023_littlefinger_midsegment_bf_rot_Coll.dae</uri>
+						<scale>0.9999999403953552 0.9999998211860657 0.9999998211860657</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<visual name="VIS_hollhollie_023_littlefinger_midsegment_bf_rot">
+				<pose>-1.9501394490362145e-06 1.4200810483089299e-06 1.505649009914123e-07 -5.066393669039826e-07 9.717378190998716e-08 1.0881833532039309e-06</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/visual/VIS_hollhollie_023_littlefinger_midsegment_bf_rot.dae</uri>
+						<scale>0.9999999403953552 0.9999998807907104 0.9999998211860657</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<link name="hollie_024_littlefinger_topsegment_bf_rot">
+			<pose>-0.0437574426636 -0.0131277943619 0.260040003807 1.192092895507813e-07 -1.570796251296997 0.0</pose>
+			<inertial>
+				<mass>9.999999747378752e-06</mass>
+				<pose>-4.451221400358918e-07 3.1597917313774815e-06 -9.999137517979761e-08 -3.3527385312481783e-08 1.1589050785687505e-07 1.445321004212019e-06</pose>
+				<inertia>
+					<ixx>0.009999999776482582</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>0.009999999776482582</iyy>
+					<iyz>0.0</iyz>
+					<izz>0.009999999776482582</izz>
+				</inertia>
+			</inertial>
+			<collision name="COL_hollhollie_024_littlefinger_topsegment_bf_rot_Coll">
+				<pose>-9.219592698173074e-07 2.5488441224297276e-06 3.768458327613189e-07 -5.960461635368119e-07 1.8418388947338826e-07 -1.1604107896800997e-07</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/collisions/COL_hollhollie_024_littlefinger_topsegment_bf_rot_Coll.dae</uri>
+						<scale>1.0 0.9999998807907104 0.9999998211860657</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<visual name="VIS_hollhollie_024_littlefinger_topsegment_bf_rot">
+				<pose>-9.219592698173074e-07 2.5413935418328037e-06 4.960551223121001e-07 -6.258486564547638e-07 1.0965159447096084e-07 1.3262751963338815e-06</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/visual/VIS_hollhollie_024_littlefinger_topsegment_bf_rot.dae</uri>
+						<scale>1.0 0.9999999403953552 0.9999998211860657</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<link name="hand_f8_link">
+			<pose>-0.018402671429 -0.0131347617135 0.13750000298 0.0 -0.0 0.0</pose>
+			<inertial>
+				<mass>9.999999747378752e-06</mass>
+				<pose>5.587935447692871e-09 -1.5273690223693848e-07 4.470348358154297e-08 2.6606237213400163e-09 2.1908732605879777e-09 4.470347292340193e-08</pose>
+				<inertia>
+					<ixx>0.009999999776482582</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>0.009999999776482582</iyy>
+					<iyz>0.0</iyz>
+					<izz>0.009999999776482582</izz>
+				</inertia>
+			</inertial>
+		</link>
+		<link name="hollie_025_ringfinger_lr_rot">
+			<pose>-0.0222578623673 -0.0131329693259 0.203000001609 -1.570796251296997 -1.570796251296997 0.0</pose>
+			<inertial>
+				<mass>9.999999747378752e-06</mass>
+				<pose>-1.7780591576865845e-07 1.7685393061128707e-07 -6.853849487953312e-09 1.0803339023368608e-07 -1.3410128758550854e-06 2.7980323125120776e-07</pose>
+				<inertia>
+					<ixx>0.009999999776482582</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>0.009999999776482582</iyy>
+					<iyz>0.0</iyz>
+					<izz>0.009999999776482582</izz>
+				</inertia>
+			</inertial>
+			<collision name="COL_hollhollie_025_ringfinger_lr_rot_Coll">
+				<pose>-5.8583491835406676e-08 -3.30572902385029e-07 -0.013209938071668148 0.1913403570652008 -9.038694059881891e-08 1.7348385483728634e-07</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/collisions/COL_hollhollie_025_ringfinger_lr_rot_Coll.dae</uri>
+						<scale>1.0 0.9999998211860657 0.9999997615814209</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<visual name="VIS_hollhollie_025_ringfinger_lr_rot">
+				<pose>-5.8583491835406676e-08 -3.007705799973337e-07 -0.013210008852183819 0.19134031236171722 -9.838751111601596e-07 2.6108654083145666e-07</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/visual/VIS_hollhollie_025_ringfinger_lr_rot.dae</uri>
+						<scale>1.0 0.9999998211860657 0.9999998211860657</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<link name="hollie_026_ringfinger_bf_rot">
+			<pose>-0.0222578623673 -0.0131329693259 0.203000001609 1.1920928955078128e-07 -1.570796251296997 0.0</pose>
+			<inertial>
+				<mass>9.999999747378752e-06</mass>
+				<pose>-5.8631716370882714e-08 4.781638267559174e-07 3.196367259761246e-08 3.725311259472619e-08 2.2886084138917795e-07 1.2070659067831002e-06</pose>
+				<inertia>
+					<ixx>0.009999999776482582</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>0.009999999776482582</iyy>
+					<iyz>0.0</iyz>
+					<izz>0.009999999776482582</izz>
+				</inertia>
+			</inertial>
+			<collision name="COL_hollhollie_026_ringfinger_bf_rot_Coll">
+				<pose>-1.012306029224419e-06 8.953963401836518e-07 -4.7467574404436164e-07 -0.052606575191020966 3.033931648133148e-07 -2.3525031167537236e-07</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/collisions/COL_hollhollie_026_ringfinger_bf_rot_Coll.dae</uri>
+						<scale>1.0 0.9999998211860657 0.9999997019767761</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<visual name="VIS_hollhollie_026_ringfinger_bf_rot">
+				<pose>-7.738875069662754e-07 9.214733722728852e-07 -5.640827112074476e-07 -0.05260690674185753 2.350997476696648e-07 1.3261117146612378e-06</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/visual/VIS_hollhollie_026_ringfinger_bf_rot.dae</uri>
+						<scale>1.0 0.9999999403953552 0.9999997615814209</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<link name="hollie_027_ringfinger_midsegment_bf_rot">
+			<pose>-0.0222581539449 -0.0131330833266 0.253040000796 1.192092895507813e-07 -1.570796251296997 0.0</pose>
+			<inertial>
+				<mass>9.999999747378752e-06</mass>
+				<pose>-1.7784100236895029e-07 2.009258196267183e-06 -2.7223039822388273e-08 -1.8626296949264542e-08 1.3079166194529535e-07 1.445321004212019e-06</pose>
+				<inertia>
+					<ixx>0.009999999776482582</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>0.009999999776482582</iyy>
+					<iyz>0.0</iyz>
+					<izz>0.009999999776482582</izz>
+				</inertia>
+			</inertial>
+			<collision name="COL_hollhollie_027_ringfinger_midsegment_bf_rot_Coll">
+				<pose>-4.162595814705128e-07 2.0725881313410355e-06 -4.742578596506064e-07 -1.1920904086082373e-07 5.7841173628503384e-08 8.614932056616453e-08</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/collisions/COL_hollhollie_027_ringfinger_midsegment_bf_rot_Coll.dae</uri>
+						<scale>1.0 0.9999998807907104 0.9999998807907104</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<visual name="VIS_hollhollie_027_ringfinger_midsegment_bf_rot">
+				<pose>-4.162595814705128e-07 2.0390605186548783e-06 -4.444555372629111e-07 -2.570449453287438e-07 1.183138422788943e-07 1.2072291610820685e-06</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/visual/VIS_hollhollie_027_ringfinger_midsegment_bf_rot.dae</uri>
+						<scale>1.0 0.9999998807907104 0.9999998211860657</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<link name="hollie_028_ringfinger_topsegment_bf_rot">
+			<pose>-0.0222583404054 -0.0131331562287 0.285040002316 1.192092895507813e-07 -1.570796251296997 0.0</pose>
+			<inertial>
+				<mass>9.999999747378752e-06</mass>
+				<pose>-2.374456329334862e-07 1.226947233590181e-06 2.1624968482569784e-08 -2.2351619222149566e-08 1.3079166194529535e-07 1.445321004212019e-06</pose>
+				<inertia>
+					<ixx>0.009999999776482582</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>0.009999999776482582</iyy>
+					<iyz>0.0</iyz>
+					<izz>0.009999999776482582</izz>
+				</inertia>
+			</inertial>
+			<collision name="COL_hollie_028_ringfinger_topsegment_bf_rot_Coll">
+				<pose>4.778100901603466e-07 9.848033641901566e-07 -1.8699134329835942e-07 0.020018044859170914 1.8418386105167883e-07 -8.623881342373352e-08</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/collisions/COL_hollie_028_ringfinger_topsegment_bf_rot_Coll.dae</uri>
+						<scale>1.0 0.9999997019767761 0.9999997019767761</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<visual name="VIS_hollhollie_028_ringfinger_topsegment_bf_rot">
+				<pose>7.162286692619091e-07 1.0630344604578568e-06 -1.2738672694467823e-07 0.020017722621560097 1.2455274145395379e-07 1.3262751963338815e-06</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_hand/meshes/visual/VIS_hollie_028_ringfinger_topsegment_bf_rot.dae</uri>
+						<scale>1.0 0.9999997019767761 0.9999997019767761</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<joint name="hollie_006_wrist_lat_rot" type="revolute">
+			<parent>base_link</parent>
+			<child>hollie_006_wrist_lat_rot</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>-1.5707963267948966</lower>
+					<upper>1.5707963267948966</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="hollie_007_wrist_lat_rot" type="revolute">
+			<parent>hollie_006_wrist_lat_rot</parent>
+			<child>hollie_007_wrist_lat_rot</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>-1.5707963267948966</lower>
+					<upper>1.5707963267948966</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="hollie_008_thumb_lat_rot" type="revolute">
+			<parent>hollie_007_wrist_lat_rot</parent>
+			<child>hollie_008_thumb_lat_rot</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>0.0</lower>
+					<upper>3.141592653589793</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="hand_Thumb_Helper_link" type="revolute">
+			<parent>hollie_008_thumb_lat_rot</parent>
+			<child>hand_Thumb_Helper_link</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>2.0943951023931953</lower>
+					<upper>2.0943951023931953</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="hollie_009_thumb_base_rot" type="revolute">
+			<parent>hand_Thumb_Helper_link</parent>
+			<child>hollie_009_thumb_base_rot</child>
+			<axis>
+				<xyz>-0.0 -0.0 -1.0</xyz>
+				<limit>
+					<lower>0.0</lower>
+					<upper>0.9599310885968813</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="hollie_010_thumb_tip_rot" type="revolute">
+			<parent>hollie_009_thumb_base_rot</parent>
+			<child>hollie_010_thumb_tip_rot</child>
+			<axis>
+				<xyz>-0.0 -0.0 -1.0</xyz>
+				<limit>
+					<lower>1.5707963267948966</lower>
+					<upper>3.12413936106985</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="hollie_011_thumb_topsegment_bf_rot" type="revolute">
+			<parent>hollie_010_thumb_tip_rot</parent>
+			<child>hollie_011_thumb_topsegment_bf_rot</child>
+			<axis>
+				<xyz>-0.0 -0.0 -1.0</xyz>
+				<limit>
+					<lower>-1.3962634015954636</lower>
+					<upper>0.08726646259971647</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="hand_f1_link" type="revolute">
+			<parent>hollie_007_wrist_lat_rot</parent>
+			<child>hand_f1_link</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>-1.5707963267948966</lower>
+					<upper>1.5707963267948966</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="hand_f2_link" type="prismatic">
+			<parent>hand_f1_link</parent>
+			<child>hand_f2_link</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>0.0</lower>
+					<upper>0.0</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="hand_f3_link" type="prismatic">
+			<parent>hand_f2_link</parent>
+			<child>hand_f3_link</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>0.0</lower>
+					<upper>0.0</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="hollie_012_indexfing_lr_rot" type="revolute">
+			<parent>hand_f3_link</parent>
+			<child>hollie_012_indexfing_lr_rot</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>0.0</lower>
+					<upper>0.2883299983156006</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="hollie_013_indexfing_bf_rot" type="revolute">
+			<parent>hollie_012_indexfing_lr_rot</parent>
+			<child>hollie_013_indexfing_bf_rot</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>0.0</lower>
+					<upper>0.24434609527920614</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="hollie_014_indexfing_midsegment_bf_rot" type="revolute">
+			<parent>hollie_013_indexfing_bf_rot</parent>
+			<child>hollie_014_indexfing_midsegment_bf_rot</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>0.0</lower>
+					<upper>1.3264502315156905</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="hollie_015_indexfing_topsegment_bf_rot" type="revolute">
+			<parent>hollie_014_indexfing_midsegment_bf_rot</parent>
+			<child>hollie_015_indexfing_topsegment_bf_rot</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>0.0</lower>
+					<upper>1.3962634015954636</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="hollie_016_midfing_lr_rot" type="revolute">
+			<parent>hand_f1_link</parent>
+			<child>hollie_016_midfing_lr_rot</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>-1.5707963267948966</lower>
+					<upper>1.5707963267948966</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="hollie_017_midfing_bf_rot" type="revolute">
+			<parent>hollie_016_midfing_lr_rot</parent>
+			<child>hollie_017_midfing_bf_rot</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>0.0</lower>
+					<upper>0.24434609527920614</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="hollie_018_midfing_midsegment_bf_rot" type="revolute">
+			<parent>hollie_017_midfing_bf_rot</parent>
+			<child>hollie_018_midfing_midsegment_bf_rot</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>0.0</lower>
+					<upper>1.3264502315156905</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="hollie_019_midfing_topsegment_bf_rot" type="revolute">
+			<parent>hollie_018_midfing_midsegment_bf_rot</parent>
+			<child>hollie_019_midfing_topsegment_bf_rot</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>0.0</lower>
+					<upper>1.3962634015954636</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="hollie_020_outerhand_rot" type="revolute">
+			<parent>hollie_007_wrist_lat_rot</parent>
+			<child>hollie_020_outerhand_rot</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>-0.5235987755982988</lower>
+					<upper>0.0</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="hand_f5_link" type="prismatic">
+			<parent>hollie_020_outerhand_rot</parent>
+			<child>hand_f5_link</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>0.0</lower>
+					<upper>0.0</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="hand_f6_link" type="prismatic">
+			<parent>hand_f5_link</parent>
+			<child>hand_f6_link</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>0.0</lower>
+					<upper>0.0</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="hand_f7_link" type="revolute">
+			<parent>hand_f6_link</parent>
+			<child>hand_f7_link</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>-1.5707963267948966</lower>
+					<upper>1.5707963267948966</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="hollie_021_littlefinger_lr_rot" type="revolute">
+			<parent>hand_f7_link</parent>
+			<child>hollie_021_littlefinger_lr_rot</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>0.0</lower>
+					<upper>0.5828999828023386</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="hollie_022_littlefinger_bf_rot" type="revolute">
+			<parent>hollie_021_littlefinger_lr_rot</parent>
+			<child>hollie_022_littlefinger_bf_rot</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>0.0</lower>
+					<upper>0.24434609527920614</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="hollie_023_littlefinger_midsegment_bf_rot" type="revolute">
+			<parent>hollie_022_littlefinger_bf_rot</parent>
+			<child>hollie_023_littlefinger_midsegment_bf_rot</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>0.0</lower>
+					<upper>1.3264502315156905</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="hollie_024_littlefinger_topsegment_bf_rot" type="revolute">
+			<parent>hollie_023_littlefinger_midsegment_bf_rot</parent>
+			<child>hollie_024_littlefinger_topsegment_bf_rot</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>0.0</lower>
+					<upper>1.3962634015954636</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="hand_f8_link" type="revolute">
+			<parent>hand_f6_link</parent>
+			<child>hand_f8_link</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>-1.5707963267948966</lower>
+					<upper>1.5707963267948966</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="hollie_025_ringfinger_lr_rot" type="revolute">
+			<parent>hand_f8_link</parent>
+			<child>hollie_025_ringfinger_lr_rot</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>0.0</lower>
+					<upper>0.2883299983156006</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="hollie_026_ringfinger_bf_rot" type="revolute">
+			<parent>hollie_025_ringfinger_lr_rot</parent>
+			<child>hollie_026_ringfinger_bf_rot</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>0.0</lower>
+					<upper>0.9817499679337369</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="hollie_027_ringfinger_midsegment_bf_rot" type="revolute">
+			<parent>hollie_026_ringfinger_bf_rot</parent>
+			<child>hollie_027_ringfinger_midsegment_bf_rot</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>0.0</lower>
+					<upper>1.3340000268899561</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="hollie_028_ringfinger_topsegment_bf_rot" type="revolute">
+			<parent>hollie_027_ringfinger_midsegment_bf_rot</parent>
+			<child>hollie_028_ringfinger_topsegment_bf_rot</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>0.0</lower>
+					<upper>1.39499999797433</upper>
+				</limit>
+			</axis>
+		</joint>
+	</model>
+</sdf>

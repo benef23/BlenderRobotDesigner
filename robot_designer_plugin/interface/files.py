@@ -99,7 +99,7 @@ def draw(layout, context):
     for plugin in PluginManager.getFilePlugins(PluginManager.PluginTypes.FILE):
         label, operators, draw_function, _ = plugin
 
-        if not label in plugins:
+        if label not in plugins:
             box = column.box()
             row2 = box.row(align=True)
             infoBox = InfoBox(row2)
@@ -109,11 +109,6 @@ def draw(layout, context):
             if not draw_function:
                 for operator in operators:
                     operator.place_button(layout=column2, infoBox=infoBox)
-            row2=box.row(align=True)
+            row2 = box.row(align=True)
             infoBox.draw_info()
         plugins.append(label)
-
-
-
-
-

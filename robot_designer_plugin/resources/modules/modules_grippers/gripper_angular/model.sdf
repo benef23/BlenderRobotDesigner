@@ -1,0 +1,343 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+	<model name="gripper_angular">
+		<pose>0.0 -0.03094574809074402 0.0 1.5707963705062866 0.0 0.0</pose>
+		<link name="base">
+			<pose>0.0 0.0 0.0 1.5707963705062866 -0.0 0.0</pose>
+			<inertial>
+				<mass>1.0</mass>
+				<pose>0 0 0 0 0 0</pose>
+				<inertia>
+					<ixx>1.0</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>1.0</iyy>
+					<iyz>0.0</iyz>
+					<izz>1.0</izz>
+				</inertia>
+			</inertial>
+			<collision name="COL__SCHUNK-9700901_S11_COL">
+				<pose>0.0 -0.0309457485518716 6.394383784495933e-09 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular/meshes/collisions/COL__SCHUNK-9700901_S11_COL.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<collision name="COL__SCHUNK-9700901_S12_COL">
+				<pose>0.0 -0.0309457485518716 6.394383784495933e-09 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular/meshes/collisions/COL__SCHUNK-9700901_S12_COL.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<collision name="COL__SCHUNK-9905503_T4_COL">
+				<pose>0.0 -0.0309457485518716 6.394383784495933e-09 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular/meshes/collisions/COL__SCHUNK-9905503_T4_COL.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<collision name="COL__SCHUNK-9936160_D1_COL">
+				<pose>0.0 -0.0309457485518716 6.394383784495933e-09 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular/meshes/collisions/COL__SCHUNK-9936160_D1_COL.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<collision name="COL__SCHUNK-9936160_D2_COL">
+				<pose>0.0 -0.0309457485518716 6.394383784495933e-09 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular/meshes/collisions/COL__SCHUNK-9936160_D2_COL.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<collision name="COL__SCHUNK-Bolzen_DW10_COL">
+				<pose>0.0 -0.0309457485518716 6.394383784495933e-09 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular/meshes/collisions/COL__SCHUNK-Bolzen_DW10_COL.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<collision name="COL__SCHUNK-Bolzen_DW8_COL">
+				<pose>0.0 -0.0309457485518716 6.394383784495933e-09 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular/meshes/collisions/COL__SCHUNK-Bolzen_DW8_COL.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<collision name="COL__SCHUNK-_Gehaeuse0_COL">
+				<pose>0.0 -0.0309457485518716 6.394383784495933e-09 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular/meshes/collisions/COL__SCHUNK-_Gehaeuse0_COL.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<collision name="COL__SCHUNK-_Gehaeuse3_COL">
+				<pose>0.0 -0.0309457485518716 6.394383784495933e-09 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular/meshes/collisions/COL__SCHUNK-_Gehaeuse3_COL.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<visual name="VIS__SCHUNK-_Gehaeuse3_VIS">
+				<pose>0.0 -0.0309457485518716 6.394383784495933e-09 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular/meshes/visual/VIS__SCHUNK-_Gehaeuse3_VIS.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+			<visual name="VIS__SCHUNK-_Gehaeuse0_VIS">
+				<pose>0.0 -0.0309457485518716 6.394383784495933e-09 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular/meshes/visual/VIS__SCHUNK-_Gehaeuse0_VIS.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+			<visual name="VIS__SCHUNK-Bolzen_DW8_VIS">
+				<pose>0.0 -0.0309457485518716 6.394383784495933e-09 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular/meshes/visual/VIS__SCHUNK-Bolzen_DW8_VIS.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+			<visual name="VIS__SCHUNK-Bolzen_DW10_VIS">
+				<pose>0.0 -0.0309457485518716 6.394383784495933e-09 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular/meshes/visual/VIS__SCHUNK-Bolzen_DW10_VIS.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+			<visual name="VIS__SCHUNK-9936160_D2_VIS">
+				<pose>0.0 -0.0309457485518716 6.394383784495933e-09 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular/meshes/visual/VIS__SCHUNK-9936160_D2_VIS.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+			<visual name="VIS__SCHUNK-9936160_D1_VIS">
+				<pose>0.0 -0.0309457485518716 6.394383784495933e-09 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular/meshes/visual/VIS__SCHUNK-9936160_D1_VIS.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+			<visual name="VIS__SCHUNK-9905503_T4_VIS">
+				<pose>0.0 -0.0309457485518716 6.394383784495933e-09 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular/meshes/visual/VIS__SCHUNK-9905503_T4_VIS.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+			<visual name="VIS__SCHUNK-9700901_S12_VIS">
+				<pose>0.0 -0.0309457485518716 6.394383784495933e-09 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular/meshes/visual/VIS__SCHUNK-9700901_S12_VIS.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+			<visual name="VIS__SCHUNK-9700901_S11_VIS">
+				<pose>0.0 -0.0309457485518716 6.394383784495933e-09 -1.5707963705062866 -0.0 0.0</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular/meshes/visual/VIS__SCHUNK-9700901_S11_VIS.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<link name="finger1">
+			<pose>0.033000001803 -2.05443535549e-09 0.0470000005811 -1.5707961320877075 -0.0 0.0</pose>
+			<inertial>
+				<mass>1.0</mass>
+				<pose>0 0 0 0 0 0</pose>
+				<inertia>
+					<ixx>1.0</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>1.0</iyy>
+					<iyz>0.0</iyz>
+					<izz>1.0</izz>
+				</inertia>
+			</inertial>
+			<collision name="COL__SCHUNK-5510221_S7_COL">
+				<pose>-0.03300000478327281 0.07794575807371373 -2.3284016839611764e-08 1.5707961320877075 -1.5099578831723193e-07 1.3200469770003817e-14</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular/meshes/collisions/COL__SCHUNK-5510221_S7_COL.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<collision name="COL__SCHUNK-5510185_F5_COL">
+				<pose>-0.03300000478327281 0.07794575807371373 -2.3284016839611764e-08 1.5707961320877075 -1.5099578831723193e-07 1.3200469770003817e-14</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular/meshes/collisions/COL__SCHUNK-5510185_F5_COL.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<collision name="COL_Finger1_COL">
+				<pose>-0.03300000478327281 0.07794575807371373 -2.3284016839611764e-08 3.141592502593994 -1.5099578831723193e-07 1.3200469770003817e-14</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular/meshes/collisions/COL_Finger1_COL.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<visual name="VIS__SCHUNK-5510221_S7_VIS">
+				<pose>-0.03300000478327281 0.07794575807371373 -2.3284016839611764e-08 1.5707961320877075 -1.5099578831723193e-07 1.3200469770003817e-14</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular/meshes/visual/VIS__SCHUNK-5510221_S7_VIS.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+			<visual name="VIS__SCHUNK-5510185_F5_VIS">
+				<pose>-0.03300000478327281 0.07794575807371373 -2.3284016839611764e-08 1.5707961320877075 -1.5099578831723193e-07 1.3200469770003817e-14</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular/meshes/visual/VIS__SCHUNK-5510185_F5_VIS.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+			<visual name="VIS_Finger1_VIS">
+				<pose>-0.03300000478327281 0.07794575807371373 -2.3284016839611764e-08 3.141592502593994 -1.5099578831723193e-07 1.3200469770003817e-14</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular/meshes/visual/VIS_Finger1_VIS.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<link name="finger2">
+			<pose>-0.033000001803 -2.05443535549e-09 0.0470000005811 -1.5707961320877075 -0.0 0.0</pose>
+			<inertial>
+				<mass>1.0</mass>
+				<pose>0 0 0 0 0 0</pose>
+				<inertia>
+					<ixx>1.0</ixx>
+					<ixy>0.0</ixy>
+					<ixz>0.0</ixz>
+					<iyy>1.0</iyy>
+					<iyz>0.0</iyz>
+					<izz>1.0</izz>
+				</inertia>
+			</inertial>
+			<collision name="COL__SCHUNK-5510185_F6_COL">
+				<pose>0.03300000478327281 0.07794575807371373 -1.3318286760938287e-08 1.5707961320877075 -1.5099578831723193e-07 1.3200469770003817e-14</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular/meshes/collisions/COL__SCHUNK-5510185_F6_COL.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<collision name="COL__SCHUNK-5510221_S9_COL">
+				<pose>0.03300000478327281 0.07794575807371373 -1.3318286760938287e-08 1.5707961320877075 -1.5099578831723193e-07 1.3200469770003817e-14</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular/meshes/collisions/COL__SCHUNK-5510221_S9_COL.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<collision name="COL_Finger2_COL">
+				<pose>0.03300000478327281 0.07794575807371373 -1.3318286760938287e-08 4.132641038268048e-07 6.357301174375607e-08 -3.141592502593994</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular/meshes/collisions/COL_Finger2_COL.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</collision>
+			<visual name="VIS__SCHUNK-5510185_F6_VIS">
+				<pose>0.03300000478327281 0.07794575807371373 -1.3318286760938287e-08 1.5707961320877075 -1.5099578831723193e-07 1.3200469770003817e-14</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular/meshes/visual/VIS__SCHUNK-5510185_F6_VIS.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+			<visual name="VIS__SCHUNK-5510221_S9_VIS">
+				<pose>0.03300000478327281 0.07794575807371373 -1.3318286760938287e-08 1.5707961320877075 -1.5099578831723193e-07 1.3200469770003817e-14</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular/meshes/visual/VIS__SCHUNK-5510221_S9_VIS.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+			<visual name="VIS_Finger2_VIS">
+				<pose>0.03300000478327281 0.07794575807371373 -1.3318286760938287e-08 4.132641038268048e-07 6.357301174375607e-08 -3.141592502593994</pose>
+				<geometry>
+					<mesh>
+						<uri>model://gripper_angular/meshes/visual/VIS_Finger2_VIS.dae</uri>
+						<scale>0.001 0.001 0.001</scale>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		<joint name="finger1" type="revolute">
+			<parent>base</parent>
+			<child>finger1</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>-1.5707963267948966</lower>
+					<upper>0.15707963267948966</upper>
+				</limit>
+			</axis>
+		</joint>
+		<joint name="finger2" type="revolute">
+			<parent>base</parent>
+			<child>finger2</child>
+			<axis>
+				<xyz>0.0 0.0 1.0</xyz>
+				<limit>
+					<lower>-0.15707963267948966</lower>
+					<upper>1.5707963267948966</upper>
+				</limit>
+			</axis>
+		</joint>
+	</model>
+</sdf>
