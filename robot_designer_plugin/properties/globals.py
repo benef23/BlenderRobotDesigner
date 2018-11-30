@@ -395,15 +395,15 @@ class RDGlobals(PropertyGroupHandlerBase):
         self.mutation_deviation = PropertyHandler(FloatProperty(name="Mutation deviation", default=0.2, min=0,
                                                            precision=5))
 
-        self.max_generation = PropertyHandler(IntProperty(name="Number of generations", default=100, min=1))
+        self.max_generation = PropertyHandler(IntProperty(name="Number of generations", default=4, min=1))
 
-        self.offspring_size = PropertyHandler(IntProperty(name="Offspring per generation", default=80, min=2))
+        self.offspring_size = PropertyHandler(IntProperty(name="Offspring per generation", default=4, min=2))
 
         self.selection_rate = PropertyHandler(FloatProperty(name="Selection rate", default=0.7, min=0.1, max=1))
 
-        self.offsetlateral = PropertyHandler(FloatProperty(name="Offsprings instance offset", default=15.0, min=1.0))
+        self.offsetlateral = PropertyHandler(FloatProperty(name="Offsprings instance offset", default=4.0, min=1.0))
 
-        self.offsetfront = PropertyHandler(FloatProperty(name="Generations instance offset", default=20.0, min=1.0))
+        self.offsetfront = PropertyHandler(FloatProperty(name="Generations instance offset", default=4.0, min=1.0))
 
 
 
