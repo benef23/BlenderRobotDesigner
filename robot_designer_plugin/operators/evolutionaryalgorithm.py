@@ -786,11 +786,13 @@ class StartSimulationMeshes(RDOperator):
     def execute(self, context):
 
         def selectrobot(robot_to_sim):  #select robot to simulate
+            print("Select Robot")
             armature_name = robot_to_sim[0].name
 
             return armature_name
 
         def editmode_mesh(mesh_to_edit): #go to edit mode
+            print("Edit Mode Mesh")
             bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
             bpy.ops.object.select_all(action='DESELECT')
             mesh = bpy.data.objects[mesh_to_edit]
@@ -803,16 +805,19 @@ class StartSimulationMeshes(RDOperator):
             return bm, obj, mesh
 
         def meshes_initial_armature (armature_name):  #get meshes of robot to simulate
+            print("Meshes initial armature")
             meshes_name = [obj.name for obj in bpy.data.objects if obj.parent_bone is not None and obj.type == 'MESH']
 
             return meshes_name
 
         def armatures_scene ():  #get all armatures of the Blender scene
+            print("Armatures scene")
             armatures = [obj.name for obj in bpy.data.objects if obj.type == 'ARMATURE']
 
             return armatures
 
         def verts_co (armature_name, meshes): #get verts xyz position for the armature armature_name
+            print("Verts co")
             pos_verts = [[] for m in range(len(meshes))]
 
             for m in range(len(meshes)):
@@ -832,6 +837,7 @@ class StartSimulationMeshes(RDOperator):
             return pos_verts
 
         def individualsgen (gen, pos_verts, historial_individuals):  #get verts' position of individuals
+            print("inidividualsgen")
             if gen == 0:
                 individuals_ch = [pos_verts, pos_verts]
 
@@ -841,12 +847,13 @@ class StartSimulationMeshes(RDOperator):
             return individuals_ch
 
         def historialgen (individuals_ch, historial_individuals):  #store verts position of the population individuals
+            print("historialgen")
             historial_individuals.append(individuals_ch)
 
             return historial_individuals
 
         def fitnessfunction (individuals_ch, ini_verts_co, meshes): #compute fitness of each vert of the meshes to get mesh fitness and, by summing all meshes fitness, claculate individual fitness
-
+            print("Fitnessfunction")
             fitness = []
             for ind in range(len(individuals_ch)):
                 f_ind = []
@@ -861,10 +868,11 @@ class StartSimulationMeshes(RDOperator):
                             f_ind.append(f)
 
                 fitness.append(np.sum(f_ind))
-
+            print("Fitness is:", fitness)
             return fitness
 
         def selection (gen, individuals_ch, num_offspring, s_rate, fitnesses):  #selection: mate 2 x num_offspring times the individuals for kepping offspring population size after crossover
+            print("Selection")
             selected = []
 
             if gen==0:
@@ -891,6 +899,7 @@ class StartSimulationMeshes(RDOperator):
             return selected
 
         def crossover (selected, meshes): #crossover
+            print("Crossover")
             crossed = []
 
             for s in range(len(selected)):
@@ -909,7 +918,7 @@ class StartSimulationMeshes(RDOperator):
             return crossed
 
         def mutation (crossed, mutation_rate, mutation_deviation, meshes):
-
+            print("Mutation")
             mutated = []
             for o in range(len(crossed)):
                 mutated_ind = []
@@ -931,15 +940,15 @@ class StartSimulationMeshes(RDOperator):
             return mutated
 
         def best_ind (mutated, ini_verts_co, meshes): #get best infividual of a generation
-
+            print("Best Individual")
             fitness_last = fitnessfunction(mutated, ini_verts_co, meshes)
             best_fitness = max(fitness_last)
             index_best = fitness_last.index(best_fitness)
-
+            print("Best individual number: ", index_best)
             return index_best
 
         def neighbours_adapt (mutated, armature_name, meshes, adapt_rate, ind): # adaptability function to get smoother geometries
-
+            print("Neighbours Adapt")
             for m in range(len(meshes)):
                 bm, obj, mesh = editmode_mesh(meshes[m])
 
@@ -984,6 +993,7 @@ class StartSimulationMeshes(RDOperator):
             return offspring_adapted
 
         def minvertexbonedistance(armature_name, meshes): #get closer vertex of the bones to meshes
+            print("Min vertex bone distance")
             local_pos_verts = np.asarray(verts_co(armature_name, meshes))
 
             def level_up_parent(armature_name, segment): #go to the parent of a particular segment
@@ -1040,6 +1050,7 @@ class StartSimulationMeshes(RDOperator):
             return min_index_parent_vert, meshes_up, initial_segment_position, global_pos_mesh_initial
 
         def sendparametersbest (offspring_generation, ini_verts_co, armature_name, meshes): #send verts xyz position to Blender for the best individual
+            print("Send parameter best")
             fitness_last = fitnessfunction(offspring_generation, ini_verts_co, meshes)
             best_fitness = max(fitness_last)
             index_best = fitness_last.index(best_fitness)
@@ -1065,7 +1076,7 @@ class StartSimulationMeshes(RDOperator):
             return None
 
         def sendparametersgen (indiv_generation, armature_name, list_instances, gen, ind): #send verts xyz position to Blender for the best individual
-
+            print("Send parameters gen")
             bpy.ops.object.select_all(action='DESELECT')
             context.scene.objects.active = bpy.data.objects[list_instances[gen][ind]]
             context.active_object.select = True
@@ -1093,7 +1104,7 @@ class StartSimulationMeshes(RDOperator):
             return None
 
         def bonematrixrotation(armature_name, segment, coo): #matrix rotation of the bones to achieve correct vertex position when translating them in local
-
+            print("Bone matrix Rotation")
             bone = bpy.data.armatures[armature_name].bones[segment].parent
             gAl = np.identity(3)
 
@@ -1108,7 +1119,7 @@ class StartSimulationMeshes(RDOperator):
             return d_l
 
         def placejoints_mesh (armature_name, min_index_parent_vert, ini_position_verts): #place mesh bone on the correct mesh spot
-
+            print("Place joints mesh")
             def reassign_mesh(meshes, m, segment_ofmesh_name, armature_name, new_mesh_name):
                 segment_ofmesh = bpy.context.active_object.data.bones[segment_ofmesh_name]
                 bpy.ops.object.select_all(action='DESELECT')
@@ -1175,7 +1186,7 @@ class StartSimulationMeshes(RDOperator):
             return None
 
         def placejoints_model (armature_name, min_index_parent_vert, meshes_up, segment_ini_pos, ini_position_verts, mesh_pos_ini): #place bone on the correct bone spot
-
+            print("Place joints model")
             meshes = [obj.name for obj in bpy.data.objects if obj.parent_bone is not None and obj.type == 'MESH'
                       and obj.parent.name == armature_name]
 
@@ -1234,7 +1245,7 @@ class StartSimulationMeshes(RDOperator):
             return None
 
         def createrobotinstances(generations, num_offspring, armature_name, meshes, offset_o, offset_g): #create robot instances to plot all individuals
-
+            print("Create robot instances")
             list_instances = [['' for i in range(num_offspring)] for g in range(generations)]
 
             for g in range(generations):
@@ -1242,27 +1253,51 @@ class StartSimulationMeshes(RDOperator):
                     context.scene.objects.active = bpy.data.objects[armature_name]
                     context.active_object.select = True
                     segments = bpy.context.active_object.data.bones.keys()
+                  # todo copy physics:  physics_frames = [obj.name for obj in bpy.data.objects if obj.parent_bone in segments and obj.type == 'EMPTY']
 
-                    for m in range(len(meshes)):
+                    for m in range(len(meshes)):    # select meshes
                         bpy.data.objects[meshes[m]].select = True
-                    for s in range(len(segments)):
+                    for s in range(len(segments)):  # select segments
                         bone = bpy.context.active_object.data.bones[segments[s]]
                         bone.select = True
+                  #  for p in range(len(physics_frames)):   # select physics frames
+                   #     bpy.data.objects[physics_frames[p]].select = True
                     bpy.ops.object.duplicate_move(TRANSFORM_OT_translate={"value": ((i * offset_o + offset_o / 2 - num_offspring * offset_o / 2), -offset_g * (g + 1), 0)})
                     bpy.data.scenes[0].update()
                     list_instances[g][i]=bpy.context.scene.objects.active.name
+                    # bpy.ops.roboteditor.createphysicsframes()  # todo: calculate new physics automatically after adaption
 
-                    for b in range(len(bpy.context.active_object.data.bones)):
-                        bpy.context.active_object.data.bones[b].name = bpy.context.active_object.data.bones[b].name+str(g)+str(i) #rename bones
 
-                        bpy.context.active_object.data.name = bpy.context.active_object.name #rename armature as the object name
+# bf rename segments not necessary
+                    #   for b in range(len(bpy.context.active_object.data.bones)):
+                  #      bpy.context.active_object.data.bones[b].name = bpy.context.active_object.data.bones[b].name+str(g)+str(i) #rename bones
+#
+ #                       bpy.context.active_object.data.name = bpy.context.active_object.name #rename armature as the object name
 
                     bpy.ops.object.select_all(action='DESELECT')
 
             return list_instances
 
+        def delete_col_and_physics():
+            print("Delete all collisions and physics")
+
+            # delete all collision meshes, need to be regenerated later / or make copy from visual
+            col_meshes = [obj.name for obj in bpy.data.objects if obj.type == 'MESH'
+                          and obj.RobotEditor.tag == "COLLISION"]
+            for mesh in col_meshes:
+                bpy.data.objects[mesh].select = True
+                bpy.ops.object.delete()
+
+            # delete all physics frames, will be recalculated later
+            # physics_frames = [obj.name for obj in bpy.data.objects if obj.type == 'EMPTY'
+            #                 and obj.RobotEditor.tag == "PHYSICS_FRAME"]
+            #for p in physics_frames:
+            #    bpy.data.objects[p].select = True
+            #    bpy.ops.object.delete()
+
 
         def main():
+            print("Main")
             RD=context.scene.RobotDesigner
             bone_sim = RD.model_to_simulate
             max_gen = RD.max_generation
@@ -1279,6 +1314,9 @@ class StartSimulationMeshes(RDOperator):
             current_scene.RobotDesigner.display_mesh_selection = 'all'
 
             historial_individuals = []
+
+            # clean up model:
+            delete_col_and_physics()
 
             armature = selectrobot(bone_sim)
             meshes = meshes_initial_armature(armature)
@@ -1314,6 +1352,10 @@ class StartSimulationMeshes(RDOperator):
             for ar in range(len(armatures_population)):
                 placejoints_mesh(armatures_population[ar], vert_parent_mesh, ini_position_verts)
                 placejoints_model(armatures_population[ar], vert_parent_mesh, meshes_level_up, segment_ini_pos, ini_position_verts, mesh_pos_ini)
+
+                # optional: create new physics frames and collision  todo: two opt box on gui
+                bpy.ops.roboteditor.generatallcollisionmeshes(shrinkWrapOffset=0.0, subdivisionLevels=1)  # generate collision meshes
+                bpy.ops.roboteditor.computephysicsframe(density=1, from_visual_geometry=False)  # compute mass todo: rotation incorrect?
 
             current_scene.RobotDesigner.display_mesh_selection = 'visual'
 
