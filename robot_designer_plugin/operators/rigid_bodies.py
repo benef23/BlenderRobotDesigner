@@ -54,7 +54,6 @@ from .helpers import ModelSelected, SingleMeshSelected, ObjectMode, SingleSegmen
 
 from ..properties.globals import global_properties
 
-
 # operator to select mesh
 @RDOperator.Preconditions(ModelSelected)
 @PluginManager.register_class
@@ -114,7 +113,6 @@ class AssignGeometry(RDOperator):
         bpy.ops.object.parent_set(type='BONE', keep_transform=True)
         # In order to get the child we have to jump through some hoops.
         obj = bpy.data.objects[global_properties.mesh_name.get(context.scene)]
-
         # Change the name depending on whether we want collision geometry or visual geometry.
 
         def maybe_remove_prefix(s, prefix):
@@ -180,13 +178,13 @@ class RenameAllGeometries(RDOperator):
             if i.parent_bone != '' and i.type == 'MESH':
                 new_name = i.name[:4] + i.parent_bone
                 num = duplication_count[new_name]
-                duplication_count[new_name] = num + 1
+                duplication_count[new_name] = num+1
                 if num > 0:
                     new_name += '_%i' % num
                 i.name = new_name
-                i.RobotDesigner.fileName = new_name
+                i.RobotEditor.fileName = new_name
 
-        global_properties.mesh_name.set(context.scene, current_mesh.name[:4] + current_mesh.parent_bone)
+        global_properties.mesh_name.set(context.scene, current_mesh.name[:4] + current_mesh.parent_bone )
 
         return {'FINISHED'}
 
@@ -213,8 +211,8 @@ class DetachGeometry(RDOperator):
         current_mesh = bpy.data.objects[mesh_name]
         mesh_global = current_mesh.matrix_world
         current_mesh.parent = None
-        current_mesh.RobotDesigner.tag = 'DEFAULT'
-        if current_mesh.name.startswith("VIS_") or current_mesh.name.startswith("COL_"):
+        current_mesh.RobotEditor.tag = 'DEFAULT'
+        if current_mesh.name.startswith("VIS_") or current_mesh.name.startswith("COL_") :
             current_mesh.name = current_mesh.name[4:]
 
         current_mesh.matrix_world = mesh_global
@@ -243,7 +241,7 @@ class DetachAllGeometries(RDOperator):
     @RDOperator.OperatorLogger
     @RDOperator.Postconditions(ModelSelected)
     def execute(self, context):
-        mesh_type = global_properties.display_mesh_selection.get(context.scene)
+        mesh_type =  global_properties.display_mesh_selection.get(context.scene)
         if mesh_type == 'all':
             meshes = [obj for obj in bpy.data.objects if
                       obj.type == 'MESH' and obj.parent_bone is not '']
@@ -255,6 +253,8 @@ class DetachAllGeometries(RDOperator):
                       obj.type == 'MESH' and obj.parent_bone is not '' and obj.RobotDesigner.tag == 'COLLISION']
         else:
             self.confirmation = False
+
+
 
         if self.confirmation:
             for mesh in meshes:
@@ -290,10 +290,10 @@ class SelectAllGeometries(RDOperator):
     @RDOperator.OperatorLogger
     @RDOperator.Postconditions(ObjectMode)
     def execute(self, context):
-        mesh_type = global_properties.mesh_type.get(context.scene)
+        mesh_type =  global_properties.mesh_type.get(context.scene)
         meshes = {obj.name for obj in context.scene.objects if
                   not obj.parent_bone is None and
-                  obj.type == 'MESH'}
+                  obj.type == 'MESH' }
         bpy.ops.object.mode_set(mode='OBJECT')
         bpy.ops.object.select_all(action='DESELECT')
 
@@ -356,8 +356,8 @@ class ReduceAllGeometry(RDOperator):
                       if (hide_geometry == 'collision' and item.RobotDesigner.tag == 'COLLISION')
                       or (hide_geometry == 'visual' and item.RobotDesigner.tag == 'DEFAULT')]
 
-        mesh_names = [m.name for m in meshes]
-        del meshes  # Don't want to get into trouble with danling pointers again.
+        if hide_geometry == 'all':
+            meshes = geometry_names
 
         ratio_act = bpy.data.objects[global_properties.mesh_name.get(context.scene)].modifiers["Decimate"].ratio
         for selected_mesh in mesh_names:

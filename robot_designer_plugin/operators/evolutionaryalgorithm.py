@@ -1361,7 +1361,10 @@ class StartSimulationMeshes(RDOperator):
 
             return None
 
-        main()
+        try:
+            main()
+        except:
+            pass
 
         return {'FINISHED'}
 

@@ -228,7 +228,7 @@ def create_sdf(operator: RDOperator, context, filepath: str, meshpath: str, topl
 
         # sdf: here the chile does not mean the child of the joint!!!!it is different
         child.joint.name = segment.name
-        child.link.name = segment.name.replace("_joint", "_link")
+        child.link.name = segment.name + '_link' #segment.name.replace("_joint", "_link")
 
         if segment.parent:
             parent_link = [l for j, l in tree.connectedLinks.items() if segment.parent.name == j.name]
