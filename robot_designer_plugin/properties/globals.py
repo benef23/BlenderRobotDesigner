@@ -370,6 +370,8 @@ class RDGlobals(PropertyGroupHandlerBase):
             ('off', 'Off', 'Toolbox off')]
         ))
 
+
+        # Evolution Parameters
         self.encoding = PropertyHandler(EnumProperty(
            items=[('real', 'Evolution Strategies', 'Real encoding for EA'),
             ('binary', 'Genetic Algorithm', 'Binary encoding for EA')]
