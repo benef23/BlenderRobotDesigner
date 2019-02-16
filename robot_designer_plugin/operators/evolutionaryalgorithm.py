@@ -1281,6 +1281,8 @@ class StartSimulationMeshes(RDOperator):
         def delete_col_and_physics():
             print("Delete all collisions and physics")
 
+            bpy.ops.object.select_all(action='DESELECT')
+
             # delete all collision meshes, need to be regenerated later / or make copy from visual
             col_meshes = [obj.name for obj in bpy.data.objects if obj.type == 'MESH'
                           and obj.RobotEditor.tag == "COLLISION"]
