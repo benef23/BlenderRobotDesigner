@@ -1160,7 +1160,7 @@ class StartSimulationMeshes(RDOperator):
 
                 bpy.ops.robotdesigner.select_geometry(geometry_name=meshes[m])
                 bpy.ops.robotdesigner.unassignmesh()
-                new_mesh_name = bpy.context.selected_objects[0].name
+                new_mesh_name = meshes[m] # BF bpy.context.selected_objects[0].name
                 bpy.ops.object.select_all(action='DESELECT')
 
                 segment_ofmesh.select = True
