@@ -98,14 +98,28 @@ def draw(layout, context):
         infoBox = InfoBox(box)
         row = box.row()
         column = row.column(align=True)
-        rigid_bodies.RenameAllGeometries.place_button(column, infoBox=infoBox)
         rigid_bodies.SetGeometryActive.place_button(column, infoBox=infoBox)
         rigid_bodies.SelectAllGeometries.place_button(column, infoBox=infoBox)
+        rigid_bodies.RenameAllGeometries.place_button(column, infoBox=infoBox)
+
         # context.scene.objects.active
         selected_objects = [i for i in context.selected_objects if i.name != context.active_object.name]
         if len(selected_objects):
             obj = bpy.data.objects[global_properties.mesh_name.get(context.scene)]
-            box.prop(obj, "scale", slider=False, text="Scale (%s)" % obj.name)
+            rigid_bodies.RenameGeometry.place_button(column, text='Rename selected geometry', infoBox=infoBox)
+            box.prop(obj, "rotation_euler", slider=False, text="Rotation")
+            box.prop(obj, "location", slider=False, text="Location")
+            row2 = box.row()
+            column = row2.column(align=True)
+            if obj.RobotDesigner.tag == 'BASIC_COLLISION_CYLINDER':
+                column.label("Scale (%s)" % obj.name)
+                column.prop(obj.RobotDesigner.scaling, "scale_radius", slider=False, text="Radius")
+                column.prop(obj.RobotDesigner.scaling, "scale_depth", slider=False, text="Depth")
+            elif obj.RobotDesigner.tag == 'BASIC_COLLISION_SPHERE':
+                column.label("Scale (%s)" % obj.name)
+                column.prop(obj.RobotDesigner.scaling, "scale_all", slider=False, text="Radius")
+            else:
+                box.prop(obj, "scale", slider=False, text="Scale (%s)" % obj.name)
             box.prop(selected_objects[0].RobotDesigner, 'fileName')
 
         box.separator()
@@ -170,6 +184,18 @@ def draw(layout, context):
             collision.GenerateCollisionMesh.place_button(column, infoBox=infoBox)
             collision.GenerateAllCollisionConvexHull.place_button(column, infoBox=infoBox)
             collision.GenerateCollisionConvexHull.place_button(column, infoBox=infoBox)
+
+            row2 = box.row()
+            row2.label("Add basic collision shapes:")
+            row3 = box.row()
+            column = row3.column(align=True)
+            collision.CreateBasicCollisionBox.place_button(column, text='Create Box', infoBox=infoBox)
+
+            column = row3.column(align=True)
+            collision.CreateBasicCollisionCylinder.place_button(column, text='Create Cylinder', infoBox=infoBox)
+
+            column = row3.column(align=True)
+            collision.CreateBasicCollisionSphere.place_button(column, text='Create Sphere', infoBox=infoBox)
 
             box.row()
             infoBox.draw_info()

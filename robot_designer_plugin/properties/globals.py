@@ -49,9 +49,11 @@ from ..operators.segments import SelectSegment, UpdateSegments
 from ..operators.muscles import SelectMuscle
 from ..core.property import PropertyGroupHandlerBase, PropertyHandler
 
+
 class RDSelectedObjects(PropertyGroupHandlerBase):
     def __init__(self):
         self.visible = PropertyHandler()
+
 
 class RDGlobals(PropertyGroupHandlerBase):
     """
@@ -92,6 +94,15 @@ class RDGlobals(PropertyGroupHandlerBase):
                 physics.hide = True
 
     @staticmethod
+    def attach_world(self, context):
+        obj = context.active_object
+        if self.world_property is True:
+            bpy.data.objects[obj.name].RobotDesigner.world = True
+            # export joint with fixed type
+        else:
+            bpy.data.objects[obj.name].RobotDesigner.world = False
+
+    @staticmethod
     def updateMuscleName(self, context):
 
         SelectMuscle.run(muscle_name=global_properties.active_muscle.get(context.scene))
@@ -115,20 +126,39 @@ class RDGlobals(PropertyGroupHandlerBase):
 
         hide_geometry = global_properties.display_mesh_selection.get(context.scene)
         geometry_name = [obj.name for obj in bpy.data.objects if
-                     not obj.parent_bone is None and
-                     obj.type == 'MESH']
+                         not obj.parent_bone is None and
+                         obj.type == 'MESH' and
+                         obj.RobotDesigner.tag != 'PHYSICS_FRAME' and obj.RobotDesigner.tag != 'WRAPPING']
+
+        for mesh in geometry_name:
+            obj = bpy.data.objects[mesh]
+            tag = obj.RobotDesigner.tag
+            if hide_geometry == 'all':
+                obj.hide = False
+            elif hide_geometry == 'collision' and (tag == 'COLLISION' or 'BASIC_COLLISION_' in tag):
+                obj.hide = False
+            elif hide_geometry == 'visual' and tag == 'DEFAULT':
+                obj.hide = False
+            elif hide_geometry == 'bascol' and 'BASIC_COLLISION_' in tag:
+                obj.hide = False
+            elif hide_geometry == 'none':
+                obj.hide = True
+            else:
+                obj.hide = True
+
+    @staticmethod
+    def display_wrapping_geometries(self, context):
+
+        hide_geometry = global_properties.display_wrapping_selection.get(context.scene)
+        geometry_name = [obj.name for obj in bpy.data.objects if
+                    not obj.parent_bone is None and
+                    obj.type == 'MESH' and obj.RobotDesigner.tag == 'WRAPPING']
 
         for mesh in geometry_name:
             obj = bpy.data.objects[mesh]
             if hide_geometry == 'all':
                 obj.hide = False
-            elif hide_geometry == 'collision' and obj.RobotDesigner.tag == 'COLLISION':
-                obj.hide = False
-            elif hide_geometry == 'visual' and obj.RobotDesigner.tag == 'DEFAULT':
-                obj.hide = False
             elif hide_geometry == 'none':
-                obj.hide = True
-            else:
                 obj.hide = True
 
     @staticmethod
@@ -206,12 +236,9 @@ class RDGlobals(PropertyGroupHandlerBase):
             for muscle in muscles:
                 muscle.RobotDesigner.muscles.robotName = self.model_name
 
-            bpy.data.armatures[self.old_name].name = self.model_name  # also update armature name
             self.old_name = self.model_name
 
         bpy.context.active_object.name = self.model_name
-
-        print('---- robot name update ----- ', self.old_name, self.model_name)
 
     @staticmethod
     def muscle_dim_update(self, context):
@@ -221,9 +248,9 @@ class RDGlobals(PropertyGroupHandlerBase):
         print("in the function")
         active_model = self.model_name
         for muscle in [obj.name for obj in bpy.data.objects
-                       if bpy.data.objects[obj.name].RobotDesigner.muscles.robotName == active_model]:
-            bpy.data.objects[muscle].data.bevel_depth = self.muscle_dim
-            print("changeing ----")
+            if bpy.data.objects[obj.name].RobotDesigner.muscles.robotName == active_model]:
+                bpy.data.objects[muscle].data.bevel_depth = self.muscle_dim
+                print("changing ----")
 
     def __init__(self):
 
@@ -252,12 +279,11 @@ class RDGlobals(PropertyGroupHandlerBase):
                    ('muscles', 'Muscles', 'Attach muscles to the robot'),
                    # ('markers', 'Markers', 'Assign markers to bones'),
                    # ('controller', 'Controller', 'Modify controller parameter'),
-                   ('evolutionaryalgorithm', 'EA', 'Define parameters'),   # Evolutionary Algorithm tab
                    ('tools', 'Tools', 'Tools'),
                    ('files', 'Files', 'Export Armature')],
         ))
 
-        # Holds the selection to operate on colission geometries OR visual geometries
+        # Holds the selection to operate on collision geometries OR visual geometries
         self.mesh_type = PropertyHandler(EnumProperty(
             items=[('DEFAULT', 'Visual geometries', 'Edit visual geometries'),
                    ('COLLISION', 'Collision geometries', 'Edit collision geometries')]
@@ -285,6 +311,9 @@ class RDGlobals(PropertyGroupHandlerBase):
             BoolProperty(name="Show Physics Frames", description="Show or hide physics frames", default=True,
                          update=self.display_physics))
 
+        # attach world property
+        self.world_property = PropertyHandler(BoolProperty(name="Attach Link to World", update=self.attach_world))
+
         # Holds the selection to list connected or unassigned meshes in dropdown menus
         self.list_meshes = PropertyHandler(EnumProperty(
             items=[("all", 'List all', 'Show all meshes in menu', 'RESTRICT_VIEW_OFF', 1),
@@ -296,16 +325,24 @@ class RDGlobals(PropertyGroupHandlerBase):
             BoolProperty(name="Assign as Collision Mesh", description="Adds a collision tag to the mesh",
                          default=False))
 
-        # Holds the selection of wheter do hide/display connected/unassigned meshes in the 3D viewport
+        # Holds the selection of whether do hide/display connected/unassigned meshes in the 3D viewport
         self.display_mesh_selection = PropertyHandler(EnumProperty(
             items=[('all', 'All',
                     'Show all objects in viewport'),
                    ('collision', 'Collision',
                     'Show only connected collision models'),
+                   ('bascol', 'BASCOL',
+                    'Show only connected basic collision shapes'),
                    ('visual', 'Visual',
                     'Show only connected visual models'),
                    ('none', "None", "Show no connected model")],
             update=self.display_geometries))
+
+        self.display_wrapping_selection = PropertyHandler(EnumProperty(
+            items=[('all', 'All',
+                    'Show all wrapping objects'),
+                   ('none', "None", "Show no wrapping models")],
+            update=self.display_wrapping_geometries))
 
         # Holds the selection to list connected or unassigned segments in dropdown menus
         self.list_segments = PropertyHandler(EnumProperty(
@@ -316,12 +353,12 @@ class RDGlobals(PropertyGroupHandlerBase):
                     'List only bones without connected meshes in menu', 'ARMATURE_DATA', 3)]))
 
         self.storage_mode = PropertyHandler(EnumProperty(items=[('temporary', 'Non-persistant GIT',
-                                                           'Stores/retrieves files from GIT temporary' +
-                                                           ' repository'),
+                                                                 'Stores/retrieves files from GIT temporary' +
+                                                                 ' repository'),
                                                                 ('git', 'Persitant GIT',
-                                                           'Stores/retrieves files from persistent GIT repository'),
+                                                                 'Stores/retrieves files from persistent GIT repository'),
                                                                 ('local', 'Local',
-                                                           'Stores/retrieves from local hard disk')]))
+                                                                 'Stores/retrieves from local hard disk')]))
         self.git_url = PropertyHandler(StringProperty(name='GIT URL'))
         self.git_repository = PropertyHandler(StringProperty(name='GIT Repository'))
 
@@ -347,7 +384,7 @@ class RDGlobals(PropertyGroupHandlerBase):
 
         self.display_muscle_selection = PropertyHandler(EnumProperty(
             items=[('all', 'All', 'Show all muscles'),
-            #       ('MYOROBOTICS', 'Myorobotics', 'Show only Myorobotics Muscles'),
+                   #       ('MYOROBOTICS', 'Myorobotics', 'Show only Myorobotics Muscles'),
                    ('MILLARD_EQUIL', 'Millard Equilibrium 2012', 'Show only Millard Equilibrium 2012 Muscles'),
                    ('MILLARD_ACCEL', 'Millard Acceleration 2012', 'Show only Millard Acceleration 2012 Muscles'),
                    ('THELEN', 'Thelen 2003', 'Show only Thelen 2003 Muscles'),
@@ -355,61 +392,8 @@ class RDGlobals(PropertyGroupHandlerBase):
                    ('none', "None", "Show no muscles")],
             update=self.display_muscles))
 
-        self.muscle_dim = PropertyHandler(FloatProperty(name="Muscle Dimension:", default=0.05, update=self.muscle_dim_update))
-	
-# evolutionary alorithms
-        self.typeoptimization = PropertyHandler(EnumProperty(
-           items=[('joints', 'Joints position', 'EA to joints'),
-            ('meshes', 'Geometry nodes position', 'EA to meshes')]
-        ))
-
-        self.visualresult = PropertyHandler(EnumProperty(  # types of Evolutionary algorithms
-           items=[('best', 'Best model', 'Only best robot'),
-            ('all', 'All models', 'Get all robots of the simulation')]
-        ))
-
-        self.toolbox = PropertyHandler(EnumProperty(
-           items=[('on', 'On', 'Toolbox on'),
-            ('off', 'Off', 'Toolbox off')]
-        ))
-
-
-        # Evolution Parameters
-        self.encoding = PropertyHandler(EnumProperty(
-           items=[('real', 'Evolution Strategies', 'Real encoding for EA'),
-            ('binary', 'Genetic Algorithm', 'Binary encoding for EA')]
-        ))
-
-        self.num_adaptions = PropertyHandler(IntProperty(name="Adaptability steps", default=1, min=0, max=50))
-
-        self.adaption_rate = PropertyHandler(FloatProperty(name="Adaptability rate", default=0.6, min=0, max=1, precision=1))
-
-        self.model_to_simulate = PropertyHandler(CollectionProperty(
-            type=bpy.types.PropertyGroup
-        ))
-
-        self.population_size = PropertyHandler(IntProperty(name="Initial population size", default=1, min=1, max=1))
-
-
-        self.mutation_rate_bin = PropertyHandler(FloatProperty(name="Mutation rate", default=0.01, min=0, max=1,
-                                                           precision=3))
-
-        self.mutation_rate_real = PropertyHandler(FloatProperty(name="Mutation rate", default=0.2, min=0, max=1,
-                                                           precision=3))
-
-        self.mutation_deviation = PropertyHandler(FloatProperty(name="Mutation deviation", default=0.2, min=0,
-                                                           precision=5))
-
-        self.max_generation = PropertyHandler(IntProperty(name="Number of generations", default=4, min=1))
-
-        self.offspring_size = PropertyHandler(IntProperty(name="Offspring per generation", default=4, min=2))
-
-        self.selection_rate = PropertyHandler(FloatProperty(name="Selection rate", default=0.7, min=0.1, max=1))
-
-        self.offsetlateral = PropertyHandler(FloatProperty(name="Offsprings instance offset", default=4.0, min=1.0))
-
-        self.offsetfront = PropertyHandler(FloatProperty(name="Generations instance offset", default=4.0, min=1.0))
-
+        self.muscle_dim = PropertyHandler(
+            FloatProperty(name="Muscle Dimension:", default=0.05, update=self.muscle_dim_update))
 
 
 global_properties = RDGlobals()

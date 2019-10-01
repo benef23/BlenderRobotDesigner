@@ -34,6 +34,7 @@
 # ######
 # System imports
 import os
+import sys
 from math import *
 from mathutils import Euler, Matrix, Vector
 from pathlib import Path
@@ -86,7 +87,6 @@ class Importer(object):
         self.logger = operator.logger
         self.operator = operator
         self.controllers = None
-
 
     def add_box(self, model):
         """
@@ -178,6 +178,12 @@ class Importer(object):
         model_name = bpy.context.active_object.name
         model_type = bpy.context.active_object.type
 
+        mat = bpy.data.materials.new('blue')
+        mat.diffuse_color = (0, 0, 1)
+        bpy.context.active_object.data.materials.append(mat)
+
+        bpy.context.active_object.RobotDesigner.tag = "BASIC_COLLISION_BOX"
+
         self.logger.debug('model_name (geometry): %s', model_name)
         self.logger.debug('model_type (geometry): %s', model_type)
 
@@ -207,15 +213,21 @@ class Importer(object):
         prefix_folder = ""
         c_radius = model.geometry[0].sphere[0].radius[0]
 
-        bpy.ops.mesh.primitive_uv_sphere_add(segments=8, ring_count=4, size=c_radius, location=(0, 0, 0))
-        # bpy.ops.mesh.primitive_cylinder_add(depth=c_depth,radius=c_radius, location=(0, 0, 0))
+        bpy.ops.mesh.primitive_uv_sphere_add(size=c_radius, location=(0, 0, 0))
         bpy.context.active_object.RobotDesigner.fileName = os.path.basename(model.name)
 
         self.logger.debug('Active robot name: %s', bpy.context.active_object.RobotDesigner.fileName)
 
+        bpy.context.active_object.name = os.path.basename(model.name)
         model_name = bpy.context.active_object.name
         # bpy.context.active_object.type = 'ARMATURE'
         model_type = bpy.context.active_object.type
+
+        mat = bpy.data.materials.new('blue')
+        mat.diffuse_color = (0, 0, 1)
+        bpy.context.active_object.data.materials.append(mat)
+
+        bpy.context.active_object.RobotDesigner.tag = "BASIC_COLLISION_SPHERE"
 
         self.logger.debug('model_name (geometry): %s', model_name)
         self.logger.debug('model_type (geometry): %s', model_type)
@@ -252,9 +264,16 @@ class Importer(object):
 
         self.logger.debug('Active robot name: %s', bpy.context.active_object.RobotDesigner.fileName)
 
+        bpy.context.active_object.name = os.path.basename(model.name)
         model_name = bpy.context.active_object.name
         # bpy.context.active_object.type = 'ARMATURE'
         model_type = bpy.context.active_object.type
+
+        mat = bpy.data.materials.new('blue')
+        mat.diffuse_color = (0, 0, 1)
+        bpy.context.active_object.data.materials.append(mat)
+
+        bpy.context.active_object.RobotDesigner.tag = "BASIC_COLLISION_CYLINDER"
 
         self.logger.debug('model_name (geometry): %s', model_name)
         self.logger.debug('model_type (geometry): %s', model_type)
@@ -305,6 +324,7 @@ class Importer(object):
         #
         #     bpy.ops.mesh.primitive_cylinder_add(depth=c_depth, radius=c_radius)
         #     bpy.context.active_object.RobotDesigner.fileName = os.path.basename(model.name)
+
 
         fn, extension = os.path.splitext(mesh_path)
         if extension == ".stl" or extension == ".STL":
@@ -411,6 +431,11 @@ class Importer(object):
         self.logger.info("converted local pose xyz -> %s", xyz)
         self.logger.info("converted local pose euler -> %s", euler)
 
+        if node.world is True:
+            bpy.context.active_bone.RobotDesigner.world = True
+        else:
+            bpy.context.active_bone.RobotDesigner.world = False
+
         # urdf xyz = string_to_list(get_value(node.joint.origin.xyz, "0 0 0"))
         # urdf euler = string_to_list(get_value(node.joint.origin.rpy, '0 0 0'))
 
@@ -456,10 +481,11 @@ class Importer(object):
         bpy.context.active_bone.RobotDesigner.Euler.gamma.value = round(degrees(euler[2]), 0)
 
         if parent_name:
-            if node.joint.axis[0].dynamics:
-                if len(node.joint.axis[0].limit):
-                    bpy.context.active_bone.RobotDesigner.controller.maxVelocity = float(get_list_value(
-                        node.joint.axis[0].limit[0].velocity, 0))
+            if len(node.joint.axis[0].limit):
+                bpy.context.active_bone.RobotDesigner.controller.maxTorque = float(get_list_value(
+                    node.joint.axis[0].limit[0].velocity, 0))
+                bpy.context.active_bone.RobotDesigner.controller.maxVelocity = float(get_list_value(
+                    node.joint.axis[0].limit[0].velocity, 0))
 
         # bpy.context.active_bone.RobotDesigner.controller.maxVelocity = float(tree.joint.limit.friction)
 
@@ -474,8 +500,10 @@ class Importer(object):
             if node.joint.type == 'prismatic':
                 bpy.context.active_bone.RobotDesigner.jointMode = 'PRISMATIC'
                 if len(node.joint.axis[0].limit):
-                    bpy.context.active_bone.RobotDesigner.d.max = float(get_list_value(node.joint.axis[0].limit[0].upper, 0))
-                    bpy.context.active_bone.RobotDesigner.d.min = float(get_list_value(node.joint.axis[0].limit[0].lower, 0))
+                    bpy.context.active_bone.RobotDesigner.d.max = \
+                        float(get_list_value(node.joint.axis[0].limit[0].upper, 0))
+                    bpy.context.active_bone.RobotDesigner.d.min = \
+                        float(get_list_value(node.joint.axis[0].limit[0].lower, 0))
             if node.joint.type == 'revolute2':
                 bpy.context.active_bone.RobotDesigner.jointMode = 'REVOLUTE2'
             if node.joint.type == 'universal':
@@ -501,19 +529,22 @@ class Importer(object):
 
         if len(node.link.inertial) > 0:
             i = node.link.inertial[0].inertia[0]
-            CreatePhysical.run(frameName=node.link.name)
-            SelectPhysical.run(frameName=node.link.name)
             SelectSegment.run(segment_name=segment_name)
-            AssignPhysical.run()
+            CreatePhysical.run(frameName=node.link.name)
+            # SelectPhysical.run(frameName=node.link.name)
+            # SelectSegment.run(segment_name=segment_name)
+            # AssignPhysical.run()
 
             # set mass
             bpy.data.objects[node.link.name].RobotDesigner.dynamics.mass = node.link.inertial[0].mass[0]
 
             # set center of mass position
             inertia_location = string_to_list(node.link.inertial[0].pose[0])[0:3]
+            inertia_location[1] = inertia_location[1] - 1.0
             inertia_rotation = string_to_list(node.link.inertial[0].pose[0])[3:]
 
-            bpy.data.objects[node.link.name].location = [inertia_location[1], inertia_location[2], inertia_location[0]]
+            # bpy.data.objects[node.link.name].location = [inertia_location[1], inertia_location[2], inertia_location[0]]
+            bpy.data.objects[node.link.name].location = inertia_location
             bpy.data.objects[node.link.name].rotation_euler = inertia_rotation
 
             # set inertia
@@ -654,6 +685,7 @@ class Importer(object):
                                           homo2origin(bpy.context.active_object.matrix_world))
                         self.logger.info("Model type: " + str(model_type))
                         # Remove multiple "COL_" and "VIS_" strings before renaming
+                        '''
                         if model_type == COLLISON:
                             # %2d changed to %d because it created unwanted space with one digit numbers
                             if not model.name.startswith("COL_"):
@@ -667,6 +699,7 @@ class Importer(object):
                                 bpy.context.active_object.name = "VIS_%s" % (model.name)
                             else:
                                 bpy.context.active_object.name = "%s" % (model.name)
+                        '''
 
                         if not model.name.endswith("_" + str(nr)) and nr != 0:
                             bpy.context.active_object.name = "%s_%d" % (model.name, nr)
@@ -674,7 +707,8 @@ class Importer(object):
                         # remove spaces from link name
                         bpy.context.active_object.name = bpy.context.active_object.name.replace(" ", "")
 
-                        if type == "mesh": print(bpy.context.active_object.name)
+                        if type == "mesh":
+                            print(bpy.context.active_object.name)
 
                         # The name might be altered by blender
                         assigned_name = bpy.context.active_object.name
@@ -814,7 +848,7 @@ class Importer(object):
         model = model_config_dom.CreateFromDocument(model_config_xml)
 
         # read model data
-        bpy.context.active_object.name = model.name
+        bpy.context.active_object.RobotDesigner.modelMeta.model_config = model.name
         bpy.context.active_object.RobotDesigner.modelMeta.model_version = str(model.version)
 
         # read author todo multiple authors
