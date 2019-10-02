@@ -145,7 +145,6 @@ def export_mesh(operator: RDOperator, context, name: str, directory: str, toplev
         # get the mesh vertices number
         bm = bpy.context.scene.objects.active.data
         # print("# of vertices=%d" % len(bm.vertices))
-
         if len(bm.vertices) > 1:
             if '.' in mesh:
                 file_path = os.path.join(directory,
@@ -155,7 +154,6 @@ def export_mesh(operator: RDOperator, context, name: str, directory: str, toplev
 
             hide_flag_backup = bpy.context.scene.objects.active.hide
             bpy.context.scene.objects.active.hide = False  # Blender does not want to export hidden objects.
-
             bpy.ops.wm.collada_export(filepath=file_path, apply_modifiers=True, selected=True, use_texture_copies=True)
 
             bpy.context.scene.objects.active.hide = hide_flag_backup
@@ -199,7 +197,6 @@ def create_sdf(operator: RDOperator, context, filepath: str, meshpath: str, topl
     :param abs_filepaths: If not intstalled into a ros package decides whether to use absolute file paths.
     :return:
     """
-
 
     def walk_segments(segment, tree, ref_pose):
         """
@@ -293,8 +290,13 @@ def create_sdf(operator: RDOperator, context, filepath: str, meshpath: str, topl
         print('Axis limit:', child.joint.axis[0].limit)
         print('Axis xyz:', child.joint.axis[0].xyz)
 
-        if segment.parent is None:
+# <<<<<<< HEAD
+        # if segment.parent is None:
             # print("Info: Root joint has no parent", segment, segment.RobotDesigner.jointMode)
+
+        if segment.parent is None:
+            # print("Info: Root joint has no parent", segment, segment.RobotEditor.jointMode)
+
             child.joint.type = 'fixed'
         else:
             if segment.RobotDesigner.jointMode == 'REVOLUTE':
@@ -501,7 +503,6 @@ def create_sdf(operator: RDOperator, context, filepath: str, meshpath: str, topl
             operator.logger.info("Next Segment'%s'" % child_segments.name)
             ref_pose = string_to_list(child.link.pose[0])
             walk_segments(child_segments, child, ref_pose)
-
 
     robot_name = context.active_object.name
 
