@@ -1291,6 +1291,10 @@ class StartSimulationMeshes(RDOperator):
                 bpy.data.objects[mesh].select = True
                 bpy.ops.object.delete()
             print('end')
+
+            ## delete all intertia meshes
+            #todo: BF bpy.data.object ... .data = mesh mesh.remove( data object)
+
             # delete all physics frames, will be recalculated later
             # physics_frames = [obj.name for obj in bpy.data.objects if obj.type == 'EMPTY'
             #                 and obj.RobotDesigner.tag == "PHYSICS_FRAME"]
