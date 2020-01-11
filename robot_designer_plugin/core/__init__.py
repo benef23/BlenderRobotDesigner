@@ -50,6 +50,11 @@ It consists of submodules for:
 5. automated plugin setup (registration to blender) (:mod:`robot_designer_plugin.core.pluginmanager`)
 '''
 
+import bpy
+import sys
+blender_python_path = bpy.app.binary_path[:-7] + '2.79/python/lib/python3.5/site-packages'
+sys.path.insert(0, blender_python_path)
+
 from . import constants, config, operators, conditions, logfile, pluginmanager, resources, gui, property
 from importlib import reload
 
