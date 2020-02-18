@@ -231,6 +231,7 @@ def create_sdf(operator: RDOperator, context, filepath: str, meshpath: str, topl
         child.joint.name = segment.name
         child.link.name = segment.name.replace("_joint", "_link")
 
+
         if segment.parent:
             parent_link = [l for j, l in tree.connectedLinks.items() if segment.parent.name == j.name]
             if parent_link[0] in tree.connectedJoints:
@@ -493,8 +494,7 @@ def create_sdf(operator: RDOperator, context, filepath: str, meshpath: str, topl
            # elif type == 'CAMERA':   todo other sensor types
             #   sensor_sdf.type = 'camera'
 
-
-  #      operator.logger.info(" sensor name'%s'" % child.link.sensor.name)
+          #      operator.logger.info(" sensor name'%s'" % child.link.sensor.name)
 
 
 
