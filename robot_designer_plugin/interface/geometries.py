@@ -175,16 +175,20 @@ def draw(layout, context):
         box = CollisionBox.get(layout, context, "Generate collision meshes", icon='SURFACE_NCURVE')
         if box:
             infoBox = InfoBox(box)
-            row = box.row()
 
             # column = row.column(align=True)
             # menus.GeometriesMenu.putMenu(column, context)
             # create_geometry_selection(column, context)
+            row = box.row()
+            column = row.column(align=True)
+            collision.GenerateCollisionMesh.place_button(column, infoBox=infoBox)
+            collision.copyVisToCol.place_button(column, infoBox=infoBox)
+            collision.GenerateCollisionConvexHull.place_button(column, infoBox=infoBox)
+
             column = row.column(align=True)
             collision.GenerateAllCollisionMeshes.place_button(column, infoBox=infoBox)
-            collision.GenerateCollisionMesh.place_button(column, infoBox=infoBox)
+            collision.copyAllVisToCol.place_button(column, infoBox=infoBox)
             collision.GenerateAllCollisionConvexHull.place_button(column, infoBox=infoBox)
-            collision.GenerateCollisionConvexHull.place_button(column, infoBox=infoBox)
 
             row2 = box.row()
             row2.label("Add basic collision shapes:")

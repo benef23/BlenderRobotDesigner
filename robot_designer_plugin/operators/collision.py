@@ -112,7 +112,8 @@ class GenerateAllCollisionConvexHull(RDOperator):
     # @Postconditions(ModelSelected)
     def execute(self, context):
         visuals = [o.name for o in context.scene.objects if o.type == 'MESH'
-                   and o.parent == context.active_object and o.RobotDesigner.tag != "COLLISION"]
+                   and o.parent == context.active_object \
+                   and o.RobotDesigner.tag == "DEFAULT"]
 
         self.logger.debug("Visuals: %s", visuals)
 
@@ -120,6 +121,74 @@ class GenerateAllCollisionConvexHull(RDOperator):
             self.logger.debug("Compute convex hull for: " + i)
             SelectGeometry.run(geometry_name=i)
             GenerateCollisionConvexHull.run()
+
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_dialog(self)
+
+@RDOperator.Preconditions(ModelSelected, SingleMeshSelected)
+@PluginManager.register_class
+class copyVisToCol(RDOperator):
+    """
+    :ref:`operator` to copy active visual meshe as collision mesh
+
+    **Preconditions:**
+
+    **Postconditions:**
+    """
+    bl_idname = config.OPERATOR_PREFIX + "copyvistocol"
+    bl_label = "Copy active visual mesh as collision mesh"
+
+    @RDOperator.OperatorLogger
+    # @Postconditions(ModelSelected)
+    def execute(self, context):
+        visual = bpy.data.objects[global_properties.mesh_name.get(context.scene)]
+
+        self.logger.debug("Visual: %s", visual)
+
+        ob = visual.copy() # duplicate linked
+        ob.data = visual.data.copy()
+        bpy.context.scene.objects.link(ob) # add to scene
+        ob.name = visual.name.replace('VIS_','COL_')
+        ob.RobotDesigner.tag = 'COLLISION'
+        ob.RobotDesigner.fileName = visual.name.replace('VIS_','COL_')
+
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_dialog(self)
+
+
+@RDOperator.Preconditions(ModelSelected)
+@PluginManager.register_class
+class copyAllVisToCol(RDOperator):
+    """
+    :ref:`operator` to copy all visual meshes as collision meshes
+
+    **Preconditions:**
+
+    **Postconditions:**
+    """
+    bl_idname = config.OPERATOR_PREFIX + "copyallvistocol"
+    bl_label = "Copy all visual meshes as collision meshes"
+
+    @RDOperator.OperatorLogger
+    # @Postconditions(ModelSelected)
+    def execute(self, context):
+        visuals = [o for o in context.scene.objects if o.type == 'MESH'
+                   and o.parent == context.active_object \
+                   and o.RobotDesigner.tag == "DEFAULT"]
+
+        self.logger.debug("Visuals: %s", visuals)
+
+        for mesh in visuals:
+                ob = mesh.copy() # duplicate linked
+                ob.data = mesh.data.copy()
+                bpy.context.scene.objects.link(ob) # add to scene
+                ob.name = mesh.name.replace('VIS_','COL_')
+                ob.RobotDesigner.tag = 'COLLISION'
+                ob.RobotDesigner.fileName = mesh.name.replace('VIS_','COL_')
 
         return {'FINISHED'}
 
