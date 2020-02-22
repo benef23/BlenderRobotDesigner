@@ -904,10 +904,10 @@ class StartSimulationMeshes(RDOperator):
             """
             get meshes of robot to simulate
             """
-            print("Meshes initial armature")
             meshes_name = [obj.name for obj in bpy.data.objects \
                         if obj.parent_bone is not None and obj.type == 'MESH' \
                          and obj.RobotDesigner.tag == "DEFAULT"]
+            print("Meshes initial armature are ", meshes_name)
 
             return meshes_name
 
@@ -1272,16 +1272,16 @@ class StartSimulationMeshes(RDOperator):
             """
             place mesh bone on the correct mesh spot
             """
-            print("Place joints mesh")
+            print("Place joints mesh1")
             def reassign_mesh(meshes, m, segment_ofmesh_name, armature_name, new_mesh_name):
                 segment_ofmesh = bpy.context.active_object.data.bones[segment_ofmesh_name]
                 bpy.ops.object.select_all(action='DESELECT')
-                bpy.data.objects[new_mesh_name].select = True
+                bpy.data.objects[new_mesh_name[4:]].select = True
                 bpy.context.active_object.data.bones.active = segment_ofmesh
                 bpy.context.active_object.data.bones.active.select = True
                 bpy.context.scene.objects.active = bpy.data.objects[armature_name]
                 bpy.ops.object.parent_set(type='BONE', keep_transform=True)
-                obj = bpy.data.objects[new_mesh_name]
+                obj = bpy.data.objects[new_mesh_name[4:]]
                 obj.name = meshes[m]
                 obj.RobotDesigner.fileName = obj.name
                 if meshes[m][:3]=='COL':
@@ -1301,7 +1301,9 @@ class StartSimulationMeshes(RDOperator):
                     and obj.parent.name == armature_name]
 
             for m in range(len(meshes)):
-
+                print("range1", m)
+                print("range1", meshes[m])
+                print("range1",bpy.data.objects[meshes[m]].parent_bone)
                 segment_ofmesh_name = bpy.data.objects[meshes[m]].parent_bone
 
                 bm, obj, _ = editmode_mesh(meshes[m])
@@ -1330,6 +1332,7 @@ class StartSimulationMeshes(RDOperator):
 
                 segment_ofmesh.select = True
                 segment_ofmesh.RobotDesigner.Euler.z.value += co_parent_joint[2]
+
                 segment_ofmesh = bpy.context.active_object.data.bones[segment_ofmesh_name]
                 segment_ofmesh.select = False
 
@@ -1337,6 +1340,7 @@ class StartSimulationMeshes(RDOperator):
                 bpy.ops.object.select_all(action='DESELECT')
 
                 bpy.ops.robotdesigner.selectarmature(model_name=armature_name)
+            print("Place joints mesh done")
 
             return None
 
@@ -1521,28 +1525,30 @@ class StartSimulationMeshes(RDOperator):
                             offspring_adapted = neighbours_adapt(offspring_adapted, armature, meshes, adapt_rate, g_ind)
                         sendparametersgen(offspring_adapted, armature, list_instances, g, g_ind)
 
+
             armatures_population = armatures_scene()
             for ar in range(len(armatures_population)):
-                placejoints_mesh(armatures_population[ar], vert_parent_mesh, ini_position_verts)
-                placejoints_model(armatures_population[ar], vert_parent_mesh, meshes_level_up, segment_ini_pos, ini_position_verts, mesh_pos_ini)
+                # TODO place joint mesh and model
+                #placejoints_mesh(armatures_population[ar], vert_parent_mesh, ini_position_verts)
+                #placejoints_model(armatures_population[ar], vert_parent_mesh, meshes_level_up, segment_ini_pos, ini_position_verts, mesh_pos_ini)
+                print('Generating new collision meshes')
+                bpy.context.scene.objects.active = bpy.data.objects[armatures_population[ar]]
+                bpy.ops.robotdesigner.copyallvistocol()
 
-                print("Calculating new physics frames")
-                bpy.ops.robotdesigner.generatallcollisionmeshes(shrinkWrapOffset=0.0, subdivisionLevels=1)  # generate collision meshes
+                print("Genearting new physics frames")
+                for bone in bpy.data.objects[armatures_population[ar]].data.bones:  # bpy.context.active_object.data.bones:
 
-                # optional: create new physics frames and collision  todo: two opt box on gui
-                for bone in bpy.data.objects[armatrues_population[ar]].data.bones:  # bpy.context.active_object.data.bones:
+                    bpy.ops.robotdesigner.createphysicsframe()
 
                     bpy.context.scene.RobotDesigner.segment_name = bone.name
                     bpy.data.objects[bone.name].RobotDesigner.dynamics.mass = 1.0
+
                     bpy.ops.robotdesigner.computephysicsframe(from_visual_geometry=False)
                     bpy.ops.robotdesigner.computemass(density=1.0, from_visual_geometry=False)
 
-                    #bpy.ops.robotdesigner.computephysicsframe(density=1, from_visual_geometry=False)  # compute mass todo: rotation incorrect?
+            #current_scene.RobotDesigner.display_mesh_selection = 'visual'
 
-
-                current_scene.RobotDesigner.display_mesh_selection = 'visual'
-
-                print('--finished')
+            print('--finished')
 
             return None
 
