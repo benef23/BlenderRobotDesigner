@@ -1435,39 +1435,16 @@ class StartSimulationMeshes(RDOperator):
                     # bpy.ops.robotdesigner.createphysicsframes()  # todo: calculate new physics automatically after adaption
 
 
-# bf rename segments not necessary
+                    # bf rename segments not necessary
                     #   for b in range(len(bpy.context.active_object.data.bones)):
                   #      bpy.context.active_object.data.bones[b].name = bpy.context.active_object.data.bones[b].name+str(g)+str(i) #rename bones
-#
- #                       bpy.context.active_object.data.name = bpy.context.active_object.name #rename armature as the object name
+                    #
+                    #   bpy.context.active_object.data.name = bpy.context.active_object.name #rename armature as the object name
 
                     bpy.ops.object.select_all(action='DESELECT')
 
             return list_instances
 
-        def delete_col_and_physics():
-            print("Delete all collisions and physics")
-
-            bpy.ops.object.select_all(action='DESELECT')
-            print('deselected')
-            # delete all collision meshes, need to be regenerated later / or make copy from visual
-            col_meshes = [obj.name for obj in bpy.data.objects if obj.type == 'MESH'
-                          and obj.RobotDesigner.tag == "COLLISION"]
-            print('middle')
-            for mesh in col_meshes:
-                bpy.data.objects[mesh].select = True
-                bpy.ops.object.delete()
-            print('end')
-
-            ## delete all intertia meshes
-            #todo: BF bpy.data.object ... .data = mesh mesh.remove( data object)
-
-            # delete all physics frames, will be recalculated later
-            # physics_frames = [obj.name for obj in bpy.data.objects if obj.type == 'EMPTY'
-            #                 and obj.RobotDesigner.tag == "PHYSICS_FRAME"]
-            #for p in physics_frames:
-            #    bpy.data.objects[p].select = True
-            #    bpy.ops.object.delete()
 
 
         def main():
@@ -1488,9 +1465,6 @@ class StartSimulationMeshes(RDOperator):
             current_scene.RobotDesigner.display_mesh_selection = 'all'
 
             historial_individuals = []
-
-            # clean up model:
-            #delete_col_and_physics()
 
             print('1')
             armature = selectrobot(bone_sim)
