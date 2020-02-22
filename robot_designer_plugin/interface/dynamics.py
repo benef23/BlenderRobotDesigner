@@ -45,6 +45,7 @@ from .model import check_armature
 from ..properties.globals import global_properties
 from ..core.gui import InfoBox
 from .helpers import getSingleSegment, getSingleObject
+from .helpers import PhysicsBox, LinkBox
 
 
 def draw(layout, context):
@@ -71,6 +72,7 @@ def draw(layout, context):
 
     dynamics.CreatePhysical.place_button(row, infoBox=infoBox)
     dynamics.ComputePhysical.place_button(row, infoBox=infoBox)
+    dynamics.ComputeMass.place_button(row, infoBox=infoBox)
 
     objs = [o for o in context.active_object.children if
             o.RobotDesigner.tag == 'PHYSICS_FRAME' and o.parent_bone == single_segment.name]
@@ -107,5 +109,22 @@ def draw(layout, context):
             row3.prop(frame.RobotDesigner.dynamics, "inertiaZZ")
     except:
         pass
+
+    # joint physics properties
+    # Only shown for child segments. Unless root segment is connected to world.
+    box = PhysicsBox.get(layout, context, 'Joint Physics')
+    if box:
+        if (context.active_bone.parent is not None) or (context.active_bone.RobotDesigner.world is True):
+            box.label(text="ODE:")
+            box.prop(bpy.context.active_bone.RobotDesigner.ode, 'cfm_damping', text='CFM-Damping')
+            box.prop(bpy.context.active_bone.RobotDesigner.ode, 'i_s_damper', text='I. S. Damper')  # implicit spring
+            box.prop(bpy.context.active_bone.RobotDesigner.ode, 'cfm', text='CFM')  # constraint force mixing
+            box.prop(bpy.context.active_bone.RobotDesigner.ode, 'erp', text='ERP')  # error reduction parameter
+
+    # link properties
+    linkBox = LinkBox.get(layout, context, 'Link Properties')
+    if linkBox:
+        linkBox.prop(bpy.context.active_bone.RobotDesigner.linkInfo, 'link_self_collide', text='Self Collide')
+        linkBox.prop(bpy.context.active_bone.RobotDesigner.linkInfo, 'gravity', text='Gravity')
 
     infoBox.draw_info()

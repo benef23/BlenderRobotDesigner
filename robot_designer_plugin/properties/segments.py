@@ -41,7 +41,7 @@ from math import radians
 
 # Blender imports
 import bpy
-from bpy.props import FloatProperty, BoolProperty, EnumProperty, PointerProperty
+from bpy.props import FloatProperty, BoolProperty, EnumProperty, PointerProperty, StringProperty
 
 # RobotDesigner imports
 from ..operators.segments import UpdateSegments
@@ -58,9 +58,28 @@ class RDActuator(bpy.types.PropertyGroup):
     """
     maxVelocity = FloatProperty(name="max. Velocity", precision=4, step=100, default=-1)
     maxTorque = FloatProperty(name="max. Torque", precision=4, step=100, default=-1)
-    isActive = BoolProperty(name="active?")
+    isActive = BoolProperty(name="Active", default=False)
     acceleration = FloatProperty(name="Acceleration", precision=4, step=100)
     deceleration = FloatProperty(name="Deceleration", precision=4, step=100)
+
+@PluginManager.register_property_group()
+class RDLinkInfo(bpy.types.PropertyGroup):
+    '''
+    Property group that contains information about link's gravity and self collision
+    '''
+    link_self_collide = BoolProperty(name='Self Collide', default=False)
+    gravity = BoolProperty(name='Gravity', default=True)
+
+
+@PluginManager.register_property_group()
+class RDOde(bpy.types.PropertyGroup):
+    '''
+    Property group that contains ODE data
+    '''
+    cfm_damping = BoolProperty(name='CFM Damping', default=False)
+    i_s_damper = BoolProperty(name='Implicit-Spring-Damper', default=False)
+    cfm = FloatProperty(name='CFM', default=0, min=0)
+    erp = FloatProperty(name='ERP', default=0.2, min=0, max=1)
 
 
 @PluginManager.register_property_group()
@@ -87,7 +106,7 @@ class RDJointController(bpy.types.PropertyGroup):
     """
     Property group for joint controllers
     """
-    isActive = BoolProperty(name="Active", default=True)
+    isActive = BoolProperty(name="Active", default=False)
 
     controllerType = EnumProperty(
         items=[('position', 'Position', 'Position'),
@@ -263,10 +282,13 @@ class RDSegment(bpy.types.PropertyGroup):
     theta = PointerProperty(type=RDDegreeOfFreedom)  # Joint transform + limits, relative to local frame.
     d = PointerProperty(type=RDDegreeOfFreedom)
     jointController = PointerProperty(type=RDJointController)
+    linkInfo = PointerProperty(type=RDLinkInfo)
+    ode = PointerProperty(type=RDOde)
     Euler = PointerProperty(type=RDEulerAnglesSegment)  # Frame relative to parent
     DH = PointerProperty(
         type=RDDenavitHartenbergSegment)  # Dito but in a different way. Only one, either DH or Euler is used.
     world = BoolProperty(name="Attach Link to World", default=False)
+    joint_name = StringProperty(name="Joint name: ")  # Name of parent joint of segment
 
 
 def getTransformFromBlender(bone):

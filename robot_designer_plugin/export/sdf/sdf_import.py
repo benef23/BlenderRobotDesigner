@@ -67,7 +67,7 @@ from ...properties.globals import global_properties
 import logging
 
 # model.config file reading
-from .generic import model_config_dom
+from .generic import model_config_dom, robot_model_config_dom
 
 __author__ = 'Benedikt Feldotto(TUM), Guang Chen(TUM), Stefan Ulbrich(FZI)'
 
@@ -121,16 +121,20 @@ class Importer(object):
         return verts, faces
 
 
-    def import_box(self, model):
+    def import_box(self, model, type):
         """
-        Adds a geometry to the blender scene. Uses the self.file_name variable of the parenting context
+        Adds a box with radius 0.5 to the blender scene. Uses the self.file_name variable of the parenting context
+        The correct lengths are adjusted later together with the scaling
         :param model: A sdf_dom.visual object.
+        :param type: COLLISION or VISUAL. COLLISION = 1. VISUAL = 0
         :return: Returns the transformation in the origin element (a 4x4 blender matrix).
         """
 
         # determine prefix path for loading meshes in case of paths relative to ROS_PACKAGE_PATH
         prefix_folder = ""
         self.logger.debug('model_geometry_bbox: %s', model.geometry[0].box[0].size[0])
+        # Previous method for making a box. While it has its uses, for simple box creation, not needed.
+        '''
         width = string_to_list(model.geometry[0].box[0].size[0])[0] / 2
         depth = string_to_list(model.geometry[0].box[0].size[0])[1] / 2
         height = string_to_list(model.geometry[0].box[0].size[0])[2] / 2
@@ -167,22 +171,25 @@ class Importer(object):
         bpy.ops.object.select_all(False)
         bpy.context.scene.objects.active = obj  # bpy.data.objects[object]
         bpy.context.active_object.select = True
+        '''
 
         # bpy.context.scene.objects.active = obj
-
+        bpy.ops.mesh.primitive_cube_add(radius=0.5)
 
         bpy.context.active_object.RobotDesigner.fileName = os.path.basename(model.name)
 
         self.logger.debug('Active robot name: %s', bpy.context.active_object.RobotDesigner.fileName)
 
+        bpy.context.active_object.name = os.path.basename(model.name)
         model_name = bpy.context.active_object.name
         model_type = bpy.context.active_object.type
 
-        mat = bpy.data.materials.new('blue')
-        mat.diffuse_color = (0, 0, 1)
-        bpy.context.active_object.data.materials.append(mat)
+        if type == 1:
+            mat = bpy.data.materials.new('blue')
+            mat.diffuse_color = (0, 0, 1)
+            bpy.context.active_object.data.materials.append(mat)
 
-        bpy.context.active_object.RobotDesigner.tag = "BASIC_COLLISION_BOX"
+            bpy.context.active_object.RobotDesigner.tag = "BASIC_COLLISION_BOX"
 
         self.logger.debug('model_name (geometry): %s', model_name)
         self.logger.debug('model_type (geometry): %s', model_type)
@@ -194,18 +201,20 @@ class Importer(object):
             model_posexyz = [0, 0, 0]
             model_poserpy = [0, 0, 0]
         else:
-            self.logger.debug('model_pose (geometry): %s', model.pose[0])
-            model_posexyz = string_to_list(model.pose[0])[0:3]
-            model_poserpy = string_to_list(model.pose[0])[3:]
+            self.logger.debug('model_pose (geometry): %s', model.pose[0].value())
+            model_posexyz = string_to_list(model.pose[0].value())[0:3]
+            model_poserpy = string_to_list(model.pose[0].value())[3:]
 
         return Matrix.Translation(Vector(model_posexyz)) * \
                Euler(model_poserpy, 'XYZ').to_matrix().to_4x4()
 
 
-    def import_sphere(self, model):
+    def import_sphere(self, model, type):
         """
-        Adds a geometry to the blender scene. Uses the self.file_name variable of the parenting context
+        Adds a sphere of radius 1.0 to the blender scene. Uses the self.file_name variable of the parenting context
+        The correct lengths are adjusted later together with the scaling
         :param model: A sdf_dom.visual object.
+        :param type: COLLISION or VISUAL. COLLISION = 1. VISUAL = 0
         :return: Returns the transformation in the origin element (a 4x4 blender matrix).
         """
 
@@ -213,7 +222,7 @@ class Importer(object):
         prefix_folder = ""
         c_radius = model.geometry[0].sphere[0].radius[0]
 
-        bpy.ops.mesh.primitive_uv_sphere_add(size=c_radius, location=(0, 0, 0))
+        bpy.ops.mesh.primitive_uv_sphere_add(size=1.0, location=(0, 0, 0))
         bpy.context.active_object.RobotDesigner.fileName = os.path.basename(model.name)
 
         self.logger.debug('Active robot name: %s', bpy.context.active_object.RobotDesigner.fileName)
@@ -223,34 +232,37 @@ class Importer(object):
         # bpy.context.active_object.type = 'ARMATURE'
         model_type = bpy.context.active_object.type
 
-        mat = bpy.data.materials.new('blue')
-        mat.diffuse_color = (0, 0, 1)
-        bpy.context.active_object.data.materials.append(mat)
+        if type == 1:
+            mat = bpy.data.materials.new('blue')
+            mat.diffuse_color = (0, 0, 1)
+            bpy.context.active_object.data.materials.append(mat)
 
-        bpy.context.active_object.RobotDesigner.tag = "BASIC_COLLISION_SPHERE"
+            bpy.context.active_object.RobotDesigner.tag = "BASIC_COLLISION_SPHERE"
 
         self.logger.debug('model_name (geometry): %s', model_name)
         self.logger.debug('model_type (geometry): %s', model_type)
 
-        self.logger.debug('model_geometry_sphere: radius %s, depth ', c_radius)
+        self.logger.debug('model_geometry_sphere: radius %s', c_radius)
 
         # todo: if geometry pose is missing
         if not model.pose:
             model_posexyz = [0, 0, 0]
             model_poserpy = [0, 0, 0]
         else:
-            self.logger.debug('model_pose (geometry): %s', model.pose[0])
-            model_posexyz = string_to_list(model.pose[0])[0:3]
-            model_poserpy = string_to_list(model.pose[0])[3:]
+            self.logger.debug('model_pose (geometry): %s', model.pose[0].value())
+            model_posexyz = string_to_list(model.pose[0].value())[0:3]
+            model_poserpy = string_to_list(model.pose[0].value())[3:]
 
         return Matrix.Translation(Vector(model_posexyz)) * \
                Euler(model_poserpy, 'XYZ').to_matrix().to_4x4()
 
 
-    def import_cylinder(self, model):
+    def import_cylinder(self, model, type):
         """
-        Adds a geometry to the blender scene. Uses the self.file_name variable of the parenting context
+        Adds a cylinder of radius 1.0 and depth 1.0 to the blender scene. Uses the self.file_name variable of the parenting context
+        The correct lengths are adjusted later together with the scaling
         :param model: A sdf_dom.visual object.
+        :param type: COLLISION or VISUAL. COLLISION = 1. VISUAL = 0
         :return: Returns the transformation in the origin element (a 4x4 blender matrix).
         """
 
@@ -259,7 +271,7 @@ class Importer(object):
         c_radius = model.geometry[0].cylinder[0].radius[0]
         c_depth = model.geometry[0].cylinder[0].length[0]
 
-        bpy.ops.mesh.primitive_cylinder_add(depth=c_depth, radius=c_radius, location=(0, 0, 0))
+        bpy.ops.mesh.primitive_cylinder_add(depth=1.0, radius=1.0, location=(0, 0, 0))
         bpy.context.active_object.RobotDesigner.fileName = os.path.basename(model.name)
 
         self.logger.debug('Active robot name: %s', bpy.context.active_object.RobotDesigner.fileName)
@@ -269,11 +281,12 @@ class Importer(object):
         # bpy.context.active_object.type = 'ARMATURE'
         model_type = bpy.context.active_object.type
 
-        mat = bpy.data.materials.new('blue')
-        mat.diffuse_color = (0, 0, 1)
-        bpy.context.active_object.data.materials.append(mat)
+        if type == 1:
+            mat = bpy.data.materials.new('blue')
+            mat.diffuse_color = (0, 0, 1)
+            bpy.context.active_object.data.materials.append(mat)
 
-        bpy.context.active_object.RobotDesigner.tag = "BASIC_COLLISION_CYLINDER"
+            bpy.context.active_object.RobotDesigner.tag = "BASIC_COLLISION_CYLINDER"
 
         self.logger.debug('model_name (geometry): %s', model_name)
         self.logger.debug('model_type (geometry): %s', model_type)
@@ -285,9 +298,9 @@ class Importer(object):
             model_posexyz = [0, 0, 0]
             model_poserpy = [0, 0, 0]
         else:
-            self.logger.debug('model_pose (geometry): %s', model.pose[0])
-            model_posexyz = string_to_list(model.pose[0])[0:3]
-            model_poserpy = string_to_list(model.pose[0])[3:]
+            self.logger.debug('model_pose (geometry): %s', model.pose[0].value())
+            model_posexyz = string_to_list(model.pose[0].value())[0:3]
+            model_poserpy = string_to_list(model.pose[0].value())[3:]
 
         return Matrix.Translation(Vector(model_posexyz)) * \
                Euler(model_poserpy, 'XYZ').to_matrix().to_4x4()
@@ -341,7 +354,7 @@ class Importer(object):
         bpy.context.active_object.RobotDesigner.fileName = os.path.basename(os.path.splitext(mesh_path)[0])
 
         self.logger.debug('Active robot name: %s', bpy.context.active_object.RobotDesigner.fileName)
-
+        bpy.context.active_object.name = os.path.basename(model.name)
         model_name = bpy.context.active_object.name
         # bpy.context.active_object.type = 'ARMATURE'
         model_type = bpy.context.active_object.type
@@ -362,9 +375,9 @@ class Importer(object):
             model_posexyz = [0, 0, 0]
             model_poserpy = [0, 0, 0]
         else:
-            self.logger.debug('model_pose (geometry): %s', model.pose[0])
-            model_posexyz = string_to_list(model.pose[0])[0:3]
-            model_poserpy = string_to_list(model.pose[0])[3:]
+            self.logger.debug('model_pose (geometry): %s', model.pose[0].value())
+            model_posexyz = string_to_list(model.pose[0].value())[0:3]
+            model_poserpy = string_to_list(model.pose[0].value())[3:]
 
         return Matrix.Translation(Vector(model_posexyz)) * \
                Euler(model_poserpy, 'XYZ').to_matrix().to_4x4() * scale_matrix
@@ -419,7 +432,7 @@ class Importer(object):
         if not node.link.pose:
             child_link_pose = [0, 0, 0, 0, 0, 0]
         else:
-            child_link_pose = string_to_list(get_value(node.link.pose[0], "0 0 0 0 0 0"))
+            child_link_pose = string_to_list(get_value(node.link.pose[0].value(), "0 0 0 0 0 0"))
         # child_link_pose = pose_modelpose(child_link_pose,  string_to_list("0 0 0.6 0 1.57 0"))
 
         parent_pose_homo = pose_float2homogeneous(rounded(ref_pose))
@@ -431,24 +444,21 @@ class Importer(object):
         self.logger.info("converted local pose xyz -> %s", xyz)
         self.logger.info("converted local pose euler -> %s", euler)
 
-        if node.world is True:
-            bpy.context.active_bone.RobotDesigner.world = True
-        else:
-            bpy.context.active_bone.RobotDesigner.world = False
-
         # urdf xyz = string_to_list(get_value(node.joint.origin.xyz, "0 0 0"))
         # urdf euler = string_to_list(get_value(node.joint.origin.rpy, '0 0 0'))
 
-        # urdf if segment_name in self.controllers:
-        #    controller = self.controllers[segment_name]
-        #    PID = controller.pid.split(" ")
-        #    bpy.context.active_bone.RobotDesigner.jointController.isActive = True
-        #    bpy.context.active_bone.RobotDesigner.jointController.controllerType = controller.type
-        #    bpy.context.active_bone.RobotDesigner.jointController.P = float(PID[0])
-        #    bpy.context.active_bone.RobotDesigner.jointController.I = float(PID[1])
-        #    bpy.context.active_bone.RobotDesigner.jointController.D = float(PID[2])
+        # urdf
+        # import joint controllers
+        if segment_name in self.controllers:
+            controller = self.controllers[segment_name]
+            PID = controller.pid.split(" ")
+            bpy.context.active_bone.RobotDesigner.jointController.isActive = True
+            bpy.context.active_bone.RobotDesigner.jointController.controllerType = controller.type
+            bpy.context.active_bone.RobotDesigner.jointController.P = float(PID[0])
+            bpy.context.active_bone.RobotDesigner.jointController.I = float(PID[1])
+            bpy.context.active_bone.RobotDesigner.jointController.D = float(PID[2])
 
-        if parent_name:
+        if node.joint:
             axis = string_to_list(node.joint.axis[0].xyz[0])
         else:
             axis = string_to_list('1 0 0')
@@ -480,16 +490,24 @@ class Importer(object):
         bpy.context.active_bone.RobotDesigner.Euler.beta.value = round(degrees(euler[1]), 0)
         bpy.context.active_bone.RobotDesigner.Euler.gamma.value = round(degrees(euler[2]), 0)
 
-        if parent_name:
+        # Set joint names
+        if node.joint:
+            bpy.context.active_bone.RobotDesigner.joint_name = node.joint.name
+            # Set attach link to world to true if world joint.
+            if node.joint.parent[0] == 'world':
+                bpy.context.active_bone.RobotDesigner.world = True
+
+        if node.joint:
             if len(node.joint.axis[0].limit):
                 bpy.context.active_bone.RobotDesigner.controller.maxTorque = float(get_list_value(
-                    node.joint.axis[0].limit[0].velocity, 0))
+                    node.joint.axis[0].limit[0].effort, 0))
                 bpy.context.active_bone.RobotDesigner.controller.maxVelocity = float(get_list_value(
                     node.joint.axis[0].limit[0].velocity, 0))
+                bpy.context.active_bone.RobotDesigner.controller.isActive = True
 
         # bpy.context.active_bone.RobotDesigner.controller.maxVelocity = float(tree.joint.limit.friction)
 
-        if parent_name:
+        if node.joint:
             if node.joint.type == 'revolute':
                 bpy.context.active_bone.RobotDesigner.jointMode = 'REVOLUTE'
                 if len(node.joint.axis[0].limit):
@@ -515,6 +533,14 @@ class Importer(object):
         else:
             bpy.context.active_bone.RobotDesigner.jointMode = 'FIXED'
 
+        # import joint physics if they exist
+        if node.joint:
+            if len(node.joint.physics):
+                bpy.context.active_bone.RobotDesigner.ode.cfm_damping = node.joint.physics[0].ode[0].cfm_damping[0]
+                bpy.context.active_bone.RobotDesigner.ode.i_s_damper = node.joint.physics[0].ode[0].implicit_spring_damper[0]
+                bpy.context.active_bone.RobotDesigner.ode.cfm = node.joint.physics[0].ode[0].cfm[0]
+                bpy.context.active_bone.RobotDesigner.ode.erp = node.joint.physics[0].ode[0].erp[0]
+
         model = bpy.context.active_object
         model_name = model.name
 
@@ -526,6 +552,11 @@ class Importer(object):
 
         segment_world = model.matrix_world * pose_bone.matrix
         # segment_world = pose_float2homogeneous(rounded(string_to_list("0 0 0.6 0 0 -1.570796")))*pose_bone.matrix
+
+        # import segment physics properties
+        if len(node.link.gravity) > 0:
+            bpy.context.active_bone.RobotDesigner.linkInfo.gravity = node.link.gravity[0]
+            bpy.context.active_bone.RobotDesigner.linkInfo.link_self_collide = node.link.self_collide[0]
 
         if len(node.link.inertial) > 0:
             i = node.link.inertial[0].inertia[0]
@@ -539,9 +570,9 @@ class Importer(object):
             bpy.data.objects[node.link.name].RobotDesigner.dynamics.mass = node.link.inertial[0].mass[0]
 
             # set center of mass position
-            inertia_location = string_to_list(node.link.inertial[0].pose[0])[0:3]
+            inertia_location = string_to_list(node.link.inertial[0].pose[0].value())[0:3]
             inertia_location[1] = inertia_location[1] - 1.0
-            inertia_rotation = string_to_list(node.link.inertial[0].pose[0])[3:]
+            inertia_rotation = string_to_list(node.link.inertial[0].pose[0].value())[3:]
 
             # bpy.data.objects[node.link.name].location = [inertia_location[1], inertia_location[2], inertia_location[0]]
             bpy.data.objects[node.link.name].location = inertia_location
@@ -645,13 +676,13 @@ class Importer(object):
                     self.logger.debug("geometry %s", model.geometry[0])
 
                     if type == "cylinder":
-                        trafo_sdf = self.import_cylinder(model)
+                        trafo_sdf = self.import_cylinder(model, model_type)
                         print("import cyl")
                     elif type == "box":
-                        trafo_sdf = self.import_box(model)
+                        trafo_sdf = self.import_box(model, model_type)
                         print("import box")
                     elif type == "sphere":
-                        trafo_sdf = self.import_sphere(model)
+                        trafo_sdf = self.import_sphere(model, model_type)
                         print("import sphere")
                     else:
                         trafo_sdf = self.import_geometry(model)
@@ -721,16 +752,60 @@ class Importer(object):
                         SelectGeometry.run(geometry_name=assigned_name)
 
                         if model_type == COLLISON:
+                            # import surface properties
+                            if len(model.surface):
+                                surface = bpy.data.objects[assigned_name].RobotDesigner.sdfCollisionProps
+                                surface.restitution_coeff = model.surface[0].bounce[0].restitution_coefficient[0]
+                                surface.threshold = model.surface[0].bounce[0].threshold[0]
+                                surface.coefficient = model.surface[0].friction[0].torsional[0].coefficient[0]
+                                surface.use_patch_radius = model.surface[0].friction[0].torsional[0].use_patch_radius[0]
+                                surface.surface_radius = model.surface[0].friction[0].torsional[0].surface_radius[0]
+                                surface.slip = model.surface[0].friction[0].torsional[0].ode[0].slip[0]
+                                surface.mu = model.surface[0].friction[0].ode[0].mu[0]
+                                surface.mu2 = model.surface[0].friction[0].ode[0].mu2[0]
+                                surface.fdir1 = string_to_list(model.surface[0].friction[0].ode[0].fdir1[0])
+                                surface.slip1 = model.surface[0].friction[0].ode[0].slip1[0]
+                                surface.slip2 = model.surface[0].friction[0].ode[0].slip2[0]
+                                surface.collide_wo_contact = model.surface[0].contact[0].collide_without_contact[0]
+                                surface.collide_wo_contact_bitmask = model.surface[0].contact[0].collide_without_contact_bitmask[0]
+                                surface.collide_bitmask = model.surface[0].contact[0].collide_bitmask[0]
+                                surface.category_bitmask = model.surface[0].contact[0].category_bitmask[0]
+                                surface.poissons_ratio = model.surface[0].contact[0].poissons_ratio[0]
+                                surface.elastic_modulus = model.surface[0].contact[0].elastic_modulus[0]
+                                surface.soft_cfm = model.surface[0].contact[0].ode[0].soft_cfm[0]
+                                surface.soft_erp = model.surface[0].contact[0].ode[0].soft_erp[0]
+                                surface.kp = model.surface[0].contact[0].ode[0].kp[0]
+                                surface.kd = model.surface[0].contact[0].ode[0].kd[0]
+                                surface.max_vel = model.surface[0].contact[0].ode[0].max_vel[0]
+                                surface.min_depth = model.surface[0].contact[0].ode[0].min_depth[0]
                             AssignGeometry.run(attach_collision_geometry=True)
                         else:
                             AssignGeometry.run()
 
-                        # scale geometry
+                        # Write scale values into scale_factor
+                        # for objects other than mesh, scaling works correctly iff the model and geometry are selected
+                        # else a different object will be scaled and/or will not scale at all
                         if type == "mesh" and model.geometry[0].mesh[0].scale != []:
                             scale_factor = string_to_list(model.geometry[0].mesh[0].scale[0])
+                        elif type == 'cylinder':
+                            c_radius = model.geometry[0].cylinder[0].radius[0]
+                            c_depth = model.geometry[0].cylinder[0].length[0]
+                            bpy.data.objects[assigned_name].RobotDesigner.scaling.scale_radius = c_radius
+                            bpy.data.objects[assigned_name].RobotDesigner.scaling.scale_depth = c_depth
+                            scale_factor = [c_radius, c_radius, c_depth]
+                        elif type == 'sphere':
+                            s_radius = model.geometry[0].sphere[0].radius[0]
+                            bpy.data.objects[assigned_name].RobotDesigner.scaling.scale_all = s_radius
+                            scale_factor = [s_radius, s_radius, s_radius]
+                        elif type == 'box':
+                            b_width = string_to_list(model.geometry[0].box[0].size[0])[0]
+                            b_depth = string_to_list(model.geometry[0].box[0].size[0])[1]
+                            b_height = string_to_list(model.geometry[0].box[0].size[0])[2]
+                            scale_factor = [b_width, b_depth, b_height]
                         else:
                             scale_factor = [1, 1, 1]
 
+                        # Scale the geometry
                         bpy.data.objects[global_properties.mesh_name.get(bpy.context.scene)].scale = scale_factor
 
                         # bpy.context.active_object.scale = scale_factor
@@ -745,7 +820,7 @@ class Importer(object):
 
 
     def import_file(self):
-        muscles, robot_name, robot_location, robot_rotation, root_links, kinematic_chains = \
+        muscles, robot_name, robot_location, robot_rotation, root_links, kinematic_chains, self.controllers = \
             sdf_tree.SDFTree.parse(self.file_path)
 
         self.MUSCLE_PATH = muscles
@@ -845,7 +920,7 @@ class Importer(object):
         :return:
         """
         model_config_xml = open(self.base_dir + '/model.config').read()
-        model = model_config_dom.CreateFromDocument(model_config_xml)
+        model = robot_model_config_dom.CreateFromDocument(model_config_xml)
 
         # read model data
         bpy.context.active_object.RobotDesigner.modelMeta.model_config = model.name

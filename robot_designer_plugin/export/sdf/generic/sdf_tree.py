@@ -45,7 +45,6 @@ class SDFTree(object):
         self.joint = None
         self.link = None
         self.sdf = None
-        self.world = True
 
         self.connectedLinks = connected_links
         self.connectedJoints = connected_joints
@@ -74,8 +73,8 @@ class SDFTree(object):
 
         # set global pose if specified
         try:
-            robot_location = string_to_list(root.model[0].pose[0])[0:3]
-            robot_rotation = string_to_list(root.model[0].pose[0])[3:]
+            robot_location = string_to_list(root.model[0].pose[0].value())[0:3]
+            robot_rotation = string_to_list(root.model[0].pose[0].value())[3:]
         except:
             robot_location = [0, 0, 0]
             robot_rotation = [0, 0, 0]
@@ -90,7 +89,7 @@ class SDFTree(object):
         # easily searchable during tree traversal
         controller_cache = {}
         gazebo_tags = []
-        logger.debug("Built controller cache:")
+        # logger.debug("Built controller cache:")
         #  logger.debug(robot.plugin[0].filename)
 
         for plugin in robot.plugin:
@@ -99,11 +98,12 @@ class SDFTree(object):
                 # print(robot.plugin[0].orderedContent()[0])
                 element = robot.plugin[0].orderedContent()[0]
                 #             logger.debug("Found controller for joint: " + element.value()[0].xsdConstraintsOK(location=None) + ", caching it.")
-                #            controller_cache[plugin.controller.joint_name] = plugin.controller
+                # controller_cache[plugin.controller[0].joint_name] = plugin.controller
+                controller_cache = {controller.joint_name: controller for controller in plugin.controller}
                 #              # remove last tag from the last, it is handled by controller plugin differently
                 #              gazebo_tags.pop()
-                #  logger.debug("Built controller cache:")
-                #  logger.debug(controller_cache)
+                logger.debug("Built controller cache:")
+                logger.debug(controller_cache)
 
         # create mapping from (parent) links to joints  (a list)
         connected_joints = {link: [joint for joint in robot.joint if link.name == joint.parent[0]] for link
@@ -119,6 +119,9 @@ class SDFTree(object):
 
         ###  the link, not link name
         root_links = [link for link in robot.link if link.name not in child_links]
+
+        # look for root links connected to world and create mapping from root link to world joint
+        world_joints = {link: joint for link in root_links for joint in robot.joint if link.name == joint.child[0]}
 
         logger.debug("Root links: %s", [i.name for i in root_links])
         logger.debug("connected links: %s", {j.name: l.name for j, l in connected_links.items()})
@@ -142,12 +145,16 @@ class SDFTree(object):
             # print({j.name: l.name for j, l in tree.connectedLinks.items()})
             # print(tree.joint, tree.link)
             kinematic_chains.append(tree)
-            tree.build(link, None)
+            try:
+                if world_joints[link]:
+                    tree.build(link, world_joints[link])
+            except KeyError:
+                tree.build(link, None)
 
             # todo: parse joint controllers
 
         logger.debug("kinematic chains: %s", kinematic_chains)
-        return muscles, robot.name, robot_location, robot_rotation, root_links, kinematic_chains  # , controller_cache, gazebo_tags
+        return muscles, robot.name, robot_location, robot_rotation, root_links, kinematic_chains, controller_cache # , gazebo_tags
 
     def build(self, link, joint=None, depth=0):
         """
@@ -162,14 +169,6 @@ class SDFTree(object):
         # self.set_defaults() # todo:set defaults
 
         children = self.connectedJoints[link]
-
-        worldlink = [joint for joint in self.connectedLinks if
-                     ('_world' in joint.name and self.connectedLinks[joint] == link)]
-
-        if worldlink:
-            self.world = True
-        else:
-            self.world = False
 
         for joint in children:
             tree = SDFTree(connected_links=self.connectedLinks, connected_joints=self.connectedJoints,
@@ -187,7 +186,7 @@ class SDFTree(object):
         :return: The tree instance.
         """
         sdf = sdf_dom.sdf()
-        sdf.version = '1.5'
+        sdf.version = '1.6'
         pyxb.utils.domutils.BindingDOMSupport.SetDefaultNamespace(None)
 
         if not sdf.model:
@@ -212,7 +211,7 @@ class SDFTree(object):
         :param file_name:
         :return:
         """
-        print("connected joints: ", {j.name: l for j, l in self.connectedJoints.items()})
+        print("connected joints: ", {l.name: j[0].name for l, j in self.connectedJoints.items()})
 
         print("connected links: ", {j.name: l.name for j, l in self.connectedLinks.items()})
 
@@ -463,30 +462,30 @@ class SDFTree(object):
         joint.child = ''
         joint.parent = ''
 
-        joint_axis = sdf_dom.CTD_ANON_47()
+        # joint_axis = sdf_dom.CTD_ANON_57()
         # if not joint_axis.xyz:
         #     print(vars(joint_axis.xyz))
         #     joint_axis.xyz.append('0 0 0 0')
-        joint_axis_limit = sdf_dom.CTD_ANON_49()
+        # joint_axis_limit = sdf_dom.CTD_ANON_49()
 
         link_inertial = sdf_dom.inertial()
-        link_inertial_inertia = sdf_dom.CTD_ANON_45()
+        # link_inertial_inertia = sdf_dom.CTD_ANON_55()
         # joint_axis_xyz = joint_axis.xyz.vector3
         print('Joint Axis')
         if not joint.axis:
-            joint.axis.append(joint_axis)
+            joint.axis = [pyxb.BIND()]
 
-        if not joint.axis[0].limit:
-            print('Set defaults: Joint Axis Limit ')
-            joint.axis[0].limit.append(joint_axis_limit)
-            # joint.axis[0].limit.append(BIND())
+        # if not joint.axis[0].limit:
+        #     print('Set defaults: Joint Axis Limit ')
+        #     joint.axis[0].limit.append(joint_axis_limit)
+        #     # joint.axis[0].limit.append(BIND())
 
         if not link.inertial:
-            print('Set defaults: Joint Axis Limit ')
+            print('Set defaults: Inertia ')
             link.inertial.append(link_inertial)
 
         if not link.inertial[0].inertia:
-            link.inertial[0].inertia.append(link_inertial_inertia)
+            link.inertial[0].inertia = [pyxb.BIND()]
 
         link.inertial[0].mass.append('1.0')
         link.inertial[0].pose.append('0 0 0 0 0 0')
