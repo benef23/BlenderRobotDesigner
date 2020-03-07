@@ -143,7 +143,7 @@ def just_create_the_physics_frame(context, name):
     mat.diffuse_intensity = 1.0
     mat.use_transparency = True
     mat.alpha = 0.3
-    bpy.data.objects[name].show_transparent = True
+    obj.show_transparent = True
 
 
     # mat = bpy.data.materials['MaterialName']
