@@ -49,11 +49,9 @@ from ..operators.segments import SelectSegment, UpdateSegments
 from ..operators.muscles import SelectMuscle
 from ..core.property import PropertyGroupHandlerBase, PropertyHandler
 
-
 class RDSelectedObjects(PropertyGroupHandlerBase):
     def __init__(self):
         self.visible = PropertyHandler()
-
 
 class RDGlobals(PropertyGroupHandlerBase):
     """
@@ -131,6 +129,8 @@ class RDGlobals(PropertyGroupHandlerBase):
                          obj.RobotDesigner.tag != 'PHYSICS_FRAME' and obj.RobotDesigner.tag != 'WRAPPING']
 
         for mesh in geometry_name:
+            obj = bpy.data.objects[mesh]
+            tag = obj.RobotDesigner.tag
             obj = bpy.data.objects[mesh]
             tag = obj.RobotDesigner.tag
             if hide_geometry == 'all':
@@ -256,8 +256,6 @@ class RDGlobals(PropertyGroupHandlerBase):
         for muscle in [obj.name for obj in bpy.data.objects
             if bpy.data.objects[obj.name].RobotDesigner.muscles.robotName == active_model]:
                 bpy.data.objects[muscle].data.bevel_depth = self.muscle_dim
-                print("changing ----")
-
     def __init__(self):
 
         # Holds the current selected kinematics model (armature) name
@@ -284,6 +282,7 @@ class RDGlobals(PropertyGroupHandlerBase):
                    ('sensors', 'Sensors', 'Attach sensors to the robot'),
                    ('muscles', 'Muscles', 'Attach muscles to the robot'),
                    # ('markers', 'Markers', 'Assign markers to bones'),
+                   ('evolutionaryalgorithm', 'EA', 'Define parameters'),   # Evolutionary Algorithm tab
                    ('files', 'Files', 'Export Armature')]
                    #('world', 'World', 'Set world parameters')],
         ))
@@ -396,6 +395,10 @@ class RDGlobals(PropertyGroupHandlerBase):
                    ('MILLARD_ACCEL', 'Millard Acceleration 2012', 'Show only Millard Acceleration 2012 Muscles'),
                    ('THELEN', 'Thelen 2003', 'Show only Thelen 2003 Muscles'),
                    ('RIGID_TENDON', 'Rigid Tendon', 'Show only Rigid Tendon Muscles'),
+                   ('MILLARD_EQUIL', 'Millard Equilibrium 2012', 'Show only Millard Equilibrium 2012 Muscles'),
+                   ('MILLARD_ACCEL', 'Millard Acceleration 2012', 'Show only Millard Acceleration 2012 Muscles'),
+                   ('THELEN', 'Thelen 2003', 'Show only Thelen 2003 Muscles'),
+                   ('RIGID_TENDON', 'Rigid Tendon', 'Show only Rigid Tendon Muscles'),
                    ('MYOROBOTICS', 'Myorobotics', 'Show only Myorobotics Muscles'),
                    ('none', "None", "Show No Muscles")],
             update=self.display_muscles))
@@ -422,6 +425,58 @@ class RDGlobals(PropertyGroupHandlerBase):
         # self.export_rqt_roslaunch = PropertyHandler(
         #     BoolProperty(name="Export roslaunch file", description="Exports a roslaunch file \
         #                         to launch the world and rqt tools", default=False))
+	
+# evolutionary alorithms
+        self.typeoptimization = PropertyHandler(EnumProperty(
+           items=[('joints', 'Joints position', 'EA to joints'),
+            ('meshes', 'Geometry nodes position', 'EA to meshes')]
+        ))
+
+        self.visualresult = PropertyHandler(EnumProperty(  # types of Evolutionary algorithms
+           items=[('best', 'Best model', 'Only best robot'),
+            ('all', 'All models', 'Get all robots of the simulation')]
+        ))
+
+        self.toolbox = PropertyHandler(EnumProperty(
+           items=[('on', 'On', 'Toolbox on'),
+            ('off', 'Off', 'Toolbox off')]
+        ))
+
+        self.encoding = PropertyHandler(EnumProperty(
+           items=[('real', 'Evolution Strategies', 'Real encoding for EA'),
+            ('binary', 'Genetic Algorithm', 'Binary encoding for EA')]
+        ))
+
+        self.num_adaptions = PropertyHandler(IntProperty(name="Adaptability steps", default=1, min=0, max=50))
+
+        self.adaption_rate = PropertyHandler(FloatProperty(name="Adaptability rate", default=0.6, min=0, max=1, precision=1))
+
+        self.model_to_simulate = PropertyHandler(CollectionProperty(
+            type=bpy.types.PropertyGroup
+        ))
+
+        self.population_size = PropertyHandler(IntProperty(name="Initial population size", default=1, min=1, max=1))
+
+
+        self.mutation_rate_bin = PropertyHandler(FloatProperty(name="Mutation rate", default=0.01, min=0, max=1,
+                                                           precision=3))
+
+        self.mutation_rate_real = PropertyHandler(FloatProperty(name="Mutation rate", default=0.2, min=0, max=1,
+                                                           precision=3))
+
+        self.mutation_deviation = PropertyHandler(FloatProperty(name="Mutation deviation", default=0.2, min=0,
+                                                           precision=5))
+
+        self.max_generation = PropertyHandler(IntProperty(name="Number of generations", default=100, min=1))
+
+        self.offspring_size = PropertyHandler(IntProperty(name="Offspring per generation", default=80, min=2))
+
+        self.selection_rate = PropertyHandler(FloatProperty(name="Selection rate", default=0.7, min=0.1, max=1))
+
+        self.offsetlateral = PropertyHandler(FloatProperty(name="Offsprings instance offset", default=15.0, min=1.0))
+
+        self.offsetfront = PropertyHandler(FloatProperty(name="Generations instance offset", default=20.0, min=1.0))
+
 
 
 global_properties = RDGlobals()

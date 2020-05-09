@@ -65,8 +65,13 @@ class ROBOTDESIGNER_PT_UserInterface(bpy.types.Panel):
     from ..core.logfile import LogFunction
     @LogFunction
     def draw(self, context):
+<<<<<<< HEAD
         from ..operators import file_tools
-        from . import files, model, segments, geometries, sensors, muscles, world, evolutionaryalgorithm
+        from . import files, model, segments, geometries, sensors, muscles, world
+=======
+        from ..operators import gui
+        from . import files, model, segments, geometries, sensors, muscles, evolutionaryalgorithm
+>>>>>>> Add changes
         layout = self.layout
 
         layout.label(text="HBP Neurorobotics RobotDesigner", icon_value=PluginManager.get_icon('hbp'))

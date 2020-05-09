@@ -66,7 +66,7 @@ class ROBOTDESIGNER_PT_UserInterface(bpy.types.Panel):
     @LogFunction
     def draw(self, context):
         from ..operators import file_tools
-        from . import files, model, segments, geometries, sensors, muscles, world, evolutionaryalgorithm
+        from . import files, model, segments, geometries, sensors, muscles, world
         layout = self.layout
 
         layout.label(text="HBP Neurorobotics RobotDesigner", icon_value=PluginManager.get_icon('hbp'))
@@ -92,8 +92,6 @@ class ROBOTDESIGNER_PT_UserInterface(bpy.types.Panel):
                 muscles.draw(layout, context)
         # elif control == 'markers':
         #     markers.draw(layout, context)
-        elif control == 'evolutionaryalgorithm':  # realize implementation of interface\evolutionaryalgorithm. Also import (line 70)
-            evolutionaryalgorithm.draw(layout, context)
         elif control == 'files':
             files.draw(layout, context)
         elif control == 'world':
