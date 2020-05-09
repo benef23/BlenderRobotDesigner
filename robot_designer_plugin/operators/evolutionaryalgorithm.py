@@ -794,8 +794,8 @@ class StartSimulationMeshes(RDOperator):
             bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
             bpy.ops.object.select_all(action='DESELECT')
             mesh = bpy.data.objects[mesh_to_edit]
-            mesh.select = True
-            bpy.context.scene.objects.active = mesh
+            mesh.select_set(True)
+            bpy.context.view_layer.objects.active = mesh
             bpy.ops.object.mode_set(mode='EDIT', toggle=False)
 
             obj = bpy.context.object.data
@@ -1056,7 +1056,7 @@ class StartSimulationMeshes(RDOperator):
                     bm.verts[v].select = False
                     bmesh.update_edit_mesh(obj, True)
 
-                mesh.select = False
+                mesh.select_set(False)
 
             bpy.ops.object.mode_set(mode='OBJECT')
             bpy.ops.object.select_all(action='DESELECT')
@@ -1068,7 +1068,7 @@ class StartSimulationMeshes(RDOperator):
 
             bpy.ops.object.select_all(action='DESELECT')
             context.scene.objects.active = bpy.data.objects[list_instances[gen][ind]]
-            context.active_object.select = True
+            context.active_object.select_set(True)
             meshes = [obj.name for obj in bpy.data.objects if obj.parent_bone is not None and obj.type == 'MESH'
                            and obj.parent.name == list_instances[gen][ind]]
 
@@ -1084,7 +1084,7 @@ class StartSimulationMeshes(RDOperator):
                     bm.verts[v].select = False
                     bmesh.update_edit_mesh(obj, True)
 
-                mesh.select = False
+                mesh.select_set(False)
 
             bpy.ops.object.mode_set(mode='OBJECT')
             bpy.ops.object.select_all(action='DESELECT')
@@ -1112,7 +1112,7 @@ class StartSimulationMeshes(RDOperator):
             def reassign_mesh(meshes, m, segment_ofmesh_name, armature_name, new_mesh_name):
                 segment_ofmesh = bpy.context.active_object.data.bones[segment_ofmesh_name]
                 bpy.ops.object.select_all(action='DESELECT')
-                bpy.data.objects[new_mesh_name].select = True
+                bpy.data.objects[new_mesh_name].select_set(True)
                 bpy.context.active_object.data.bones.active = segment_ofmesh
                 bpy.context.active_object.data.bones.active.select = True
                 bpy.context.scene.objects.active = bpy.data.objects[armature_name]
@@ -1129,7 +1129,7 @@ class StartSimulationMeshes(RDOperator):
 
             bpy.ops.object.select_all(action='DESELECT')
             context.scene.objects.active = bpy.data.objects[armature_name]
-            context.active_object.select = True
+            context.active_object.select_set(True)
 
             meshes = [obj.name for obj in bpy.data.objects if obj.parent_bone is not None and obj.type == 'MESH'
                    and obj.parent.name == armature_name]

@@ -54,14 +54,14 @@ def draw(layout, context):
 
     box = layout.box()
     row = box.row(align=True)
-    row.label("Optimization type:")
+    row.label(text="Optimization type:")
     global_properties.typeoptimization.prop(context.scene, row, expand=True)
 
     # box: select the robot population
     box = layout.box()
     infoBox = InfoBox(box)
     row = box.row()
-    row.label("Select model to evolve:")
+    row.label(text="Select model to evolve:")
     row = box.row()
     active_model = global_properties.model_name.get(context.scene)
     column = row.column(align=True)
@@ -75,16 +75,16 @@ def draw(layout, context):
     # box: select result plot type
     box = layout.box()
     row = box.row(align=True)
-    row.label("Generate instances:")
+    row.label(text="Generate instances:")
     global_properties.visualresult.prop(context.scene, row, expand=True)
     row = box.row(align=True)
 
     if global_properties.typeoptimization.get(context.scene)=='joints':
 
-        row.label("Generate simulation plots:")
+        row.label(text="Generate simulation plots:")
         global_properties.toolbox.prop(context.scene, row, expand=True)
         row = box.row(align=True)
-        row.label("Ev. Algorithm:")
+        row.label(text="Ev. Algorithm:")
         global_properties.encoding.prop(context.scene, row, expand=True)
 
     # box: selection of general GA parameters
@@ -115,30 +115,30 @@ def draw(layout, context):
     if box and global_properties.encoding.get(context.scene)=='binary':
         infoBox = InfoBox(box)
         row = box.row()
-        row.label ("Selection parameters:")
+        row.label(text="Selection parameters:")
         row = box.row()
         global_properties.selection_rate.prop(context.scene, row)
         row = box.row()
-        row.label ("Crossover parameters:")
+        row.label(text="Crossover parameters:")
         row = box.row()
         global_properties.offspring_size.prop(context.scene, row)
         row = box.row()
-        row.label ("Mutation parameters:")
+        row.label(text="Mutation parameters:")
         row = box.row()
         global_properties.mutation_rate_bin.prop(context.scene, row)
 
     if box and global_properties.encoding.get(context.scene) == 'real':
         infoBox = InfoBox(box)
         row = box.row()
-        row.label("Selection parameters:")
+        row.label(text="Selection parameters:")
         row = box.row()
         global_properties.selection_rate.prop(context.scene, row)
         row = box.row()
-        row.label("Crossover parameters:")
+        row.label(text="Crossover parameters:")
         row = box.row()
         global_properties.offspring_size.prop(context.scene, row)
         row = box.row()
-        row.label("Mutation parameters:")
+        row.label(text="Mutation parameters:")
         row = box.row()
         global_properties.mutation_rate_real.prop(context.scene, row)
         row = box.row()
