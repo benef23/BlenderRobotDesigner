@@ -124,6 +124,7 @@ class RenameSegment(RDOperator):
             context.active_bone.RobotDesigner.joint_name = self.new_name + "_joint"
         return {'FINISHED'}
 
+
     def invoke(self, context, event):
         return context.window_manager.invoke_props_dialog(self)
 

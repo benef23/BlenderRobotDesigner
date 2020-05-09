@@ -176,9 +176,7 @@ class RebuildModel(RDOperator):
 class SelectModel(RDOperator):
     """
     :ref:`operator` for ...
-
     **Preconditions:**
-
     **RDOperator.Postconditions:**
     """
     bl_idname = config.OPERATOR_PREFIX + "selectarmature"
@@ -200,6 +198,7 @@ class SelectModel(RDOperator):
         context.view_layer.objects.active = bpy.data.objects[self.model_name]
         context.active_object.select_set(True)
         global_properties.model_name.set(context.scene, self.model_name)
+        global_properties.old_name.set(context.scene, self.model_name)
         # not so sure if this is needed at all
 
         if len(context.active_object.data.bones) > 0:

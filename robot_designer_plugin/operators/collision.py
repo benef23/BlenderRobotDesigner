@@ -185,7 +185,7 @@ class copyAllVisToCol(RDOperator):
         for mesh in visuals:
                 ob = mesh.copy() # duplicate linked
                 ob.data = mesh.data.copy()
-                bpy.context.scene.objects.link(ob) # add to scene
+                bpy.context.scene.collection.objects.link(ob) # add to scene
                 ob.name = mesh.name.replace('VIS_','COL_')
                 ob.RobotDesigner.tag = 'COLLISION'
                 ob.RobotDesigner.fileName = mesh.name.replace('VIS_','COL_')

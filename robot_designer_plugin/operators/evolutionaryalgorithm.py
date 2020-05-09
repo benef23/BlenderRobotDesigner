@@ -939,14 +939,13 @@ class StartSimulationMeshes(RDOperator):
             """
             go to edit mode
             """
+            print("Edit mode mesh")
             bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
             bpy.ops.object.select_all(action='DESELECT')
             mesh = bpy.data.objects[mesh_to_edit]
             mesh.select_set(True)
-
             bpy.context.view_layer.objects.active = mesh
             bpy.ops.object.mode_set(mode='EDIT', toggle=False)
-
             obj = bpy.context.object.data
             bm = bmesh.from_edit_mesh(obj)
             return bm, obj, mesh
@@ -980,7 +979,6 @@ class StartSimulationMeshes(RDOperator):
 
             for m in range(len(meshes)):
                 bm, obj, mesh = editmode_mesh(meshes[m])
-
                 for v in range(len(bm.verts)):
                     bm.verts.ensure_lookup_table()
                     pos_verts[m].append(bm.verts[v].co)
@@ -1182,17 +1180,14 @@ class StartSimulationMeshes(RDOperator):
             """
             print("Min vertex bone distance")
             local_pos_verts = np.asarray(verts_co(armature_name, meshes))
-
             def level_up_parent(armature_name, segment):
                 """
                 go to the parent of a particular segment
                 """
-
                 if bpy.data.armatures[armature_name].bones[segment].parent:
                     segment_up = bpy.data.armatures[armature_name].bones[segment].parent.name
                 else:
                     segment_up=segment
-
                 return segment_up
 
             def checkmesh(armature_name, parent_ofsegment_name):
@@ -1211,7 +1206,10 @@ class StartSimulationMeshes(RDOperator):
             min_index_parent_vert = []
             meshes_up = []
             initial_segment_position = []
+
             global_pos_mesh_initial =[]
+            if len(meshes) == 0:
+                print('Error: model has no meshes attached')
             for m in range(len(meshes)):
                 segment_ofmesh_name = bpy.data.objects[meshes[m]].parent_bone
                 parent_ofsegment_name = level_up_parent(armature_name, segment_ofmesh_name)
@@ -1220,14 +1218,12 @@ class StartSimulationMeshes(RDOperator):
                            and obj.RobotDesigner.tag==bpy.data.objects[meshes[m]].RobotDesigner.tag][0] #get meshes of the parent segment
 
                 m_up = meshes.index(mesh_up)
-
                 global_pos_mesh = np.asarray(bpy.data.objects[meshes[m]].matrix_world.to_translation())
                 global_pos_mesh_up = np.asarray(bpy.data.objects[meshes[m_up]].matrix_world.to_translation()) #up means of the parent segment
                 scale_factor = np.asarray(bpy.data.objects[meshes[m]].scale)
                 scale_factor_up = np.asarray(bpy.data.objects[meshes[m_up]].scale)
                 global_pos_verts = [(local_pos_verts[m][v] * scale_factor + global_pos_mesh) for v in range(len(local_pos_verts[m]))]
                 global_pos_verts_up = [(local_pos_verts[m_up][v] * scale_factor_up + global_pos_mesh_up) for v in range(len(local_pos_verts[m_up]))]
-
                 global_pos_parent_bone = np.asarray(bpy.data.armatures[armature_name].bones[segment_ofmesh_name].head_local)
 
                 dist_parent_vert = [(math.sqrt((global_pos_verts[v][0]-global_pos_parent_bone[0])**2 #distance between vertexes and parent segment
@@ -1236,7 +1232,6 @@ class StartSimulationMeshes(RDOperator):
                 dist_parent_vert_up = [(math.sqrt((global_pos_verts_up[v][0]-global_pos_parent_bone[0])**2
                                                +(global_pos_verts_up[v][1]-global_pos_parent_bone[1])**2
                                                +(global_pos_verts_up[v][2]-global_pos_parent_bone[2])**2)) for v in range(len(global_pos_verts_up))]
-
                 min_index_parent_vert.append([dist_parent_vert.index(min(dist_parent_vert)), dist_parent_vert_up.index(min(dist_parent_vert_up))]) # get the vertex that is closer
                 meshes_up.append(m_up)
                 initial_segment_position.append(global_pos_parent_bone) #get initial segment position
@@ -1289,7 +1284,6 @@ class StartSimulationMeshes(RDOperator):
 
             for m in range(len(meshes)):
                 bm, obj, mesh = editmode_mesh(meshes[m])
-
                 for v in range(len(bm.verts)):
                     bm.verts.ensure_lookup_table()
                     bm.verts[v].select = True
@@ -1298,8 +1292,7 @@ class StartSimulationMeshes(RDOperator):
                     bmesh.update_edit_mesh(obj, True)
                     bm.verts[v].select = False
                     bmesh.update_edit_mesh(obj, True)
-                mesh.select = False
-
+                mesh.select_set(False)
             bpy.ops.object.mode_set(mode='OBJECT')
             bpy.ops.object.select_all(action='DESELECT')
             bpy.ops.robotdesigner.selectarmature(model_name=armature_name)
@@ -1359,9 +1352,6 @@ class StartSimulationMeshes(RDOperator):
                     and obj.parent.name == armature_name]
 
             for m in range(len(meshes)):
-                print("range1", m)
-                print("range1", meshes[m])
-                print("range1",bpy.data.objects[meshes[m]].parent_bone)
                 segment_ofmesh_name = bpy.data.objects[meshes[m]].parent_bone
 
                 bm, obj, _ = editmode_mesh(meshes[m])
@@ -1472,26 +1462,30 @@ class StartSimulationMeshes(RDOperator):
             """
             print("Create robot instances")
             list_instances = [['' for i in range(num_offspring)] for g in range(generations)]
-
+            print('offsprings generations', num_offspring, generations)
             for g in range(generations):
                 for i in range(num_offspring):
+
                     bpy.context.view_layer.objects.active = bpy.data.objects[armature_name]
+
                     context.active_object.select_set(True)
+
                     segments = bpy.context.active_object.data.bones.keys()
                   # todo copy physics:  physics_frames = [obj.name for obj in bpy.data.objects if obj.parent_bone in segments and obj.type == 'EMPTY']
 
                     for m in range(len(meshes)):    # select meshes
-                        bpy.data.objects[meshes[m]].select = True
+                        bpy.data.objects[meshes[m]].select_set(True)
+
                     for s in range(len(segments)):  # select segments
                         bone = bpy.context.active_object.data.bones[segments[s]]
                         bone.select = True
-                  #  for p in range(len(physics_frames)):   # select physics frames
+
+                        #  for p in range(len(physics_frames)):   # select physics frames
                    #     bpy.data.objects[physics_frames[p]].select = True
                     bpy.ops.object.duplicate_move(TRANSFORM_OT_translate={"value": ((i * offset_o + offset_o / 2 - num_offspring * offset_o / 2), -offset_g * (g + 1), 0)})
-                    bpy.data.scenes[0].update()
-                    list_instances[g][i] = bpy.context.view_layer.objects.active.name
-                    # bpy.ops.robotdesigner.createphysicsframes()  # todo: calculate new physics automatically after adaption
+                    bpy.context.view_layer.update()
 
+                    list_instances[g][i] = bpy.context.view_layer.objects.active.name
 
                     # bf rename segments not necessary
                     #   for b in range(len(bpy.context.active_object.data.bones)):
@@ -1524,11 +1518,9 @@ class StartSimulationMeshes(RDOperator):
 
             historial_individuals = []
 
-            print('1')
             armature = selectrobot(bone_sim)
             meshes = meshes_initial_armature(armature)
             ini_position_verts = verts_co(armature, meshes)
-            print('2')
             vert_parent_mesh, meshes_level_up, segment_ini_pos, mesh_pos_ini = minvertexbonedistance(armature, meshes)
 
             print(max_gen)
@@ -1567,19 +1559,16 @@ class StartSimulationMeshes(RDOperator):
                 bpy.context.view_layer.objects.active = bpy.data.objects[armatures_population[ar]]
                 bpy.ops.robotdesigner.copyallvistocol()
 
-                print("Genearting new physics frames")
+                print("Generating new physics frames")
                 for bone in bpy.data.objects[armatures_population[ar]].data.bones:  # bpy.context.active_object.data.bones:
-
                     bpy.ops.robotdesigner.createphysicsframe(frameName='bone.name')
                     bpy.context.scene.RobotDesigner.segment_name = bone.name
-                    bpy.data.objects[bone.name].RobotDesigner.dynamics.mass = 1.0
-
+                    bpy.data.objects['PHYS_' + bone.name].RobotDesigner.dynamics.mass = 1.0
                     bpy.ops.robotdesigner.computephysicsframe(from_visual_geometry=False)
                     bpy.ops.robotdesigner.computemass(density=1.0, from_visual_geometry=False)
-
             #current_scene.RobotDesigner.display_mesh_selection = 'visual'
 
-            print('--finished')
+            print('-- finished evolution --')
 
             return None
 

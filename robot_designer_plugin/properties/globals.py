@@ -240,11 +240,10 @@ class RDGlobals(PropertyGroupHandlerBase):
             for muscle in muscles:
                 muscle.RobotDesigner.muscles.robotName = self.model_name
 
-
+            self.old_name = self.model_name
 
         # update active object name
-        bpy.data.objects[self.old_name].name = self.model_name
-        self.old_name = self.model_name
+        bpy.context.active_object.name = self.model_name
 
     @staticmethod
     def muscle_dim_update(self, context):
