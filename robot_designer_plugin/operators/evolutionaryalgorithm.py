@@ -1949,8 +1949,7 @@ class StartSimulationMeshes(RDOperator):
                 print("Genearting new physics frames")
                 for bone in bpy.data.objects[armatures_population[ar]].data.bones:  # bpy.context.active_object.data.bones:
 
-                    bpy.ops.robotdesigner.createphysicsframe()
-
+                    bpy.ops.robotdesigner.createphysicsframe(frameName='bone.name')
                     bpy.context.scene.RobotDesigner.segment_name = bone.name
                     bpy.data.objects[bone.name].RobotDesigner.dynamics.mass = 1.0
 
