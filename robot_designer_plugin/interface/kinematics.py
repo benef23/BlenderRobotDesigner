@@ -48,8 +48,6 @@ def draw(layout, context):
     :param context:
     :return:
     """
-    settings = layout.row()
-    global_properties.display_physics_selection.prop(context.scene, settings)
 
     settings2 = layout.row()
     settings2.prop(context.active_bone.RobotDesigner, "world")
@@ -57,57 +55,62 @@ def draw(layout, context):
     if context.active_bone.parent is not None:
         settings2.enabled = False
 
-    layout.label("Parent Mode:")
-    layout.prop(context.active_bone.RobotDesigner, "parentMode", expand=True)
-    parent_column = layout.column(align=True)
+    linkbox = layout.box()
+    linkbox.label(text="Link:")
+
+    column = linkbox.column()
+    column.label(text="Parent Mode:")
+    column.prop(context.active_bone.RobotDesigner, "parentMode", expand=True)
+    parent_column = linkbox.column(align=True)
 
     if context.active_bone.RobotDesigner.parentMode == 'EULER':
-        parent_column.label("Euler position:")
-        parent_column.prop(context.active_bone.RobotDesigner.Euler.x, "value", slider=False, text="x")
-        parent_column.prop(context.active_bone.RobotDesigner.Euler.y, "value", slider=False, text="y")
-        parent_column.prop(context.active_bone.RobotDesigner.Euler.z, "value", slider=False, text="z")
+        parent_column.label(text="Euler Position:")
+        parent_column.prop(context.active_bone.RobotDesigner.Euler.x, "value", slider=False, text="X")
+        parent_column.prop(context.active_bone.RobotDesigner.Euler.y, "value", slider=False, text="Y")
+        parent_column.prop(context.active_bone.RobotDesigner.Euler.z, "value", slider=False, text="Z")
         parent_column.separator()
-        parent_column.label("Euler rotation in xy'z''")
-        parent_column.prop(context.active_bone.RobotDesigner.Euler.alpha, "value", slider=False, text="alpha")
-        parent_column.prop(context.active_bone.RobotDesigner.Euler.beta, "value", slider=False, text="beta")
-        parent_column.prop(context.active_bone.RobotDesigner.Euler.gamma, "value", slider=False, text="gamma")
+        parent_column.label(text="Euler Rotation in XY'Z''")
+        parent_column.prop(context.active_bone.RobotDesigner.Euler.alpha, "value", slider=False, text="Alpha")
+        parent_column.prop(context.active_bone.RobotDesigner.Euler.beta, "value", slider=False, text="Beta")
+        parent_column.prop(context.active_bone.RobotDesigner.Euler.gamma, "value", slider=False, text="Gamma")
     else:  # parentMode == 'DH'
-        parent_column.label("DH parameter:")
-        parent_column.prop(context.active_bone.RobotDesigner.DH.theta, "value", slider=False, text="theta")
-        parent_column.prop(context.active_bone.RobotDesigner.DH.d, "value", slider=False, text="d")
-        parent_column.prop(context.active_bone.RobotDesigner.DH.alpha, "value", slider=False, text="alpha")
-        parent_column.prop(context.active_bone.RobotDesigner.DH.a, "value", slider=False, text="a")
+        parent_column.label(text="DH parameter:")
+        parent_column.prop(context.active_bone.RobotDesigner.DH.theta, "value", slider=False, text="Theta")
+        parent_column.prop(context.active_bone.RobotDesigner.DH.d, "value", slider=False, text="D")
+        parent_column.prop(context.active_bone.RobotDesigner.DH.alpha, "value", slider=False, text="Alpha")
+        parent_column.prop(context.active_bone.RobotDesigner.DH.a, "value", slider=False, text="A")
 
-    jointbox = layout.box()
-    jointbox.label("Joint:")
-    # Only show joint if not root bone. Unless root bone is connected to world
     if (context.active_bone.parent is not None) or (context.active_bone.RobotDesigner.world is True):
-        name = jointbox.column(align=True)
-        name.prop(context.active_bone.RobotDesigner, "joint_name")
-        default_row = jointbox.row()
-        default_row.alignment = 'RIGHT'
-        column = default_row.column(align=True)
-        segments.SetDefaultJointName.place_button(column, text="Default Name")
-        segments.SetDefaultJointNameAll.place_button(column, text="Default Name All")
+        # Only show joint if not root bone. Unless root bone is connected to world
+        jointbox = layout.box()
+        jointbox.label(text="Joint:")
 
-        jointbox.label("Active Axis:")
+        name = jointbox.column(align=True)
+        name.prop(context.active_bone.RobotDesigner, "joint_name", text="Joint Name")
+        row = jointbox.row(align=True)
+        segments.SetDefaultJointName.place_button(row, text="Default Name")
+        segments.SetDefaultJointNameAll.place_button(row, text="Default Name All")
+
+        jointbox.label(text="Active Axis:")
         axis_row = jointbox.row()
         axis_row.prop(context.active_bone.RobotDesigner, "axis", expand=True)
-        axis_row.prop(context.active_bone.RobotDesigner, "axis_revert")
+        axis_row.prop(context.active_bone.RobotDesigner, "axis_revert", text="Axis Reverted?")
 
-        jointbox.label("Joint Type:")
+        jointbox.label(text="Joint Type:")
         jointbox.prop(context.active_bone.RobotDesigner, "jointMode", expand=True)
         joint_column = jointbox.column(align=True)
 
         if context.active_bone.RobotDesigner.jointMode == 'REVOLUTE':
-            joint_column.label("theta:")
+            joint_column.label(text="Theta:")
             joint_column.prop(context.active_bone.RobotDesigner.theta, "value", slider=False)
             joint_column.prop(context.active_bone.RobotDesigner.theta, "offset", slider=False)
             joint_column.prop(context.active_bone.RobotDesigner.theta, "min", slider=False)
             joint_column.prop(context.active_bone.RobotDesigner.theta, "max", slider=False)
+            joint_column.prop(context.active_bone.RobotDesigner.theta, "isActive", text="Active Joint Limits")
         elif context.active_bone.RobotDesigner.jointMode == 'PRISMATIC':
-            joint_column.label("d:")
+            joint_column.label(text="D:")
             joint_column.prop(context.active_bone.RobotDesigner.d, "value", slider=False)
             joint_column.prop(context.active_bone.RobotDesigner.d, "offset", slider=False)
             joint_column.prop(context.active_bone.RobotDesigner.d, "min", slider=False)
             joint_column.prop(context.active_bone.RobotDesigner.d, "max", slider=False)
+            joint_column.prop(context.active_bone.RobotDesigner.d, "isActive", text="Active Joint Limits")

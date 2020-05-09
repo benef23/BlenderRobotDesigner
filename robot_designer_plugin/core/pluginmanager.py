@@ -251,13 +251,13 @@ class PluginManager(object):
 
             core_logger.debug("Properties: %s", cls._property_groups_to_register)
             for prop, extends in cls._property_groups_to_register:
-                report.append("\t+ propery {0:33} {1:8} in {2:40}".format(prop.__name__,
+                report.append("\t+ property {0:33} {1:8} in {2:40}".format(prop.__name__,
                                                                           "(%s)" % extends.__name__ if extends else '',
                                                                           "/".join(prop.__module__.split('.')[1:])))
 
                 bpy.utils.register_class(prop)
                 if extends in (bpy.types.Object, bpy.types.Scene, bpy.types.Bone):
-                    setattr(extends, 'RobotDesigner', bpy.props.PointerProperty(type=getattr(bpy.types, prop.__name__)))
+                    setattr(extends, 'RobotDesigner', bpy.props.PointerProperty(type=prop))
                 cls._registered_properties.append((prop, extends))
 
             for i in cls._property_fields.items():

@@ -69,16 +69,16 @@ def draw(layout, context):
 
     box = layout.box()
     row = box.row(align=True)
-    row.label("Mesh type:")
+    row.label(text="Mesh Type:")
     global_properties.mesh_type.prop(context.scene, row, expand=True)
     row = box.row(align=True)
-    row.label("Show:")
+    row.label(text="Show:")
     global_properties.display_mesh_selection.prop(context.scene, row, expand=True)
 
     if 1:
         row = box.row()
         column = row.column(align=True)
-        column.label("Segment Selector")
+        column.label(text="Segment Selector")
         # Start of segment menu code.
         single_segment = getSingleSegment(context)
         column.menu(menus.SegmentsGeometriesMenu.bl_idname,
@@ -91,10 +91,12 @@ def draw(layout, context):
                                                    text='')
         # End of segment menu code.
         column = row.column(align=True)
-        column.label("Mesh Selector")
+        column.label(text="Mesh Selector")
         menus.GeometriesMenu.putMenu(column, context)
 
-    box = GeometrySettingsBox.get(layout, context, "Geometry Properties", icon="SCRIPTWIN")
+    mesh_obj = bpy.data.objects[global_properties.mesh_name.get(context.scene)]
+
+    box = GeometrySettingsBox.get(layout, context, "Geometry Properties", icon="PREFERENCES")
     if box:
         infoBox = InfoBox(box)
         row = box.row()
@@ -107,20 +109,20 @@ def draw(layout, context):
         selected_objects = [i for i in context.selected_objects if i.name != context.active_object.name]
         if len(selected_objects):
             obj = bpy.data.objects[global_properties.mesh_name.get(context.scene)]
-            rigid_bodies.RenameGeometry.place_button(column, text='Rename selected geometry', infoBox=infoBox)
-            box.prop(obj, "rotation_euler", slider=False, text="Rotation")
-            box.prop(obj, "location", slider=False, text="Location")
+            rigid_bodies.RenameGeometry.place_button(column, text='Rename Selected Geometry', infoBox=infoBox)
+            box.prop(mesh_obj, "rotation_euler", slider=False, text="Rotation")
+            box.prop(mesh_obj, "location", slider=False, text="Location")
             row2 = box.row()
             column = row2.column(align=True)
             if obj.RobotDesigner.tag == 'BASIC_COLLISION_CYLINDER':
-                column.label("Scale (%s)" % obj.name)
-                column.prop(obj.RobotDesigner.scaling, "scale_radius", slider=False, text="Radius")
-                column.prop(obj.RobotDesigner.scaling, "scale_depth", slider=False, text="Depth")
+                column.label(text="Scale (%s)" % obj.name)
+                column.prop(mesh_obj.RobotDesigner.scaling, "scale_radius", slider=False, text="Radius")
+                column.prop(mesh_obj.RobotDesigner.scaling, "scale_depth", slider=False, text="Depth")
             elif obj.RobotDesigner.tag == 'BASIC_COLLISION_SPHERE':
-                column.label("Scale (%s)" % obj.name)
-                column.prop(obj.RobotDesigner.scaling, "scale_all", slider=False, text="Radius")
+                column.label(text="Scale (%s)" % obj.name)
+                column.prop(mesh_obj.RobotDesigner.scaling, "scale_all", slider=False, text="Radius")
             else:
-                box.prop(obj, "scale", slider=False, text="Scale (%s)" % obj.name)
+                box.prop(mesh_obj, "scale", slider=False, text="Scale (%s)" % obj.name)
             box.prop(selected_objects[0].RobotDesigner, 'fileName')
 
         box.separator()
@@ -191,7 +193,7 @@ def draw(layout, context):
             collision.GenerateAllCollisionConvexHull.place_button(column, infoBox=infoBox)
 
             row2 = box.row()
-            row2.label("Add basic collision shapes:")
+            row2.label(text="Add Basic Collision Geometry:")
             row3 = box.row()
             column = row3.column(align=True)
             collision.CreateBasicCollisionBox.place_button(column, text='Create Box', infoBox=infoBox)
@@ -237,12 +239,11 @@ def draw(layout, context):
         # menus.GeometriesMenu.putMenu(column, context)
         column = row.column(align=True)
 
-        obj = bpy.data.objects[global_properties.mesh_name.get(context.scene)]
         try:
-            column.prop(obj.modifiers["Decimate"], "ratio", slider=False, text="Ratio")
+            column.prop(mesh_obj.modifiers["Decimate"], "ratio", slider=False, text="Ratio")
         except KeyError:
-            obj.modifiers.new('Decimate', 'DECIMATE')
-            column.prop(obj.modifiers["Decimate"], "ratio", slider=False, text="Ratio")
+            mesh_obj.modifiers.new('Decimate', 'DECIMATE')
+            column.prop(mesh_obj.modifiers["Decimate"], "ratio", slider=False, text="Ratio")
 
         row2 = column.row()
         rigid_bodies.ReduceAllGeometry.place_button(row2, infoBox=infoBox)
@@ -250,59 +251,66 @@ def draw(layout, context):
         box.separator()
         infoBox.draw_info()
 
-    SDFbox = SDFCollisionPropertiesBox.get(layout, context, "SDF Collision Surface Properties", icon="WIRE")
-    if SDFbox:
-        obj = bpy.data.objects[global_properties.mesh_name.get(context.scene)]
-        box1 = BounceBox.get(SDFbox, context, "Bounce")
-        if box1:
-            box1.prop(obj.RobotDesigner.sdfCollisionProps, 'restitution_coeff', text='Restitution Coefficient')
-            box1.prop(obj.RobotDesigner.sdfCollisionProps, 'threshold', text='Threshold')
-        box2 = FrictionBox.get(SDFbox, context, "Friction")
-        if box2:
-            box3 = box2.box()
-            box3.label(text="Torsional Friction")
-            box3.prop(obj.RobotDesigner.sdfCollisionProps, 'coefficient', text='Coefficient')
-            box3.prop(obj.RobotDesigner.sdfCollisionProps, 'use_patch_radius', text='Use Patch Radius')
-            box3.prop(obj.RobotDesigner.sdfCollisionProps, 'patch_radius', text='Patch Radius')
-            box3.prop(obj.RobotDesigner.sdfCollisionProps, 'surface_radius', text='Surface Radius')
-            box4 = box3.box()
-            box4.label(text="ODE")
-            box4.prop(obj.RobotDesigner.sdfCollisionProps, 'slip', text='Slip')
+    if mesh_obj.RobotDesigner.tag == 'COLLISION':
+        SDFbox = SDFCollisionPropertiesBox.get(layout, context, "SDF Collision Surface Properties", icon="SHADING_WIRE")
+        if SDFbox:
+            box1 = BounceBox.get(SDFbox, context, "Bounce")
+            if box1:
+                box1.prop(mesh_obj.RobotDesigner.sdfCollisionProps, 'restitution_coeff', text='Restitution Coefficient')
+                box1.prop(mesh_obj.RobotDesigner.sdfCollisionProps, 'threshold', text='Threshold')
+            box2 = FrictionBox.get(SDFbox, context, "Friction")
+            if box2:
+                box3 = box2.box()
+                box3.label(text="Torsional Friction")
+                box3.prop(mesh_obj.RobotDesigner.sdfCollisionProps, 'coefficient', text='Coefficient')
+                box3.prop(mesh_obj.RobotDesigner.sdfCollisionProps, 'use_patch_radius', text='Use Patch Radius')
+                box3.prop(mesh_obj.RobotDesigner.sdfCollisionProps, 'patch_radius', text='Patch Radius')
+                box3.prop(mesh_obj.RobotDesigner.sdfCollisionProps, 'surface_radius', text='Surface Radius')
+                box4 = box3.box()
+                box4.label(text="ODE")
+                box4.prop(mesh_obj.RobotDesigner.sdfCollisionProps, 'slip', text='Slip')
 
-            box5 = box2.box()
-            box5.label(text="ODE")
-            box5.prop(obj.RobotDesigner.sdfCollisionProps, 'mu', text='Mu')
-            box5.prop(obj.RobotDesigner.sdfCollisionProps, 'mu2', text='Mu2')
-            box5.prop(obj.RobotDesigner.sdfCollisionProps, 'fdir1', text='FDir1')
-            box5.prop(obj.RobotDesigner.sdfCollisionProps, 'slip1', text='Slip1')
-            box5.prop(obj.RobotDesigner.sdfCollisionProps, 'slip2', text='Slip2')
+                box5 = box2.box()
+                box5.label(text="ODE")
+                box5.prop(mesh_obj.RobotDesigner.sdfCollisionProps, 'mu', text='Mu')
+                box5.prop(mesh_obj.RobotDesigner.sdfCollisionProps, 'mu2', text='Mu2')
+                box5.prop(mesh_obj.RobotDesigner.sdfCollisionProps, 'fdir1', text='FDir1')
+                box5.prop(mesh_obj.RobotDesigner.sdfCollisionProps, 'slip1', text='Slip1')
+                box5.prop(mesh_obj.RobotDesigner.sdfCollisionProps, 'slip2', text='Slip2')
 
-        box6 = ContactBox.get(SDFbox, context, "Contact")
-        if box6:
-            box6.prop(obj.RobotDesigner.sdfCollisionProps, 'collide_wo_contact', text='Collide without contact')
-            box6.prop(obj.RobotDesigner.sdfCollisionProps, 'collide_wo_contact_bitmask',
-                      text='Collide without contact bitmask')
-            box6.prop(obj.RobotDesigner.sdfCollisionProps, 'collide_bitmask', text='Collide bitmask')
-            box6.prop(obj.RobotDesigner.sdfCollisionProps, 'category_bitmask', text='Category bitmask')
-            box6.prop(obj.RobotDesigner.sdfCollisionProps, 'poissons_ratio', text='Poissons Ratio')
-            box6.prop(obj.RobotDesigner.sdfCollisionProps, 'elastic_modulus', text="Elastic Modulus")
+            box6 = ContactBox.get(SDFbox, context, "Contact")
+            if box6:
+                box6.prop(mesh_obj.RobotDesigner.sdfCollisionProps, 'collide_wo_contact', text='Collide Without Contact')
+                box6.prop(mesh_obj.RobotDesigner.sdfCollisionProps, 'collide_wo_contact_bitmask',
+                          text='Collide without contact bitmask')
+                box6.prop(mesh_obj.RobotDesigner.sdfCollisionProps, 'collide_bitmask', text='Collide Bitmask')
+                box6.prop(mesh_obj.RobotDesigner.sdfCollisionProps, 'category_bitmask', text='Category Bitmask')
+                box6.prop(mesh_obj.RobotDesigner.sdfCollisionProps, 'poissons_ratio', text='Poissons Ratio')
+                box6.prop(mesh_obj.RobotDesigner.sdfCollisionProps, 'elastic_modulus', text="Elastic Modulus")
 
-            box7 = box6.box()
-            box7.label(text="ODE")
-            box7.prop(obj.RobotDesigner.sdfCollisionProps, 'soft_cfm', text="Soft CMF")
-            box7.prop(obj.RobotDesigner.sdfCollisionProps, 'soft_erp', text='Soft ERP')
-            box7.prop(obj.RobotDesigner.sdfCollisionProps, 'kp', text='Kp')
-            box7.prop(obj.RobotDesigner.sdfCollisionProps, 'kd', text='Kd')
-            box7.prop(obj.RobotDesigner.sdfCollisionProps, 'max_vel', text='Max. Vel')
-            box7.prop(obj.RobotDesigner.sdfCollisionProps, 'min_depth', text='Min. Depth')
+                if bpy.data.objects[global_properties.model_name.get(bpy.context.scene)].RobotDesigner.physics_engine == 'OPENSIM':
+                    box7 = box6.box()
+                    box7.label(text="Opensim")
+                    box7.prop(mesh_obj.RobotDesigner.sdfCollisionProps, 'osim_stiffness', text='Stiffness')
+                    box7.prop(mesh_obj.RobotDesigner.sdfCollisionProps, 'osim_dissipation', text='Dissipation')
 
-        box8 = SoftContactBox.get(SDFbox, context, "Soft Contact")
-        if box8:
-            box8.row().label(text="Dart:")
-            box8.prop(obj.RobotDesigner.sdfCollisionProps, 'bone_attachment', text="Bone Attachment")
-            box8.prop(obj.RobotDesigner.sdfCollisionProps, 'stiffness', text='Stifness')
-            box8.prop(obj.RobotDesigner.sdfCollisionProps, 'damping', text='Damping')
-            box8.prop(obj.RobotDesigner.sdfCollisionProps, 'flesh_mass_fraction', text='Flesh mass fraction')
+                box8 = box6.box()
+                box8.label(text="ODE")
+                box8.prop(mesh_obj.RobotDesigner.sdfCollisionProps, 'soft_cfm', text="Soft CMF")
+                box8.prop(mesh_obj.RobotDesigner.sdfCollisionProps, 'soft_erp', text='Soft ERP')
+                box8.prop(mesh_obj.RobotDesigner.sdfCollisionProps, 'kp', text='Kp')
+                box8.prop(mesh_obj.RobotDesigner.sdfCollisionProps, 'kd', text='Kd')
+                box8.prop(mesh_obj.RobotDesigner.sdfCollisionProps, 'max_vel', text='Max. Vel')
+                box8.prop(mesh_obj.RobotDesigner.sdfCollisionProps, 'min_depth', text='Min. Depth')
+
+            if bpy.data.objects[global_properties.model_name.get(bpy.context.scene)].RobotDesigner.physics_engine == 'DART':
+                box9 = SoftContactBox.get(SDFbox, context, "Soft Contact")
+                if box9:
+                    box9.row().label(text="Dart:")
+                    box9.prop(mesh_obj.RobotDesigner.sdfCollisionProps, 'bone_attachment', text="Bone Attachment")
+                    box9.prop(mesh_obj.RobotDesigner.sdfCollisionProps, 'dart_stiffness', text='Stifness')
+                    box9.prop(mesh_obj.RobotDesigner.sdfCollisionProps, 'damping', text='Damping')
+                    box9.prop(mesh_obj.RobotDesigner.sdfCollisionProps, 'flesh_mass_fraction', text='Flesh Mass Fraction')
 
 
     drawInfoBox(layout,context)

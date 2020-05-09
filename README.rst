@@ -49,11 +49,15 @@ simplified web-based interface integrated into the NRP to construct
 robots from building blocks. Therefore, the code base of the standalone
 software is planned to be used and will be further maintained.
 
-The RobotDesigner is currently developed and maintained under the lead
+The RobotDesigner project was started under the lead
 of the `Intelligent Systems and Production Engineering
 department <http://www.fzi.de/en/about-us/organisation/research-divisions/ispe/>`__
 of the `FZI Forschungszentrum Informatik <http://www.fzi.de/en/home/>`__
-in Karlsruhe.
+in Karlsruhe. Currently the RobotDesigner is developed and maintained towards NRP
+compliance and biomimetic robot design capabilities under the lead of 
+`Benedikt Feldotto <http://www6.in.tum.de/en/people/benedikt-feldotto-msc/>`__ at 
+the `Chair of Robotics, Artificial Intelligence and Real-Time Systems 
+<http://www6.in.tum.de/en/home/>`__ at Technical University of Munich.
 
 History
 ^^^^^^^
@@ -95,7 +99,7 @@ added to the software. This software is still developed and available
 license <http://www.gnu.org/licenses/gpl-2.0.html>`__ from
 `here <https://gitlab.com/h2t/roboteditor>`__.
 
-he *NRP RobotDesigner* is a fork of the *RobotEditor*, which has been
+The *NRP RobotDesigner* is a fork of the *RobotEditor*, which has been
 chosen as the basis after a comparison to competing projects (e.g.,
 `phobos <https://github.com/rock-simulation/phobos>`__). It will enrich
 the existing project by components required for the NRP (e.g., for
@@ -181,7 +185,7 @@ Installation
 Important: You should have a latest blender (version>=2.77) on your computer. Your version of blender should have a built-in python. Install on linux and windows:
 
 1.  Download blender from the dedicated website: https://www.blender.org/download/
-2.  Download the “installer.blend” from our github: https://github.com/HBPNeurorobotics/BlenderRobotDesigner/blob/master/installer.blend
+2.  Download the “installer.blend” from our github: https://github.com/HBPNeurorobotics/BlenderRobotDesigner/raw/master/installer.blend
 3.  Launch blender and open the installer.blend file, click “run script” and wait until “RD Installation Done!” appears in your terminal (Windows Users run Blender as administrator, as several python packages will be installed)
 4.  Relaunch blender, you will find the HBP add-on on the top left of blender GUI (Note: if the HBP tab does not appear in the tool shelf, navigate to File->User Preferences->Add-Ons tab, search for and select the NRP Robot Designer add-on, and click “Save User Settings”)
 
@@ -326,6 +330,10 @@ automatically for the installed Blender version.
    (URDF) <http://wiki.ros.org/urdf/XML>`__ format which is very popular
     among the `Robot Operating System (ROS) <http://wiki.ros.org>`__
    community. 
+
+Acknowledgement
+--------
+This open source software code was developed in part or in whole in the Human Brain Project, funded from the European Union’s Horizon 2020 Framework Programme for Research and Innovation under Specific Grant Agreements No. 720270 and No. 785907 (Human Brain Project SGA1 and SGA2).
 
 --------------
 

@@ -45,7 +45,7 @@ from .model import check_armature
 from ..properties.globals import global_properties
 from ..core.gui import InfoBox
 from .helpers import getSingleSegment, getSingleObject
-from .helpers import PhysicsBox, LinkBox
+from .helpers import PhysicsBox, LinkBox, JointLimitsBox, JointDynamicsBox, JointPhysicsBox
 
 
 def draw(layout, context):
@@ -58,73 +58,97 @@ def draw(layout, context):
     if not check_armature(layout, context):
         return
 
-    settings = layout.row()
-    global_properties.display_physics_selection.prop(context.scene, settings)
 
-    box = layout.box()
-    box.label("Edit Mass Object")
-    infoBox = InfoBox(box)
-    row = box.row()
 
     single_segment = getSingleSegment(context)
 
-    row = box.column(align=True)
-
-    dynamics.CreatePhysical.place_button(row, infoBox=infoBox)
-    dynamics.ComputePhysical.place_button(row, infoBox=infoBox)
-    dynamics.ComputeMass.place_button(row, infoBox=infoBox)
-
-    objs = [o for o in context.active_object.children if
-            o.RobotDesigner.tag == 'PHYSICS_FRAME' and o.parent_bone == single_segment.name]
-    try:
-        obj, = objs
-        # obj = getSingleObject(context)
-        if obj and obj.RobotDesigner.tag == "PHYSICS_FRAME":
-            frame_name = obj.name
-            box = layout.box()
-            box.label("Mass properties (" + single_segment.name + ")", icon="MODIFIER")
-            frame = bpy.data.objects[frame_name]
-            box.prop(frame.RobotDesigner.dynamics, "mass")
-            box.separator()
-
-            row_t = box.row(align=True)
-            row_r = box.row(align=True)
-
-            row_t.prop(bpy.data.objects[frame_name], 'location', text="Translation")
-            row_r.prop(bpy.data.objects[frame_name], 'rotation_euler', text="Rotation")
-
-            row0 = box.row(align=True)
-            row1 = box.row(align=True)
-            row2 = box.row(align=True)
-            row3 = box.row(align=True)
-            row0.label("Inertia Matrix")
-            row1.prop(frame.RobotDesigner.dynamics, "inertiaXX")
-            row2.prop(frame.RobotDesigner.dynamics, "inertiaXY")
-            row3.prop(frame.RobotDesigner.dynamics, "inertiaXZ")
-            row1.prop(frame.RobotDesigner.dynamics, "inertiaXY")
-            row2.prop(frame.RobotDesigner.dynamics, "inertiaYY")
-            row3.prop(frame.RobotDesigner.dynamics, "inertiaYZ")
-            row1.prop(frame.RobotDesigner.dynamics, "inertiaXZ")
-            row2.prop(frame.RobotDesigner.dynamics, "inertiaYZ")
-            row3.prop(frame.RobotDesigner.dynamics, "inertiaZZ")
-    except:
-        pass
-
-    # joint physics properties
-    # Only shown for child segments. Unless root segment is connected to world.
-    box = PhysicsBox.get(layout, context, 'Joint Physics')
-    if box:
-        if (context.active_bone.parent is not None) or (context.active_bone.RobotDesigner.world is True):
-            box.label(text="ODE:")
-            box.prop(bpy.context.active_bone.RobotDesigner.ode, 'cfm_damping', text='CFM-Damping')
-            box.prop(bpy.context.active_bone.RobotDesigner.ode, 'i_s_damper', text='I. S. Damper')  # implicit spring
-            box.prop(bpy.context.active_bone.RobotDesigner.ode, 'cfm', text='CFM')  # constraint force mixing
-            box.prop(bpy.context.active_bone.RobotDesigner.ode, 'erp', text='ERP')  # error reduction parameter
 
     # link properties
     linkBox = LinkBox.get(layout, context, 'Link Properties')
     if linkBox:
+        infoBox = InfoBox(linkBox)
+        row = linkBox.column(align=True)
+
+        dynamics.CreatePhysical.place_button(row, infoBox=infoBox)
+        dynamics.ComputePhysical.place_button(row, infoBox=infoBox)
+        dynamics.ComputeMass.place_button(row, infoBox=infoBox)
+
+        objs = [o for o in context.active_object.children if
+                o.RobotDesigner.tag == 'PHYSICS_FRAME' and o.parent_bone == single_segment.name]
+        try:
+            obj, = objs
+            # obj = getSingleObject(context)
+            if obj and obj.RobotDesigner.tag == "PHYSICS_FRAME":
+                frame_name = obj.name
+                box = linkBox.box()
+                box.label(text="Mass Properties (" + single_segment.name + ")", icon="MODIFIER")
+                frame = bpy.data.objects[frame_name]
+                box.prop(frame.RobotDesigner.dynamics, "mass")
+                box.separator()
+
+                row_t = box.row(align=True)
+                row_r = box.row(align=True)
+
+                row_t.prop(bpy.data.objects[frame_name], 'location', text="Translation")
+                row_r.prop(bpy.data.objects[frame_name], 'rotation_euler', text="Rotation")
+
+                row0 = box.row(align=True)
+                row1 = box.row(align=True)
+                row2 = box.row(align=True)
+                row3 = box.row(align=True)
+                row0.label(text="Inertia Matrix")
+                row1.prop(frame.RobotDesigner.dynamics, "inertiaXX")
+                row2.prop(frame.RobotDesigner.dynamics, "inertiaXY")
+                row3.prop(frame.RobotDesigner.dynamics, "inertiaXZ")
+                row1.prop(frame.RobotDesigner.dynamics, "inertiaXY")
+                row2.prop(frame.RobotDesigner.dynamics, "inertiaYY")
+                row3.prop(frame.RobotDesigner.dynamics, "inertiaYZ")
+                row1.prop(frame.RobotDesigner.dynamics, "inertiaXZ")
+                row2.prop(frame.RobotDesigner.dynamics, "inertiaYZ")
+                row3.prop(frame.RobotDesigner.dynamics, "inertiaZZ")
+        except:
+            pass
+
         linkBox.prop(bpy.context.active_bone.RobotDesigner.linkInfo, 'link_self_collide', text='Self Collide')
         linkBox.prop(bpy.context.active_bone.RobotDesigner.linkInfo, 'gravity', text='Gravity')
+
+
+
+    # joint physics properties
+    # Only shown for child segments. Unless root segment is connected to world.
+    joint_box = PhysicsBox.get(layout, context, 'Joint')
+    if joint_box:
+        if (context.active_bone.parent is not None) or (context.active_bone.RobotDesigner.world is True):
+            # Joint controller limit properties
+            # Only shown for child segments. Unless root segment is connected to world
+            limit_box = JointLimitsBox.get(joint_box, context, 'Limits')
+            if limit_box:
+                limit_box.prop(context.active_bone.RobotDesigner.dynamic_limits, "isActive", text="Active Dynamic Limits")
+
+                limit_box.prop(context.active_bone.RobotDesigner.dynamic_limits, "maxVelocity")
+                limit_box.prop(context.active_bone.RobotDesigner.dynamic_limits, "maxTorque")
+
+                ## URDF only
+                #limit_box.prop(context.active_bone.RobotDesigner.controller, "acceleration")
+                #limit_box.prop(context.active_bone.RobotDesigner.controller, "deceleration")
+
+                physics_box = JointPhysicsBox.get(joint_box, context, 'Physics')
+                if physics_box:
+                    physics_ode_box = physics_box.box()
+                    physics_ode_box.label(text="ODE")
+                    physics_ode_box.prop(bpy.context.active_bone.RobotDesigner.ode, 'cfm_damping', text='CFM-Damping')
+                    physics_ode_box.prop(bpy.context.active_bone.RobotDesigner.ode, 'i_s_damper',
+                                     text='I. S. Damper')  # implicit spring
+                    physics_ode_box.prop(bpy.context.active_bone.RobotDesigner.ode, 'cfm', text='CFM')  # constraint force mixing
+                    physics_ode_box.prop(bpy.context.active_bone.RobotDesigner.ode, 'erp', text='ERP')  # error reduction parameter
+
+            dynamics_box = JointDynamicsBox.get(joint_box, context, 'Dynamics')
+            if dynamics_box:
+                dynamics_box.prop(bpy.context.active_bone.RobotDesigner.joint_dynamics, 'damping', text='Damping')
+                dynamics_box.prop(bpy.context.active_bone.RobotDesigner.joint_dynamics, 'friction', text='Friction')
+                dynamics_box.prop(
+                    bpy.context.active_bone.RobotDesigner.joint_dynamics, 'spring_reference', text='Spring Reference')
+                dynamics_box.prop(
+                    bpy.context.active_bone.RobotDesigner.joint_dynamics, 'spring_stiffness', text='Spring Stiffness')
 
     infoBox.draw_info()

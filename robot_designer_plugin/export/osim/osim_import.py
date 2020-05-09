@@ -81,14 +81,16 @@ class OsimImporter(object):
         RDmuscle = bpy.data.objects[muscle.name]
 
         RDmuscle.RobotDesigner.muscles.muscleType = type
-        RDmuscle.RobotDesigner.muscles.length = muscle.optimal_fiber_length / 0.9
-        RDmuscle.RobotDesigner.muscles.max_isometric_force = muscle.max_isometric_force
+
+        if type in ['THELEN', 'MILLARD_EQUIL', 'MILLARD_ACCEL', 'RIGID_TENDON']:
+            RDmuscle.RobotDesigner.muscles.length = muscle.optimal_fiber_length / 0.9
+            RDmuscle.RobotDesigner.muscles.max_isometric_force = muscle.max_isometric_force
 
         global_properties.active_muscle.set(bpy.context.scene, muscle.name)
-
         self.import_pathpoints(muscle, RDmuscle)
 
         self.connect_wrapping_objects(muscle, RDmuscle)
+
 
     def connect_wrapping_objects(self, muscle, RDmuscle):
         """
@@ -134,11 +136,11 @@ class OsimImporter(object):
                 # get pathpoint parent world pose
                 model = bpy.data.objects[global_properties.model_name.get(bpy.context.scene)]
                 pose_bone = model.pose.bones[pathpoint.body]
-                segment_world = model.matrix_world * pose_bone.matrix
+                segment_world = model.matrix_world @ pose_bone.matrix
 
                 # calculate pathpoint world pose
                 location_local = [float(x) for x in pathpoint.location.split()]
-                location_global = segment_world * Matrix.Translation(
+                location_global = segment_world @ Matrix.Translation(
                     (location_local[0], location_local[1], location_local[2], 1))
 
                 # create new pathpoint and set parameters of RD pathpoint object
@@ -163,14 +165,14 @@ class OsimImporter(object):
         :return:
         """
         radius = wrapping.radius
-        bpy.ops.mesh.primitive_uv_sphere_add(size=1.0, calc_uvs=True, view_align=False,
+        bpy.ops.mesh.primitive_uv_sphere_add(radius=1.0, calc_uvs=True,
                                              enter_editmode=False, location=(0, 0, 0))
         sphere = bpy.context.active_object
         sphere.name = wrapping.name
 
         lmat = bpy.data.materials.new(sphere.name)
-        lmat.diffuse_color = (0.0, 0.135, 0.0)
-        lmat.use_shadeless = True
+        lmat.diffuse_color = (0.0, 0.135, 0.0, 1.0)
+        # lmat.use_shadeless = True
         sphere.data.materials.append(lmat)
 
         sphere.RobotDesigner.tag = 'WRAPPING'
@@ -178,15 +180,15 @@ class OsimImporter(object):
 
         model = bpy.data.objects[global_properties.model_name.get(bpy.context.scene)]
         pose_bone = model.pose.bones[body.name]
-        segment_world = model.matrix_world * pose_bone.matrix
+        segment_world = model.matrix_world @ pose_bone.matrix
 
         model_posexyz = string_to_list(wrapping.translation[:])[0:3]
         model_poserpy = [0, 0, 0]
-        trafo = Matrix.Translation(Vector(model_posexyz)) * \
+        trafo = Matrix.Translation(Vector(model_posexyz)) @ \
             Euler(model_poserpy, 'XYZ').to_matrix().to_4x4()
 
         bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-        bpy.context.active_object.matrix_world = segment_world * trafo * bpy.context.active_object.matrix_world
+        bpy.context.active_object.matrix_world = segment_world @ trafo @ bpy.context.active_object.matrix_world
 
         assigned_name = bpy.context.active_object.name
 
@@ -213,14 +215,14 @@ class OsimImporter(object):
         """
         radius = wrapping.radius
         depth = wrapping.length
-        bpy.ops.mesh.primitive_cylinder_add(radius=1.0, depth=1.0, view_align=False,
+        bpy.ops.mesh.primitive_cylinder_add(radius=1.0, depth=1.0,
                                             enter_editmode=False, location=(0, 0, 0))
         cylinder = bpy.context.active_object
         cylinder.name = wrapping.name
 
         lmat = bpy.data.materials.new(cylinder.name)
-        lmat.diffuse_color = (0.0, 0.135, 0.0)
-        lmat.use_shadeless = True
+        lmat.diffuse_color = (0.0, 0.135, 0.0, 1.0)
+        # lmat.use_shadeless = True
         cylinder.data.materials.append(lmat)
 
         cylinder.RobotDesigner.tag = 'WRAPPING'
@@ -228,15 +230,15 @@ class OsimImporter(object):
 
         model = bpy.data.objects[global_properties.model_name.get(bpy.context.scene)]
         pose_bone = model.pose.bones[body.name]
-        segment_world = model.matrix_world * pose_bone.matrix
+        segment_world = model.matrix_world @ pose_bone.matrix
 
         model_posexyz = string_to_list(wrapping.translation[:])
         model_poserpy = string_to_list(wrapping.xyz_body_rotation[:])
-        trafo = Matrix.Translation(Vector(model_posexyz)) * \
+        trafo = Matrix.Translation(Vector(model_posexyz)) @ \
                 Euler(model_poserpy, 'XYZ').to_matrix().to_4x4()
 
         bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-        bpy.context.active_object.matrix_world = segment_world * trafo * bpy.context.active_object.matrix_world
+        bpy.context.active_object.matrix_world = segment_world @ trafo @ bpy.context.active_object.matrix_world
 
         assigned_name = bpy.context.active_object.name
 
@@ -330,6 +332,17 @@ class OsimImporter(object):
             try:
                 muscle = self.muscles.Model.ForceSet.objects.RigidTendonMuscle[m]
                 type = 'RIGID_TENDON'
+                self.import_muscles(muscle, type)
+                m += 1
+            except:
+                break
+
+        # import Myorobotics Muscles
+        m = 0
+        while (True):
+            try:
+                muscle = self.muscles.Model.ForceSet.objects.MyoroboticsMuscle[m]
+                type = 'MYOROBOTICS'
                 self.import_muscles(muscle, type)
                 m += 1
             except:

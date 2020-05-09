@@ -70,7 +70,7 @@ class SelectCoordinateFrame(RDOperator):
     bl_idname = config.OPERATOR_PREFIX + "selectcf"
     bl_label = "Select Mesh"
 
-    mesh_name = StringProperty()
+    mesh_name: StringProperty()
 
     @classmethod
     def run(cls, mesh_name=""):
@@ -105,7 +105,7 @@ class RebuildModel(RDOperator):
     **RDOperator.Postconditions:**
     """
     bl_idname = config.OPERATOR_PREFIX + "rebuildmodel"
-    bl_label = "Rebuild model"
+    bl_label = "Rebuild Model"
 
     @classmethod
     def run(cls):
@@ -182,9 +182,9 @@ class SelectModel(RDOperator):
     **RDOperator.Postconditions:**
     """
     bl_idname = config.OPERATOR_PREFIX + "selectarmature"
-    bl_label = "Select model"
+    bl_label = "Select Model"
 
-    model_name = StringProperty()
+    model_name: StringProperty()
 
     @classmethod
     def run(cls, model_name=""):
@@ -195,11 +195,10 @@ class SelectModel(RDOperator):
     def execute(self, context):
         from . import segments
         for obj in context.scene.objects:
-            obj.select = False
+            obj.select_set(False)
 
-        context.scene.objects.active = bpy.data.objects[self.model_name]
-        context.active_object.select = True
-        global_properties.old_name.set(context.scene, self.model_name)
+        context.view_layer.objects.active = bpy.data.objects[self.model_name]
+        context.active_object.select_set(True)
         global_properties.model_name.set(context.scene, self.model_name)
         # not so sure if this is needed at all
 
@@ -220,9 +219,9 @@ class RenameModel(RDOperator):
     **RDOperator.Postconditions:**
     """
     bl_idname = config.OPERATOR_PREFIX + "renamearmature"
-    bl_label = "Rename selected armature"
+    bl_label = "Rename Selected Armature"
 
-    newName = StringProperty(name="Enter new name:")
+    newName: StringProperty(name="Enter new name:")
 
     @classmethod
     def run(cls, newName=""):
@@ -259,9 +258,9 @@ class JoinModels(RDOperator):
     """
     bl_idname = config.OPERATOR_PREFIX + "joinarmature"
 
-    bl_label = "Join two models"
+    bl_label = "Join Two Models"
 
-    targetArmatureName = StringProperty()
+    targetArmatureName: StringProperty()
 
     @classmethod
     def run(cls, targetArmatureName=""):
@@ -278,7 +277,7 @@ class JoinModels(RDOperator):
         sourceArmName = context.active_object.name
         sourceParentBoneName = context.active_object.data.bones[0].name
         SelectModel.run(model_name=self.targetArmatureName)
-        bpy.data.objects[sourceArmName].select = True
+        bpy.data.objects[sourceArmName].select_set(True)
 
         bpy.ops.object.join()
         segments.SelectSegment.run(segment_name=sourceParentBoneName)
@@ -300,10 +299,10 @@ class CreateNewModel(RDOperator):
     **RDOperator.Postconditions:**
     """
     bl_idname = config.OPERATOR_PREFIX + "create_model"
-    bl_label = "Create new robot model"
+    bl_label = "Create New Robot Model"
 
-    model_name = StringProperty(name="Enter model name:")
-    base_segment_name = StringProperty(name="Enter root segment name:", default="")
+    model_name: StringProperty(name="Enter model name:")
+    base_segment_name: StringProperty(name="Enter root segment name:", default="")
 
     @classmethod
     def run(cls, model_name, base_segment_name):
@@ -322,9 +321,9 @@ class CreateNewModel(RDOperator):
         model_object.data = model_data
         model_data.show_names = True
         model_data.show_axes = True
-        model_data.draw_type = 'STICK'
+        model_data.display_type = 'STICK'
         scene = bpy.context.scene
-        scene.objects.link(model_object)
+        scene.collection.objects.link(model_object)
         bpy.data.objects[self.model_name].RobotDesigner.modelMeta.model_config = self.model_name
         SelectModel.run(model_name=self.model_name)
         if self.base_segment_name:
@@ -333,6 +332,7 @@ class CreateNewModel(RDOperator):
 
     def invoke(self, context, event):
         return context.window_manager.invoke_props_dialog(self)
+
 
 # def createArmature(new_name):
 #     """

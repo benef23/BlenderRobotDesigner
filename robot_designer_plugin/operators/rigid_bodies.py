@@ -65,9 +65,9 @@ class SelectGeometry(RDOperator):
     second to the selected model (Blender object with :class:`bpy.types.Armature` data)
     """
     bl_idname = config.OPERATOR_PREFIX + "select_geometry"
-    bl_label = "Select geometry"
+    bl_label = "Select Geometry"
 
-    geometry_name = StringProperty()
+    geometry_name: StringProperty()
 
     @classmethod
     def run(cls, geometry_name=""):
@@ -99,8 +99,8 @@ class RenameGeometry(RDOperator):
     """
 
     bl_idname = config.OPERATOR_PREFIX + "rename_mesh"
-    bl_label = "Rename seleted mesh"
-    new_name = StringProperty(name="Enter new name:")
+    bl_label = "Rename Selected Mesh"
+    new_name: StringProperty(name="Enter new name:")
 
 
     @RDOperator.OperatorLogger
@@ -128,9 +128,9 @@ class AssignGeometry(RDOperator):
     :ref:`operator` for assigning a geometry to a segment.
     """
     bl_idname = config.OPERATOR_PREFIX + "assign_geometry"
-    bl_label = "Assign selected geometry to active segment"
+    bl_label = "Assign Selected Geometry to Active Segment"
 
-    attach_collision_geometry = BoolProperty(name="Assign as Collision Mesh",
+    attach_collision_geometry: BoolProperty(name="Assign as Collision Mesh",
                                              description="Adds a collision tag to the mesh",
                                              default=False)
 
@@ -193,7 +193,7 @@ class RenameAllGeometries(RDOperator):
     :ref:`operator` for renaming geometries using their parented segment's name.
     """
     bl_idname = config.OPERATOR_PREFIX + "rename_geometries"
-    bl_label = "Rename geometries after segments"
+    bl_label = "Rename Geometries After Segments"
 
     @classmethod
     def run(cls):
@@ -232,7 +232,7 @@ class DetachGeometry(RDOperator):
     :term:`operator` for detaching a single :term:`geometry` form a :term:`segment`.
     """
     bl_idname = config.OPERATOR_PREFIX + "unassignmesh"
-    bl_label = "Detach selected geometry"
+    bl_label = "Detach Selected Geometry"
 
     @classmethod
     def run(cls):
@@ -266,9 +266,9 @@ class DetachAllGeometries(RDOperator):
     :ref:`operator` for detaching *all* :term:`geometries` from the selected :term:`model`.
     """
     bl_idname = config.OPERATOR_PREFIX + "unassignallmeshes"
-    bl_label = "Detach all geometries"
+    bl_label = "Detach All Geometries"
 
-    confirmation = BoolProperty(
+    confirmation: BoolProperty(
         name="This disconnects all collision OR visual geometries from the model. Are you sure?")
 
     @classmethod
@@ -325,7 +325,7 @@ class SelectAllGeometries(RDOperator):
 
     """
     bl_idname = config.OPERATOR_PREFIX + "setallmeshesactiveobject"
-    bl_label = "Select all geometries"
+    bl_label = "Select All Geometries"
 
     @classmethod
     def run(cls):
@@ -342,8 +342,8 @@ class SelectAllGeometries(RDOperator):
         bpy.ops.object.select_all(action='DESELECT')
 
         for mesh in meshes:
-            bpy.data.objects[mesh].select = True
-            context.scene.objects.active = bpy.data.objects[mesh]
+            bpy.data.objects[mesh].select_set(True)
+            context.view_layer.objects.active = bpy.data.objects[mesh]
 
         return {'FINISHED'}
 
@@ -355,7 +355,7 @@ class SetGeometryActive(RDOperator):
     :ref:`operator` for ...
     """
     bl_idname = config.OPERATOR_PREFIX + "setseletedmeshactiveobject"
-    bl_label = "Make geometry active"
+    bl_label = "Make Geometry Active"
 
     @classmethod
     def run(cls):
@@ -366,8 +366,8 @@ class SetGeometryActive(RDOperator):
         selected = [i.name for i in bpy.context.selected_objects if i.type == 'MESH'][0]
         bpy.ops.object.mode_set(mode='OBJECT')
         bpy.ops.object.select_all(action='DESELECT')
-        bpy.data.objects[selected].select = True
-        context.scene.objects.active = bpy.data.objects[selected]
+        bpy.data.objects[selected].select_set(True)
+        context.view_layer.objects.active = bpy.data.objects[selected]
         return {'FINISHED'}
 
 
@@ -380,7 +380,7 @@ class ReduceAllGeometry(RDOperator):
 
     """
     bl_idname = config.OPERATOR_PREFIX + "polygonallreduction"
-    bl_label = "Apply to all meshes"
+    bl_label = "Apply to All Meshes"
 
     @classmethod
     def run(cls):

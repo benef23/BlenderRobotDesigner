@@ -111,38 +111,54 @@ class StartSimulationJoints(RDOperator):
     @RDOperator.Postconditions(ModelSelected)
     def execute(self, context):
 
+<<<<<<< HEAD
         def selectrobot(blenderrobots):
             """
             select robot to simulate
             """
+=======
+        def selectrobot(blenderrobots):  #select robot to simulate
+>>>>>>> c729e77
             robot_tosimulate = blenderrobots[0].name
 
             return robot_tosimulate
 
+<<<<<<< HEAD
         def listbones(numberindividuals, robot_tosimulate):
             """
             get bones of the armature robot_tosimulate
             """
+=======
+        def listbones(numberindividuals, robot_tosimulate):  #get bones of the armature robot_tosimulate
+>>>>>>> c729e77
             for r in range(numberindividuals):
                 M_bones_list = [obj.name for obj in bpy.data.armatures[robot_tosimulate].bones]
 
             return M_bones_list
 
+<<<<<<< HEAD
         def numbits (upper_limit, lower_limit, decimal_precision):
             """
             number of bits needed to represent the variable value in a binary string.
             normaliz is for normalizing values when converting from real to bin, and viceversa
             """
+=======
+        def numbits (upper_limit, lower_limit, decimal_precision):  #number of bits needed to represent the variable value in a binary string. normaliz is for normalizing values when converting from real to bin, and viceversa
+>>>>>>> c729e77
             bits_string = int(np.ceil(math.log10((upper_limit - lower_limit) * (10 ** decimal_precision)) / math.log10(2)))
             max_bin = bin(2**bits_string-1)[2:]
             normaliz = (int(str(max_bin),2)/2)/(10 ** decimal_precision)
 
             return bits_string, normaliz
 
+<<<<<<< HEAD
         def getparameters (M_bones_list, robot_tosimulate):
             """
             get the x, y, z position of the bones in M_bones_list
             """
+=======
+        def getparameters (M_bones_list, robot_tosimulate):  #get the x, y, z position of the bones in M_bones_list
+>>>>>>> c729e77
             M_ch_real = [[0 for i in range(3)] for j in range(len(M_bones_list))]
 
             bpy.context.scene.objects.active = bpy.data.objects[robot_tosimulate]
@@ -151,16 +167,24 @@ class StartSimulationJoints(RDOperator):
                     bpy.context.active_object.data.bones.active.select = False
                     bone = bpy.context.active_object.data.bones[M_bones_list[b]]
                     bone.select = True
+<<<<<<< HEAD
                     x_pos_real, y_pos_real, z_pos_real = bone.RobotDesigner.Euler.x.value, bone.RobotDesigner.Euler.y.value, bone.RobotDesigner.Euler.z.value
+=======
+                    x_pos_real, y_pos_real, z_pos_real = bone.RobotEditor.Euler.x.value, bone.RobotEditor.Euler.y.value, bone.RobotEditor.Euler.z.value
+>>>>>>> c729e77
 
                     M_ch_real[b] = [x_pos_real, y_pos_real, z_pos_real]
 
             return M_ch_real
 
+<<<<<<< HEAD
         def individualsgen (gen, M_M_M_historial, M_bones_list, M_ch_real):
             """
             get segments' position from individuals of previous generation
             """
+=======
+        def individualsgen (gen, M_M_M_historial, M_bones_list, M_ch_real):  #get segments' position from individuals of previous generation
+>>>>>>> c729e77
             if gen == 0:
                 M_ch_realextra = [[(random.randint(-int(max(max(M_ch_real))), int(max(max(M_ch_real))))) for i in range(3)] for j in range(len(M_bones_list))]
                 M_M_ch_real = [M_ch_real, M_ch_realextra]  #M_ch_realextra is an individual with random segments' position values to pair with the initial robot
@@ -170,10 +194,14 @@ class StartSimulationJoints(RDOperator):
 
             return M_M_ch_real
 
+<<<<<<< HEAD
         def code (M_M_ch_real, M_bones_list, normaliz, decimal_precision, bits_string):
             """
             code from real system number to binary system
             """
+=======
+        def code (M_M_ch_real, M_bones_list, normaliz, decimal_precision, bits_string):  #code from real system number to binary system
+>>>>>>> c729e77
             M_M_ch_bin = []
             for m in range(len(M_M_ch_real)):
                 M_ch_bin = [[bin(0)[2:].zfill(bits_string) for i in range(3)] for j in range(len(M_bones_list))]
@@ -185,10 +213,14 @@ class StartSimulationJoints(RDOperator):
                 M_M_ch_bin.append(M_ch_bin)
             return M_M_ch_bin
 
+<<<<<<< HEAD
         def robotstructure(M_bones_list, robot_tosimulate):
             """
             get the tree structure of the robot
             """
+=======
+        def robotstructure(M_bones_list, robot_tosimulate):  #get the tree structure of the robot
+>>>>>>> c729e77
             tree_structure=[]
 
             for b in range(len(M_bones_list)):
@@ -205,10 +237,14 @@ class StartSimulationJoints(RDOperator):
 
             return tree_structure
 
+<<<<<<< HEAD
         def iniboneposition(M_bones_list, robot_tosimulate):
             """
             get initial position of the armature's segments
             """
+=======
+        def iniboneposition(M_bones_list, robot_tosimulate):  #get initial position of the armature's segments
+>>>>>>> c729e77
             bone_position=[]
 
             for b in range(len(M_bones_list)):
@@ -217,6 +253,7 @@ class StartSimulationJoints(RDOperator):
 
             return bone_position
 
+<<<<<<< HEAD
         def inimeshposition():
             """
             get initial position of armature's meshes
@@ -225,6 +262,12 @@ class StartSimulationJoints(RDOperator):
 
             meshes = [obj.name for obj in bpy.data.objects \
                 if obj.type == 'MESH' if obj.RobotDesigner.tag == "DEFAULT"]
+=======
+        def inimeshposition():  #get initial position of armature's meshes
+            mesh_position = []
+
+            meshes = [obj.name for obj in bpy.data.objects if obj.type == 'MESH']
+>>>>>>> c729e77
 
             for m in range(len(meshes)):
                 pos_glob_mesh = bpy.data.objects[meshes[m]].matrix_world.to_translation()
@@ -232,6 +275,7 @@ class StartSimulationJoints(RDOperator):
 
             return mesh_position
 
+<<<<<<< HEAD
         def fitnessf (gen, M_bones_list, M_M_ch_real, tree_structure, M_ev_direction, M_fitness):
             """
             fitness function
@@ -241,6 +285,11 @@ class StartSimulationJoints(RDOperator):
                 """
                 generate general knowledge to evaluate the segments' movement direction in the fitness function
                 """
+=======
+        def fitnessf (gen, M_bones_list, M_M_ch_real, tree_structure, M_ev_direction, M_fitness):  #fitness function
+
+            def growthmatrix(children,matrix_children_pos):  # generate general knowledge to evaluate the segments' movement direction in the fitness function
+>>>>>>> c729e77
                 direction = [['' for i in range(3)] for j in range(len(children))]
 
                 for c in range(len(children)):
@@ -297,10 +346,14 @@ class StartSimulationJoints(RDOperator):
 
             return fitness, meta_parent, M_ev_direction, M_fitness
 
+<<<<<<< HEAD
         def selectionbin (gen, M_M_ch_bin, num_offspring, s_rate, fitness):
             """
             selection for GA: mate 2 x num_offspring times the individuals for kepping offspring population size after crossover
             """
+=======
+        def selectionbin (gen, M_M_ch_bin, num_offspring, s_rate, fitness):  #selection for GA: mate 2 x num_offspring times the individuals for kepping offspring population size after crossover
+>>>>>>> c729e77
             selected_matrices = []
 
             if gen==0: #in generation 0 there is no selection
@@ -326,10 +379,14 @@ class StartSimulationJoints(RDOperator):
 
             return selected_matrices
 
+<<<<<<< HEAD
         def crossoverbin (bits_string, selected_matrices, M_M_ch_bin):
             """
             crossover for GA
             """
+=======
+        def crossoverbin (bits_string, selected_matrices, M_M_ch_bin): #crossover for GA
+>>>>>>> c729e77
             M_M_cross = []
 
             for m in range(len(selected_matrices)):
@@ -342,10 +399,14 @@ class StartSimulationJoints(RDOperator):
 
             return M_M_cross
 
+<<<<<<< HEAD
         def mutationbin (gen,M_M_cross, M_M_ch_bin, bits_string, mutation_rate):
             """
             mutation for GA
             """
+=======
+        def mutationbin (gen,M_M_cross, M_M_ch_bin, bits_string, mutation_rate):  #mutation for GA
+>>>>>>> c729e77
             M_M_mut = [0 for i in range(len(M_M_cross))]
 
             for o in range(len(M_M_cross)):
@@ -366,10 +427,14 @@ class StartSimulationJoints(RDOperator):
 
             return M_M_mut
 
+<<<<<<< HEAD
         def selectionreal (gen, M_M_ch_real, num_offspring, s_rate, fitness):
             """
             selection for ES: mate 2 x num_offspring times the individuals for kepping offspring population size after crossover
             """
+=======
+        def selectionreal (gen, M_M_ch_real, num_offspring, s_rate, fitness):  #selection for ES: mate 2 x num_offspring times the individuals for kepping offspring population size after crossover
+>>>>>>> c729e77
             selected_matrices = []
 
             if gen==0: #only two parent reproduce all offspring
@@ -395,10 +460,14 @@ class StartSimulationJoints(RDOperator):
 
             return selected_matrices
 
+<<<<<<< HEAD
         def crossoverreal (selected_matrices, M_M_ch_real):
             """
             crossover for ES
             """
+=======
+        def crossoverreal (selected_matrices, M_M_ch_real): #crossover for ES
+>>>>>>> c729e77
             M_M_cross = []
 
             for m in range(len(selected_matrices)):
@@ -413,10 +482,14 @@ class StartSimulationJoints(RDOperator):
 
             return M_M_cross
 
+<<<<<<< HEAD
         def mutationreal (M_M_cross, M_M_ch_real, mutation_rate, mutation_deviation):
             """
             mutation for ES
             """
+=======
+        def mutationreal (M_M_cross, M_M_ch_real, mutation_rate, mutation_deviation): #mutation for ES
+>>>>>>> c729e77
             M_M_mut = [0 for i in range(len(M_M_cross))]
 
             for o in range(len(M_M_cross)):
@@ -433,10 +506,14 @@ class StartSimulationJoints(RDOperator):
 
             return M_M_mut
 
+<<<<<<< HEAD
         def decode(M_M_mut, M_bones_list, normaliz, decimal_precision):
             """
             decode bones' positions from binary to real
             """
+=======
+        def decode(M_M_mut, M_bones_list, normaliz, decimal_precision): #decode bones' positions from binary to real
+>>>>>>> c729e77
             M_M_newch_real = []
 
             for o in range(len(M_M_mut)):
@@ -449,27 +526,39 @@ class StartSimulationJoints(RDOperator):
 
             return M_M_newch_real
 
+<<<<<<< HEAD
         def historialgen (M_M_newch_real, M_M_M_historial):
             """
             record individuals bone's position for all generations
             """
+=======
+        def historialgen (M_M_newch_real, M_M_M_historial):  #record individuals bone's position for all generations
+>>>>>>> c729e77
             M_M_M_historial.append(M_M_newch_real)
 
             return M_M_M_historial
 
+<<<<<<< HEAD
         def createrobotinstances(gen, num_offspring, robot_tosimulate, M_bones_list, list_instances, offset_o, offset_g):
             """
             create robot instances to plot all individuals
             """
+=======
+        def createrobotinstances(gen, num_offspring, robot_tosimulate, M_bones_list, list_instances, offset_o, offset_g): #create robot instances to plot all individuals
+>>>>>>> c729e77
 
             for i in range(num_offspring):
 
                 context.scene.objects.active = bpy.data.objects[robot_tosimulate]
                 context.active_object.select = True
+<<<<<<< HEAD
                 meshes = [obj.name for obj in bpy.data.objects \
                             if not obj.parent_bone is None \
                             and obj.type == 'MESH' and obj.RobotDesigner.tag == 'DEFAULT'
                             and obj.parent == bpy.data.objects[robot_tosimulate]]
+=======
+                meshes = [obj.name for obj in bpy.data.objects if not obj.parent_bone is None and obj.type == 'MESH' and obj.parent == bpy.data.objects[robot_tosimulate]]
+>>>>>>> c729e77
 
                 for m in range(len(meshes)):
                     bpy.data.objects[meshes[m]].select = True
@@ -487,10 +576,14 @@ class StartSimulationJoints(RDOperator):
 
         def visualprop (gen, robot_tosimulate, M_bones_list, M_M_newch_real, M_ch_real, list_instances, indiv, tree_structure, initial_bone_position, initial_mesh_position): #COMPLEX FUNCTION! change visual properties of the meshes
 
+<<<<<<< HEAD
             def bonematrixrotation_L_G(robot_tosimulate, bone_to_rot, dx, dy, dz):
                 """
                 matrix rotation of the bones to achieve correct bone position when translating them in local coordinates
                 """
+=======
+            def bonematrixrotation_L_G(robot_tosimulate, bone_to_rot, dx, dy, dz):  #matrix rotation of the bones to achieve correct bone position when translating them in local coordinates
+>>>>>>> c729e77
 
                 bone = bpy.data.armatures[robot_tosimulate].bones[bone_to_rot].parent
                 gAl = np.identity(3)
@@ -504,10 +597,14 @@ class StartSimulationJoints(RDOperator):
 
                 return d_g
 
+<<<<<<< HEAD
             def editmode_mesh(mesh_to_edit):
                 """
                 from object to edit mode of a mesh
                 """
+=======
+            def editmode_mesh(mesh_to_edit):  #from object to edit mode of a mesh
+>>>>>>> c729e77
                 bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
                 bpy.ops.object.select_all(action='DESELECT')
                 mesh = bpy.data.objects[mesh_to_edit]
@@ -532,10 +629,16 @@ class StartSimulationJoints(RDOperator):
                 ##################################################################check if the bone has a mesh attached. if not, got to its children
                 meshes = []
                 for c in range(len(chi_indexes)):
+<<<<<<< HEAD
                     mesh = [obj.name for obj in bpy.data.objects \
                             if not obj.parent_bone is None \
                             and obj.type == 'MESH' and obj.RobotDesigner.tag == 'DEFAULT'\
                             and bpy.data.armatures[robot_tosimulate].bones[obj.parent_bone].name == M_bones_list[chi_indexes[c]]]
+=======
+                    mesh = [obj.name for obj in bpy.data.objects if
+                            not obj.parent_bone is None and obj.type == 'MESH' and
+                            bpy.data.armatures[robot_tosimulate].bones[obj.parent_bone].name == M_bones_list[chi_indexes[c]]]
+>>>>>>> c729e77
                     meshes.append(mesh)
 
                 for m in range(len(meshes)):
@@ -548,15 +651,23 @@ class StartSimulationJoints(RDOperator):
 
                 if result == 'all': #meshes when all individuals are plotted
                     meshes = [obj.name for obj in bpy.data.objects if
+<<<<<<< HEAD
                               not obj.parent_bone is None and obj.type == 'MESH' \
                               and obj.RobotDesigner.tag == 'DEFAULT' \
                               and obj.parent.name == list_instances[gen - 1][indiv] and
+=======
+                              not obj.parent_bone is None and obj.type == 'MESH' and obj.parent.name == list_instances[gen - 1][indiv] and
+>>>>>>> c729e77
                               bpy.data.armatures[robot_tosimulate].bones[obj.parent_bone].name == parent_p]
 
                 if result == 'best': #meshes when only the best individual is plotted
                     meshes = [obj.name for obj in bpy.data.objects if  # meshes of the parent
+<<<<<<< HEAD
                               not obj.parent_bone is None and obj.type == 'MESH' \
                               and obj.RobotDesigner.tag == 'DEFAULT' and \
+=======
+                              not obj.parent_bone is None and obj.type == 'MESH' and
+>>>>>>> c729e77
                               bpy.data.armatures[robot_tosimulate].bones[obj.parent_bone].name == parent_p]
 
                 for m in range(len(meshes)):
@@ -643,10 +754,14 @@ class StartSimulationJoints(RDOperator):
 
             return None
 
+<<<<<<< HEAD
         def sendparametersall(gen, robot_tosimulate, M_M_newch_real, M_bones_list, num_offspring, list_instances, M_ch_real, tree_structure, initial_bone_position, initial_mesh_position):
             """
             send segment's position value to Blender when all individuals are plotted
             """
+=======
+        def sendparametersall(gen, robot_tosimulate, M_M_newch_real, M_bones_list, num_offspring, list_instances, M_ch_real, tree_structure, initial_bone_position, initial_mesh_position):  #send segment's position value to Blender when all individuals are plotted
+>>>>>>> c729e77
 
             for indiv in range(num_offspring):
                 context.scene.objects.active = bpy.data.objects[list_instances[gen-1][indiv]]
@@ -657,21 +772,34 @@ class StartSimulationJoints(RDOperator):
                     bone = bpy.context.active_object.data.bones[M_bones_list[b]]
                     bpy.context.active_object.data.bones.active.select = False
                     bone.select = True
+<<<<<<< HEAD
                     bone.RobotDesigner.Euler.x.value = M_M_newch_real[indiv][b][0]  #x position
+=======
+                    bone.RobotEditor.Euler.x.value = M_M_newch_real[indiv][b][0]  #x position
+>>>>>>> c729e77
 
                     bone = bpy.context.active_object.data.bones[M_bones_list[b]]
                     bpy.context.active_object.data.bones.active.select = False
                     bone.select = True
+<<<<<<< HEAD
                     bone.RobotDesigner.Euler.y.value = M_M_newch_real[indiv][b][1]  #y position
+=======
+                    bone.RobotEditor.Euler.y.value = M_M_newch_real[indiv][b][1]  #y position
+>>>>>>> c729e77
 
                     bone = bpy.context.active_object.data.bones[M_bones_list[b]]
                     bpy.context.active_object.data.bones.active.select = False
                     bone.select = True
+<<<<<<< HEAD
                     bone.RobotDesigner.Euler.z.value = M_M_newch_real[indiv][b][2]  #z position
+=======
+                    bone.RobotEditor.Euler.z.value = M_M_newch_real[indiv][b][2]  #z position
+>>>>>>> c729e77
 
                 visualprop(gen, robot_tosimulate, M_bones_list, M_M_newch_real, M_ch_real, list_instances, indiv, tree_structure, initial_bone_position, initial_mesh_position) #change meshes' visual properties
 
             bpy.ops.object.select_all(action='DESELECT')
+<<<<<<< HEAD
             bpy.ops.robotdesigner.selectarmature(model_name=robot_tosimulate)
 
             return None
@@ -680,13 +808,25 @@ class StartSimulationJoints(RDOperator):
             """
             send segment's position value to Blender when only the best individual is plotted
             """
+=======
+            bpy.ops.roboteditor.selectarmature(model_name=robot_tosimulate)
+
+            return None
+
+        def sendparametersbest(gen, robot_tosimulate, M_M_newch_real, M_bones_list, M_ch_real, tree_structure, fitness, initial_bone_position, initial_mesh_position): #send segment's position value to Blender when only the best individual is plotted
+
+>>>>>>> c729e77
             best_fitness = max(fitness) #get best individual
             index_best = fitness.index(best_fitness)
 
             for b in range(len(M_bones_list)):
                 mesh = [obj.name for obj in bpy.data.objects if
                         obj.parent_bone == bpy.data.armatures[robot_tosimulate].bones[M_bones_list[b]].name
+<<<<<<< HEAD
                         and obj.type == 'MESH' and obj.RobotDesigner.tag == "DEFAULT"]
+=======
+                        and obj.type == 'MESH']
+>>>>>>> c729e77
 
                 if not bpy.data.armatures[robot_tosimulate].bones[M_bones_list[b]].parent_recursive or not mesh: #not moving metaparent or bones without mesh
                     None
@@ -694,21 +834,34 @@ class StartSimulationJoints(RDOperator):
                     bone = bpy.context.active_object.data.bones[M_bones_list[b]]
                     bpy.context.active_object.data.bones.active.select = False
                     bone.select = True
+<<<<<<< HEAD
                     bone.RobotDesigner.Euler.x.value = M_M_newch_real[index_best][b][0]  # x position
+=======
+                    bone.RobotEditor.Euler.x.value = M_M_newch_real[index_best][b][0]  # x position
+>>>>>>> c729e77
 
                     bone = bpy.context.active_object.data.bones[M_bones_list[b]]
                     bpy.context.active_object.data.bones.active.select = False
                     bone.select = True
+<<<<<<< HEAD
                     bone.RobotDesigner.Euler.y.value = M_M_newch_real[index_best][b][1]  # y position
+=======
+                    bone.RobotEditor.Euler.y.value = M_M_newch_real[index_best][b][1]  # y position
+>>>>>>> c729e77
 
                     bone = bpy.context.active_object.data.bones[M_bones_list[b]]
                     bpy.context.active_object.data.bones.active.select = False
                     bone.select = True
+<<<<<<< HEAD
                     bone.RobotDesigner.Euler.z.value = M_M_newch_real[index_best][b][2]  # z position
+=======
+                    bone.RobotEditor.Euler.z.value = M_M_newch_real[index_best][b][2]  # z position
+>>>>>>> c729e77
 
             visualprop(gen, robot_tosimulate, M_bones_list, M_M_newch_real, M_ch_real, M_bones_list, index_best, tree_structure, initial_bone_position, initial_mesh_position)
 
             bpy.ops.object.select_all(action='DESELECT')
+<<<<<<< HEAD
             bpy.ops.robotdesigner.selectarmature(model_name=robot_tosimulate)
 
             return None
@@ -717,6 +870,14 @@ class StartSimulationJoints(RDOperator):
             """
             function to write in a csv the evaluation data to get the plots. it should be used in combination with the file "plots_ea", since matplotlib does not work in blender
             """
+=======
+            bpy.ops.roboteditor.selectarmature(model_name=robot_tosimulate)
+
+            return None
+
+        def toolbox(max_gen, M_fitness, M_bones_list, M_M_M_historial, M_ch_real): #function to write in a csv the evaluation data to get the plots. it should be used in combination with the file "plots_ea", since matplotlib does not work in blender
+
+>>>>>>> c729e77
             def removecsvfile (fname):
                 os.remove(fname)
 
@@ -729,10 +890,14 @@ class StartSimulationJoints(RDOperator):
 
                 return None
 
+<<<<<<< HEAD
             def fitnessplot (max_gen, M_fitness):
                 """
                 specify path for the cvs
                 """
+=======
+            def fitnessplot (max_gen, M_fitness): #specify path for the cvs
+>>>>>>> c729e77
                 fname = 'C:/tmp/fitness.csv'
                 if os.path.isfile(fname)==True:
                     removecsvfile(fname)
@@ -743,10 +908,14 @@ class StartSimulationJoints(RDOperator):
 
                 return None
 
+<<<<<<< HEAD
             def growthplot (max_gen, M_bones_list, M_M_M_historial, M_ch_real):
                 """
                 specify path for the cvs
                 """
+=======
+            def growthplot (max_gen, M_bones_list, M_M_M_historial, M_ch_real): #specify path for the cvs
+>>>>>>> c729e77
                 fname1 = 'C:/tmp/maxgrowth.csv'
                 if os.path.isfile(fname1)==True:
                     removecsvfile(fname1)
@@ -782,10 +951,15 @@ class StartSimulationJoints(RDOperator):
             return None
 
 
+<<<<<<< HEAD
         def main():
             """
             Main function for the simulator
             """
+=======
+        """Main function for the simulator"""
+        def main():
+>>>>>>> c729e77
             gen=0
             RD=context.scene.RobotDesigner
             numberindividuals = RD.population_size  # number of individuals for simulation in generation 0
@@ -875,15 +1049,20 @@ class StartSimulationMeshes(RDOperator):
     @RDOperator.Postconditions(ModelSelected)
     def execute(self, context):
 
+<<<<<<< HEAD
         def selectrobot(robot_to_sim):
             """
             select robot to simulate
             """
             print("Select Robot")
+=======
+        def selectrobot(robot_to_sim):  #select robot to simulate
+>>>>>>> c729e77
             armature_name = robot_to_sim[0].name
 
             return armature_name
 
+<<<<<<< HEAD
         def editmode_mesh(mesh_to_edit):
             """
             go to edit mode
@@ -894,12 +1073,21 @@ class StartSimulationMeshes(RDOperator):
             mesh = bpy.data.objects[mesh_to_edit]
             mesh.select = True
             bpy.context.scene.objects.active = mesh
+=======
+        def editmode_mesh(mesh_to_edit): #go to edit mode
+            bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+            bpy.ops.object.select_all(action='DESELECT')
+            mesh = bpy.data.objects[mesh_to_edit]
+            mesh.select_set(True)
+            bpy.context.view_layer.objects.active = mesh
+>>>>>>> c729e77
             bpy.ops.object.mode_set(mode='EDIT', toggle=False)
 
             obj = bpy.context.object.data
             bm = bmesh.from_edit_mesh(obj)
             return bm, obj, mesh
 
+<<<<<<< HEAD
         def meshes_initial_armature (armature_name):
             """
             get meshes of robot to simulate
@@ -916,15 +1104,27 @@ class StartSimulationMeshes(RDOperator):
             get all armatures of the Blender scene
             """
             print("Armatures scene")
+=======
+        def meshes_initial_armature (armature_name):  #get meshes of robot to simulate
+            meshes_name = [obj.name for obj in bpy.data.objects if obj.parent_bone is not None and obj.type == 'MESH']
+
+            return meshes_name
+
+        def armatures_scene ():  #get all armatures of the Blender scene
+>>>>>>> c729e77
             armatures = [obj.name for obj in bpy.data.objects if obj.type == 'ARMATURE']
 
             return armatures
 
+<<<<<<< HEAD
         def verts_co (armature_name, meshes):
             """
             get verts xyz position for the armature armature_name
             """
             print("Verts co")
+=======
+        def verts_co (armature_name, meshes): #get verts xyz position for the armature armature_name
+>>>>>>> c729e77
             pos_verts = [[] for m in range(len(meshes))]
 
             for m in range(len(meshes)):
@@ -938,16 +1138,24 @@ class StartSimulationMeshes(RDOperator):
 
             bpy.ops.object.mode_set(mode='OBJECT')
             bpy.ops.object.select_all(action='DESELECT')
+<<<<<<< HEAD
             bpy.ops.robotdesigner.selectarmature(model_name=armature_name)
+=======
+            bpy.ops.roboteditor.selectarmature(model_name=armature_name)
+>>>>>>> c729e77
 
 
             return pos_verts
 
+<<<<<<< HEAD
         def individualsgen (gen, pos_verts, historial_individuals):
             """
             get verts' position of individuals
             """
             print("inidividualsgen")
+=======
+        def individualsgen (gen, pos_verts, historial_individuals):  #get verts' position of individuals
+>>>>>>> c729e77
             if gen == 0:
                 individuals_ch = [pos_verts, pos_verts]
 
@@ -956,20 +1164,29 @@ class StartSimulationMeshes(RDOperator):
 
             return individuals_ch
 
+<<<<<<< HEAD
         def historialgen (individuals_ch, historial_individuals):
             """
             store verts position of the population individuals
             """
             print("historialgen")
+=======
+        def historialgen (individuals_ch, historial_individuals):  #store verts position of the population individuals
+>>>>>>> c729e77
             historial_individuals.append(individuals_ch)
 
             return historial_individuals
 
+<<<<<<< HEAD
         def fitnessfunction (individuals_ch, ini_verts_co, meshes):
             """
             compute fitness of each vert of the meshes to get mesh fitness and, by summing all meshes fitness, claculate individual fitness
             """
             print("Fitnessfunction")
+=======
+        def fitnessfunction (individuals_ch, ini_verts_co, meshes): #compute fitness of each vert of the meshes to get mesh fitness and, by summing all meshes fitness, claculate individual fitness
+
+>>>>>>> c729e77
             fitness = []
             for ind in range(len(individuals_ch)):
                 f_ind = []
@@ -984,6 +1201,7 @@ class StartSimulationMeshes(RDOperator):
                             f_ind.append(f)
 
                 fitness.append(np.sum(f_ind))
+<<<<<<< HEAD
             print("Fitness is:", fitness)
             return fitness
 
@@ -992,6 +1210,12 @@ class StartSimulationMeshes(RDOperator):
             selection: mate 2 x num_offspring times the individuals for kepping offspring population size after crossover
             """
             print("Selection")
+=======
+
+            return fitness
+
+        def selection (gen, individuals_ch, num_offspring, s_rate, fitnesses):  #selection: mate 2 x num_offspring times the individuals for kepping offspring population size after crossover
+>>>>>>> c729e77
             selected = []
 
             if gen==0:
@@ -1017,11 +1241,15 @@ class StartSimulationMeshes(RDOperator):
 
             return selected
 
+<<<<<<< HEAD
         def crossover (selected, meshes):
             """
             crossover
             """
             print("Crossover")
+=======
+        def crossover (selected, meshes): #crossover
+>>>>>>> c729e77
             crossed = []
 
             for s in range(len(selected)):
@@ -1040,10 +1268,14 @@ class StartSimulationMeshes(RDOperator):
             return crossed
 
         def mutation (crossed, mutation_rate, mutation_deviation, meshes):
+<<<<<<< HEAD
             """
             mutation
             """
             print("Mutation")
+=======
+
+>>>>>>> c729e77
             mutated = []
             for o in range(len(crossed)):
                 mutated_ind = []
@@ -1064,6 +1296,7 @@ class StartSimulationMeshes(RDOperator):
 
             return mutated
 
+<<<<<<< HEAD
         def best_ind (mutated, ini_verts_co, meshes):
             """
             get best infividual of a generation
@@ -1080,6 +1313,18 @@ class StartSimulationMeshes(RDOperator):
             adaptability function to get smoother geometries
             """
             print("Neighbours Adapt")
+=======
+        def best_ind (mutated, ini_verts_co, meshes): #get best infividual of a generation
+
+            fitness_last = fitnessfunction(mutated, ini_verts_co, meshes)
+            best_fitness = max(fitness_last)
+            index_best = fitness_last.index(best_fitness)
+
+            return index_best
+
+        def neighbours_adapt (mutated, armature_name, meshes, adapt_rate, ind): # adaptability function to get smoother geometries
+
+>>>>>>> c729e77
             for m in range(len(meshes)):
                 bm, obj, mesh = editmode_mesh(meshes[m])
 
@@ -1119,6 +1364,7 @@ class StartSimulationMeshes(RDOperator):
                 offspring_adapted = mutated
                 bpy.ops.object.mode_set(mode='OBJECT')
                 bpy.ops.object.select_all(action='DESELECT')
+<<<<<<< HEAD
                 bpy.ops.robotdesigner.selectarmature(model_name=armature_name)
 
             return offspring_adapted
@@ -1134,6 +1380,17 @@ class StartSimulationMeshes(RDOperator):
                 """
                 go to the parent of a particular segment
                 """
+=======
+                bpy.ops.roboteditor.selectarmature(model_name=armature_name)
+
+            return offspring_adapted
+
+        def minvertexbonedistance(armature_name, meshes): #get closer vertex of the bones to meshes
+            local_pos_verts = np.asarray(verts_co(armature_name, meshes))
+
+            def level_up_parent(armature_name, segment): #go to the parent of a particular segment
+
+>>>>>>> c729e77
                 if bpy.data.armatures[armature_name].bones[segment].parent:
                     segment_up = bpy.data.armatures[armature_name].bones[segment].parent.name
                 else:
@@ -1141,12 +1398,18 @@ class StartSimulationMeshes(RDOperator):
 
                 return segment_up
 
+<<<<<<< HEAD
             def checkmesh(armature_name, parent_ofsegment_name):
                 """
                 check if the bone has a mesh attached. If not, go to its parent
                 """
                 mesh = [obj.name for obj in bpy.data.objects if obj.parent_bone == bpy.data.armatures[armature_name].bones[parent_ofsegment_name].name
                         and obj.type == 'MESH' and obj.RobotDesigner.tag == "DEFAULT"]
+=======
+            def checkmesh(armature_name, parent_ofsegment_name): #check if the bone has a mesh attached. If not, go to its parent
+                mesh = [obj.name for obj in bpy.data.objects if obj.parent_bone == bpy.data.armatures[armature_name].bones[parent_ofsegment_name].name
+                        and obj.type == 'MESH']
+>>>>>>> c729e77
 
                 if not mesh:
                     parent_ofsegment_name = level_up_parent(armature_name, parent_ofsegment_name)
@@ -1162,7 +1425,11 @@ class StartSimulationMeshes(RDOperator):
                 parent_ofsegment_name = level_up_parent(armature_name, segment_ofmesh_name)
                 parent_ofsegment_name = checkmesh(armature_name, parent_ofsegment_name)
                 mesh_up = [obj.name for obj in bpy.data.objects if bpy.data.objects[obj.name].parent_bone == parent_ofsegment_name and obj.type == 'MESH'
+<<<<<<< HEAD
                            and obj.RobotDesigner.tag==bpy.data.objects[meshes[m]].RobotDesigner.tag][0] #get meshes of the parent segment
+=======
+                           and obj.RobotEditor.tag==bpy.data.objects[meshes[m]].RobotEditor.tag][0] #get meshes of the parent segment
+>>>>>>> c729e77
                 m_up = meshes.index(mesh_up)
 
                 global_pos_mesh = np.asarray(bpy.data.objects[meshes[m]].matrix_world.to_translation())
@@ -1188,11 +1455,15 @@ class StartSimulationMeshes(RDOperator):
 
             return min_index_parent_vert, meshes_up, initial_segment_position, global_pos_mesh_initial
 
+<<<<<<< HEAD
         def sendparametersbest (offspring_generation, ini_verts_co, armature_name, meshes):
             """
             send verts xyz position to Blender for the best individual
             """
             print("Send parameter best")
+=======
+        def sendparametersbest (offspring_generation, ini_verts_co, armature_name, meshes): #send verts xyz position to Blender for the best individual
+>>>>>>> c729e77
             fitness_last = fitnessfunction(offspring_generation, ini_verts_co, meshes)
             best_fitness = max(fitness_last)
             index_best = fitness_last.index(best_fitness)
@@ -1209,6 +1480,7 @@ class StartSimulationMeshes(RDOperator):
                     bm.verts[v].select = False
                     bmesh.update_edit_mesh(obj, True)
 
+<<<<<<< HEAD
                 mesh.select = False
 
             bpy.ops.object.mode_set(mode='OBJECT')
@@ -1229,6 +1501,23 @@ class StartSimulationMeshes(RDOperator):
                         if obj.parent_bone is not None and obj.type == 'MESH' \
                         and obj.RobotDesigner.tag == "DEFAULT" \
                         and obj.parent.name == list_instances[gen][ind]]
+=======
+                mesh.select_set(False)
+
+            bpy.ops.object.mode_set(mode='OBJECT')
+            bpy.ops.object.select_all(action='DESELECT')
+            bpy.ops.roboteditor.selectarmature(model_name=armature_name)
+
+            return None
+
+        def sendparametersgen (indiv_generation, armature_name, list_instances, gen, ind): #send verts xyz position to Blender for the best individual
+
+            bpy.ops.object.select_all(action='DESELECT')
+            context.scene.objects.active = bpy.data.objects[list_instances[gen][ind]]
+            context.active_object.select_set(True)
+            meshes = [obj.name for obj in bpy.data.objects if obj.parent_bone is not None and obj.type == 'MESH'
+                           and obj.parent.name == list_instances[gen][ind]]
+>>>>>>> c729e77
 
             for m in range(len(meshes)):
                 bm, obj, mesh = editmode_mesh(meshes[m])
@@ -1242,6 +1531,7 @@ class StartSimulationMeshes(RDOperator):
                     bm.verts[v].select = False
                     bmesh.update_edit_mesh(obj, True)
 
+<<<<<<< HEAD
                 mesh.select = False
 
             bpy.ops.object.mode_set(mode='OBJECT')
@@ -1255,6 +1545,18 @@ class StartSimulationMeshes(RDOperator):
             matrix rotation of the bones to achieve correct vertex position when translating them in local
             """
             print("Bone matrix Rotation")
+=======
+                mesh.select_set(False)
+
+            bpy.ops.object.mode_set(mode='OBJECT')
+            bpy.ops.object.select_all(action='DESELECT')
+            bpy.ops.roboteditor.selectarmature(model_name=armature_name)
+
+            return None
+
+        def bonematrixrotation(armature_name, segment, coo): #matrix rotation of the bones to achieve correct vertex position when translating them in local
+
+>>>>>>> c729e77
             bone = bpy.data.armatures[armature_name].bones[segment].parent
             gAl = np.identity(3)
 
@@ -1268,6 +1570,7 @@ class StartSimulationMeshes(RDOperator):
 
             return d_l
 
+<<<<<<< HEAD
         def placejoints_mesh (armature_name, min_index_parent_vert, ini_position_verts):
             """
             place mesh bone on the correct mesh spot
@@ -1277,10 +1580,19 @@ class StartSimulationMeshes(RDOperator):
                 segment_ofmesh = bpy.context.active_object.data.bones[segment_ofmesh_name]
                 bpy.ops.object.select_all(action='DESELECT')
                 bpy.data.objects[new_mesh_name[4:]].select = True
+=======
+        def placejoints_mesh (armature_name, min_index_parent_vert, ini_position_verts): #place mesh bone on the correct mesh spot
+
+            def reassign_mesh(meshes, m, segment_ofmesh_name, armature_name, new_mesh_name):
+                segment_ofmesh = bpy.context.active_object.data.bones[segment_ofmesh_name]
+                bpy.ops.object.select_all(action='DESELECT')
+                bpy.data.objects[new_mesh_name].select_set(True)
+>>>>>>> c729e77
                 bpy.context.active_object.data.bones.active = segment_ofmesh
                 bpy.context.active_object.data.bones.active.select = True
                 bpy.context.scene.objects.active = bpy.data.objects[armature_name]
                 bpy.ops.object.parent_set(type='BONE', keep_transform=True)
+<<<<<<< HEAD
                 obj = bpy.data.objects[new_mesh_name[4:]]
                 obj.name = meshes[m]
                 obj.RobotDesigner.fileName = obj.name
@@ -1288,11 +1600,21 @@ class StartSimulationMeshes(RDOperator):
                     obj.RobotDesigner.tag = 'COLLISION'
                 else:
                     obj.RobotDesigner.tag == 'DEFAULT'
+=======
+                obj = bpy.data.objects[new_mesh_name]
+                obj.name = meshes[m]
+                obj.RobotEditor.fileName = obj.name
+                if meshes[m][:3]=='COL':
+                    obj.RobotEditor.tag = 'COLLISION'
+                else:
+                    obj.RobotEditor.tag == 'DEFAULT'
+>>>>>>> c729e77
 
                 return None
 
             bpy.ops.object.select_all(action='DESELECT')
             context.scene.objects.active = bpy.data.objects[armature_name]
+<<<<<<< HEAD
             context.active_object.select = True
 
             meshes = [obj.name for obj in bpy.data.objects \
@@ -1304,6 +1626,15 @@ class StartSimulationMeshes(RDOperator):
                 print("range1", m)
                 print("range1", meshes[m])
                 print("range1",bpy.data.objects[meshes[m]].parent_bone)
+=======
+            context.active_object.select_set(True)
+
+            meshes = [obj.name for obj in bpy.data.objects if obj.parent_bone is not None and obj.type == 'MESH'
+                   and obj.parent.name == armature_name]
+
+            for m in range(len(meshes)):
+
+>>>>>>> c729e77
                 segment_ofmesh_name = bpy.data.objects[meshes[m]].parent_bone
 
                 bm, obj, _ = editmode_mesh(meshes[m])
@@ -1312,6 +1643,7 @@ class StartSimulationMeshes(RDOperator):
                 co_parent_joint = bonematrixrotation(armature_name, segment_ofmesh_name, co_parent_joint_G)
 
                 bpy.ops.object.mode_set(mode='OBJECT')
+<<<<<<< HEAD
                 bpy.ops.robotdesigner.selectarmature(model_name=armature_name)
                 segment_ofmesh = bpy.context.active_object.data.bones[segment_ofmesh_name]
 
@@ -1322,23 +1654,44 @@ class StartSimulationMeshes(RDOperator):
 
                 segment_ofmesh.select = True
                 segment_ofmesh.RobotDesigner.Euler.x.value += co_parent_joint[0]
+=======
+                bpy.ops.roboteditor.selectarmature(model_name=armature_name)
+                segment_ofmesh = bpy.context.active_object.data.bones[segment_ofmesh_name]
+
+                bpy.ops.roboteditor.select_geometry(geometry_name=meshes[m])
+                bpy.ops.roboteditor.unassignmesh()
+                new_mesh_name = bpy.context.selected_objects[0].name
+                bpy.ops.object.select_all(action='DESELECT')
+
+                segment_ofmesh.select = True
+                segment_ofmesh.RobotEditor.Euler.x.value += co_parent_joint[0]
+>>>>>>> c729e77
                 segment_ofmesh = bpy.context.active_object.data.bones[segment_ofmesh_name]
                 segment_ofmesh.select = False
 
                 segment_ofmesh.select = True
+<<<<<<< HEAD
                 segment_ofmesh.RobotDesigner.Euler.y.value += co_parent_joint[1]
+=======
+                segment_ofmesh.RobotEditor.Euler.y.value += co_parent_joint[1]
+>>>>>>> c729e77
                 segment_ofmesh = bpy.context.active_object.data.bones[segment_ofmesh_name]
                 segment_ofmesh.select = False
 
                 segment_ofmesh.select = True
+<<<<<<< HEAD
                 segment_ofmesh.RobotDesigner.Euler.z.value += co_parent_joint[2]
 
+=======
+                segment_ofmesh.RobotEditor.Euler.z.value += co_parent_joint[2]
+>>>>>>> c729e77
                 segment_ofmesh = bpy.context.active_object.data.bones[segment_ofmesh_name]
                 segment_ofmesh.select = False
 
                 reassign_mesh(meshes, m, segment_ofmesh_name, armature_name, new_mesh_name)
                 bpy.ops.object.select_all(action='DESELECT')
 
+<<<<<<< HEAD
                 bpy.ops.robotdesigner.selectarmature(model_name=armature_name)
             print("Place joints mesh done")
 
@@ -1353,6 +1706,16 @@ class StartSimulationMeshes(RDOperator):
                     if obj.parent_bone is not None and obj.type == 'MESH'\
                      and obj.RobotDesigner.tag == "DEFAULT" \
                      and obj.parent.name == armature_name]
+=======
+                bpy.ops.roboteditor.selectarmature(model_name=armature_name)
+
+            return None
+
+        def placejoints_model (armature_name, min_index_parent_vert, meshes_up, segment_ini_pos, ini_position_verts, mesh_pos_ini): #place bone on the correct bone spot
+
+            meshes = [obj.name for obj in bpy.data.objects if obj.parent_bone is not None and obj.type == 'MESH'
+                      and obj.parent.name == armature_name]
+>>>>>>> c729e77
 
             for m in range(len(meshes)):
                 segment_ofmesh_name = bpy.data.objects[meshes[m]].parent_bone
@@ -1370,49 +1733,82 @@ class StartSimulationMeshes(RDOperator):
                 co_parent_joint = bonematrixrotation(armature_name, segment_ofmesh_name, co_parent_joint_G) #from global coordinates to local
 
                 bpy.ops.object.mode_set(mode='OBJECT')
+<<<<<<< HEAD
                 bpy.ops.robotdesigner.selectarmature(model_name=armature_name)
+=======
+                bpy.ops.roboteditor.selectarmature(model_name=armature_name)
+>>>>>>> c729e77
                 segment_ofmesh = bpy.context.active_object.data.bones[segment_ofmesh_name]
 
                 if not bpy.data.armatures[armature_name].bones[segment_ofmesh_name].parent_recursive: #keep metaparent bone at the same spot as the original model
                     fix_parent = bonematrixrotation(armature_name, segment_ofmesh_name, segment_ini_pos[m])
                     segment_ofmesh.select = True
+<<<<<<< HEAD
                     segment_ofmesh.RobotDesigner.Euler.x.value = fix_parent[0]
+=======
+                    segment_ofmesh.RobotEditor.Euler.x.value = fix_parent[0]
+>>>>>>> c729e77
                     segment_ofmesh = bpy.context.active_object.data.bones[segment_ofmesh_name]
                     segment_ofmesh.select = False
 
                     segment_ofmesh.select = True
+<<<<<<< HEAD
                     segment_ofmesh.RobotDesigner.Euler.y.value = fix_parent[1]
+=======
+                    segment_ofmesh.RobotEditor.Euler.y.value = fix_parent[1]
+>>>>>>> c729e77
                     segment_ofmesh = bpy.context.active_object.data.bones[segment_ofmesh_name]
                     segment_ofmesh.select = False
 
                     segment_ofmesh.select = True
+<<<<<<< HEAD
                     segment_ofmesh.RobotDesigner.Euler.z.value = fix_parent[2]
+=======
+                    segment_ofmesh.RobotEditor.Euler.z.value = fix_parent[2]
+>>>>>>> c729e77
                     segment_ofmesh = bpy.context.active_object.data.bones[segment_ofmesh_name]
                     segment_ofmesh.select = False
 
                 else:
                     segment_ofmesh.select = True
+<<<<<<< HEAD
                     segment_ofmesh.RobotDesigner.Euler.x.value += co_parent_joint[0]
+=======
+                    segment_ofmesh.RobotEditor.Euler.x.value += co_parent_joint[0]
+>>>>>>> c729e77
                     segment_ofmesh = bpy.context.active_object.data.bones[segment_ofmesh_name]
                     segment_ofmesh.select = False
 
                     segment_ofmesh.select = True
+<<<<<<< HEAD
                     segment_ofmesh.RobotDesigner.Euler.y.value += co_parent_joint[1]
+=======
+                    segment_ofmesh.RobotEditor.Euler.y.value += co_parent_joint[1]
+>>>>>>> c729e77
                     segment_ofmesh = bpy.context.active_object.data.bones[segment_ofmesh_name]
                     segment_ofmesh.select = False
 
                     segment_ofmesh.select = True
+<<<<<<< HEAD
                     segment_ofmesh.RobotDesigner.Euler.z.value += co_parent_joint[2]
+=======
+                    segment_ofmesh.RobotEditor.Euler.z.value += co_parent_joint[2]
+>>>>>>> c729e77
                     segment_ofmesh = bpy.context.active_object.data.bones[segment_ofmesh_name]
                     segment_ofmesh.select = False
 
             return None
 
+<<<<<<< HEAD
         def createrobotinstances(generations, num_offspring, armature_name, meshes, offset_o, offset_g):
             """
             create robot instances to plot all individuals
             """
             print("Create robot instances")
+=======
+        def createrobotinstances(generations, num_offspring, armature_name, meshes, offset_o, offset_g): #create robot instances to plot all individuals
+
+>>>>>>> c729e77
             list_instances = [['' for i in range(num_offspring)] for g in range(generations)]
 
             for g in range(generations):
@@ -1420,6 +1816,7 @@ class StartSimulationMeshes(RDOperator):
                     context.scene.objects.active = bpy.data.objects[armature_name]
                     context.active_object.select = True
                     segments = bpy.context.active_object.data.bones.keys()
+<<<<<<< HEAD
                   # todo copy physics:  physics_frames = [obj.name for obj in bpy.data.objects if obj.parent_bone in segments and obj.type == 'EMPTY']
 
                     for m in range(len(meshes)):    # select meshes
@@ -1440,15 +1837,35 @@ class StartSimulationMeshes(RDOperator):
                   #      bpy.context.active_object.data.bones[b].name = bpy.context.active_object.data.bones[b].name+str(g)+str(i) #rename bones
                     #
                     #   bpy.context.active_object.data.name = bpy.context.active_object.name #rename armature as the object name
+=======
+
+                    for m in range(len(meshes)):
+                        bpy.data.objects[meshes[m]].select = True
+                    for s in range(len(segments)):
+                        bone = bpy.context.active_object.data.bones[segments[s]]
+                        bone.select = True
+                    bpy.ops.object.duplicate_move(TRANSFORM_OT_translate={"value": ((i * offset_o + offset_o / 2 - num_offspring * offset_o / 2), -offset_g * (g + 1), 0)})
+                    bpy.data.scenes[0].update()
+                    list_instances[g][i]=bpy.context.scene.objects.active.name
+
+                    for b in range(len(bpy.context.active_object.data.bones)):
+                        bpy.context.active_object.data.bones[b].name = bpy.context.active_object.data.bones[b].name+str(g)+str(i) #rename bones
+
+                        bpy.context.active_object.data.name = bpy.context.active_object.name #rename armature as the object name
+>>>>>>> c729e77
 
                     bpy.ops.object.select_all(action='DESELECT')
 
             return list_instances
 
 
+<<<<<<< HEAD
 
         def main():
             print("Starting Evolutionary Algorithm")
+=======
+        def main():
+>>>>>>> c729e77
             RD=context.scene.RobotDesigner
             bone_sim = RD.model_to_simulate
             max_gen = RD.max_generation
@@ -1460,12 +1877,18 @@ class StartSimulationMeshes(RDOperator):
             adapt_rate = global_properties.adaption_rate.get(context.scene)
             current_scene = bpy.context.scene
             result = global_properties.visualresult.get(context.scene)
+<<<<<<< HEAD
             offset_o = RD.offsetlateral
             offset_g = RD.offsetfront
+=======
+            offset_o=RD.offsetlateral
+            offset_g=RD.offsetfront
+>>>>>>> c729e77
             current_scene.RobotDesigner.display_mesh_selection = 'all'
 
             historial_individuals = []
 
+<<<<<<< HEAD
             print('1')
             armature = selectrobot(bone_sim)
             meshes = meshes_initial_armature(armature)
@@ -1476,6 +1899,15 @@ class StartSimulationMeshes(RDOperator):
             print(max_gen)
             for gen in range(max_gen):
                 print('Run Generation ', gen)
+=======
+            armature = selectrobot(bone_sim)
+            meshes = meshes_initial_armature(armature)
+            ini_position_verts = verts_co(armature, meshes)
+            vert_parent_mesh, meshes_level_up, segment_ini_pos, mesh_pos_ini = minvertexbonedistance(armature, meshes)
+
+            for gen in range(max_gen):
+
+>>>>>>> c729e77
                 individuals_generation = individualsgen(gen, ini_position_verts, historial_individuals)
                 fitness_generation = fitnessfunction(individuals_generation, ini_position_verts, meshes)
                 selected_parents = selection(gen, individuals_generation, size_offspring, selection_rate, fitness_generation)
@@ -1490,7 +1922,11 @@ class StartSimulationMeshes(RDOperator):
                     offspring_adapted = neighbours_adapt(offspring_adapted, armature, meshes, adapt_rate, best_individual)
                 sendparametersbest(offspring_adapted, ini_position_verts, armature, meshes)
 
+<<<<<<< HEAD
             elif result == 'all':
+=======
+            if result == 'all':
+>>>>>>> c729e77
                 list_instances = createrobotinstances(max_gen, size_offspring, armature, meshes, offset_o, offset_g)
                 for g in range (len(historial_individuals)): #generations
                     offspring_adapted = historial_individuals[g]
@@ -1499,6 +1935,7 @@ class StartSimulationMeshes(RDOperator):
                             offspring_adapted = neighbours_adapt(offspring_adapted, armature, meshes, adapt_rate, g_ind)
                         sendparametersgen(offspring_adapted, armature, list_instances, g, g_ind)
 
+<<<<<<< HEAD
 
             armatures_population = armatures_scene()
             for ar in range(len(armatures_population)):
@@ -1532,3 +1969,20 @@ class StartSimulationMeshes(RDOperator):
             pass
 
         return {'FINISHED'}
+=======
+            armatures_population = armatures_scene()
+            for ar in range(len(armatures_population)):
+                placejoints_mesh(armatures_population[ar], vert_parent_mesh, ini_position_verts)
+                placejoints_model(armatures_population[ar], vert_parent_mesh, meshes_level_up, segment_ini_pos, ini_position_verts, mesh_pos_ini)
+
+            current_scene.RobotDesigner.display_mesh_selection = 'visual'
+
+            return None
+
+        main()
+
+        return {'FINISHED'}
+
+
+
+>>>>>>> c729e77

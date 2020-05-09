@@ -174,7 +174,7 @@ class Importer(object):
         '''
 
         # bpy.context.scene.objects.active = obj
-        bpy.ops.mesh.primitive_cube_add(radius=0.5)
+        bpy.ops.mesh.primitive_cube_add(size=0.5, location=(0, 0, 0))
 
         bpy.context.active_object.RobotDesigner.fileName = os.path.basename(model.name)
 
@@ -186,7 +186,7 @@ class Importer(object):
 
         if type == 1:
             mat = bpy.data.materials.new('blue')
-            mat.diffuse_color = (0, 0, 1)
+            mat.diffuse_color = (0, 0, 1, 0.5)
             bpy.context.active_object.data.materials.append(mat)
 
             bpy.context.active_object.RobotDesigner.tag = "BASIC_COLLISION_BOX"
@@ -205,7 +205,7 @@ class Importer(object):
             model_posexyz = string_to_list(model.pose[0].value())[0:3]
             model_poserpy = string_to_list(model.pose[0].value())[3:]
 
-        return Matrix.Translation(Vector(model_posexyz)) * \
+        return Matrix.Translation(Vector(model_posexyz)) @ \
                Euler(model_poserpy, 'XYZ').to_matrix().to_4x4()
 
 
@@ -222,7 +222,7 @@ class Importer(object):
         prefix_folder = ""
         c_radius = model.geometry[0].sphere[0].radius[0]
 
-        bpy.ops.mesh.primitive_uv_sphere_add(size=1.0, location=(0, 0, 0))
+        bpy.ops.mesh.primitive_uv_sphere_add(radius=1.0, location=(0, 0, 0))
         bpy.context.active_object.RobotDesigner.fileName = os.path.basename(model.name)
 
         self.logger.debug('Active robot name: %s', bpy.context.active_object.RobotDesigner.fileName)
@@ -234,7 +234,7 @@ class Importer(object):
 
         if type == 1:
             mat = bpy.data.materials.new('blue')
-            mat.diffuse_color = (0, 0, 1)
+            mat.diffuse_color = (0, 0, 1, 0.5)
             bpy.context.active_object.data.materials.append(mat)
 
             bpy.context.active_object.RobotDesigner.tag = "BASIC_COLLISION_SPHERE"
@@ -253,7 +253,7 @@ class Importer(object):
             model_posexyz = string_to_list(model.pose[0].value())[0:3]
             model_poserpy = string_to_list(model.pose[0].value())[3:]
 
-        return Matrix.Translation(Vector(model_posexyz)) * \
+        return Matrix.Translation(Vector(model_posexyz)) @ \
                Euler(model_poserpy, 'XYZ').to_matrix().to_4x4()
 
 
@@ -283,7 +283,7 @@ class Importer(object):
 
         if type == 1:
             mat = bpy.data.materials.new('blue')
-            mat.diffuse_color = (0, 0, 1)
+            mat.diffuse_color = (0, 0, 1, 0.5)
             bpy.context.active_object.data.materials.append(mat)
 
             bpy.context.active_object.RobotDesigner.tag = "BASIC_COLLISION_CYLINDER"
@@ -302,7 +302,7 @@ class Importer(object):
             model_posexyz = string_to_list(model.pose[0].value())[0:3]
             model_poserpy = string_to_list(model.pose[0].value())[3:]
 
-        return Matrix.Translation(Vector(model_posexyz)) * \
+        return Matrix.Translation(Vector(model_posexyz)) @ \
                Euler(model_poserpy, 'XYZ').to_matrix().to_4x4()
 
 
@@ -379,8 +379,8 @@ class Importer(object):
             model_posexyz = string_to_list(model.pose[0].value())[0:3]
             model_poserpy = string_to_list(model.pose[0].value())[3:]
 
-        return Matrix.Translation(Vector(model_posexyz)) * \
-               Euler(model_poserpy, 'XYZ').to_matrix().to_4x4() * scale_matrix
+        return Matrix.Translation(Vector(model_posexyz)) @ \
+               Euler(model_poserpy, 'XYZ').to_matrix().to_4x4() @ scale_matrix
 
 
     def parse(self, node: sdf_tree.SDFTree, ref_pose, parent_name = ""):
@@ -459,10 +459,13 @@ class Importer(object):
             bpy.context.active_bone.RobotDesigner.jointController.D = float(PID[2])
 
         if node.joint:
-            axis = string_to_list(node.joint.axis[0].xyz[0])
+            if node.joint.axis:
+                axis = string_to_list(node.joint.axis[0].xyz[0])
+            else:
+                axis = string_to_list('1 0 0')
         else:
             axis = string_to_list('1 0 0')
-        # axis = [round(axis[0]), round(axis[1]), round(axis[2])]
+            # axis = [round(axis[0]), round(axis[1]), round(axis[2])]
         self.logger.info("axis -> %s", axis)
         for i, element in enumerate(axis):
             if element == -1.0:
@@ -497,49 +500,67 @@ class Importer(object):
             if node.joint.parent[0] == 'world':
                 bpy.context.active_bone.RobotDesigner.world = True
 
-        if node.joint:
-            if len(node.joint.axis[0].limit):
-                bpy.context.active_bone.RobotDesigner.controller.maxTorque = float(get_list_value(
-                    node.joint.axis[0].limit[0].effort, 0))
-                bpy.context.active_bone.RobotDesigner.controller.maxVelocity = float(get_list_value(
-                    node.joint.axis[0].limit[0].velocity, 0))
-                bpy.context.active_bone.RobotDesigner.controller.isActive = True
+            # Set joint dynamic limits
+            if node.joint.axis:
+                if node.joint.axis[0].limit:
+                    if node.joint.axis[0].limit[0].effort or node.joint.axis[0].limit[0].velocity:
+                        bpy.context.active_bone.RobotDesigner.dynamic_limits.maxTorque = float(get_list_value(
+                            node.joint.axis[0].limit[0].effort, 0))
+                        bpy.context.active_bone.RobotDesigner.dynamic_limits.maxVelocity = float(get_list_value(
+                            node.joint.axis[0].limit[0].velocity, 0))
+                        bpy.context.active_bone.RobotDesigner.dynamic_limits.isActive = True
 
-        # bpy.context.active_bone.RobotDesigner.controller.maxVelocity = float(tree.joint.limit.friction)
+                # Set joint kinematic limits
+                if node.joint.type == 'revolute':
+                    bpy.context.active_bone.RobotDesigner.jointMode = 'REVOLUTE'
+                    if len(node.joint.axis[0].limit):
+                        bpy.context.active_bone.RobotDesigner.theta.max = degrees(
+                            float(get_list_value(node.joint.axis[0].limit[0].upper, 0)))
+                        bpy.context.active_bone.RobotDesigner.theta.min = degrees(
+                            float(get_list_value(node.joint.axis[0].limit[0].lower, 0)))
+                    else:
+                        bpy.context.active_bone.RobotDesigner.theta.isActive = False
+                if node.joint.type == 'prismatic':
+                    bpy.context.active_bone.RobotDesigner.jointMode = 'PRISMATIC'
+                    if len(node.joint.axis[0].limit):
+                        bpy.context.active_bone.RobotDesigner.d.max = \
+                            float(get_list_value(node.joint.axis[0].limit[0].upper, 0))
+                        bpy.context.active_bone.RobotDesigner.d.min = \
+                            float(get_list_value(node.joint.axis[0].limit[0].lower, 0))
+                    else:
+                        bpy.context.active_bone.RobotDesigner.d.isActive = False
+                if node.joint.type == 'revolute2':
+                    bpy.context.active_bone.RobotDesigner.jointMode = 'REVOLUTE2'
+                if node.joint.type == 'universal':
+                    bpy.context.active_bone.RobotDesigner.jointMode = 'UNIVERSAL'
+                if node.joint.type == 'ball':
+                    bpy.context.active_bone.RobotDesigner.jointMode = 'BALL'
+                if node.joint.type == 'fixed':
+                    bpy.context.active_bone.RobotDesigner.jointMode = 'FIXED'
 
-        if node.joint:
-            if node.joint.type == 'revolute':
-                bpy.context.active_bone.RobotDesigner.jointMode = 'REVOLUTE'
-                if len(node.joint.axis[0].limit):
-                    bpy.context.active_bone.RobotDesigner.theta.max = degrees(
-                        float(get_list_value(node.joint.axis[0].limit[0].upper, 0)))
-                    bpy.context.active_bone.RobotDesigner.theta.min = degrees(
-                        float(get_list_value(node.joint.axis[0].limit[0].lower, 0)))
-            if node.joint.type == 'prismatic':
-                bpy.context.active_bone.RobotDesigner.jointMode = 'PRISMATIC'
-                if len(node.joint.axis[0].limit):
-                    bpy.context.active_bone.RobotDesigner.d.max = \
-                        float(get_list_value(node.joint.axis[0].limit[0].upper, 0))
-                    bpy.context.active_bone.RobotDesigner.d.min = \
-                        float(get_list_value(node.joint.axis[0].limit[0].lower, 0))
-            if node.joint.type == 'revolute2':
-                bpy.context.active_bone.RobotDesigner.jointMode = 'REVOLUTE2'
-            if node.joint.type == 'universal':
-                bpy.context.active_bone.RobotDesigner.jointMode = 'UNIVERSAL'
-            if node.joint.type == 'ball':
-                bpy.context.active_bone.RobotDesigner.jointMode = 'BALL'
-            if node.joint.type == 'fixed':
-                bpy.context.active_bone.RobotDesigner.jointMode = 'FIXED'
-        else:
-            bpy.context.active_bone.RobotDesigner.jointMode = 'FIXED'
+                # import joint physics if they exist
+                if node.joint.physics:
+                    if node.joint.physics[0].ode:
+                        rd_physcis_ode = bpy.context.active_bone.RobotDesigner.ode
+                        if node.joint.physics[0].ode[0].cfm_damping:
+                            rd_physcis_ode.cfm_damping = node.joint.physics[0].ode[0].cfm_damping[0]
+                        if node.joint.physics[0].ode[0].implicit_spring_damper:
+                            rd_physcis_ode.i_s_damper = node.joint.physics[0].ode[0].implicit_spring_damper[0]
+                        if node.joint.physics[0].ode[0].cfm:
+                            rd_physcis_ode.cfm = node.joint.physics[0].ode[0].cfm[0]
+                        if node.joint.physics[0].ode[0].erp:
+                            rd_physcis_ode.erp = node.joint.physics[0].ode[0].erp[0]
 
-        # import joint physics if they exist
-        if node.joint:
-            if len(node.joint.physics):
-                bpy.context.active_bone.RobotDesigner.ode.cfm_damping = node.joint.physics[0].ode[0].cfm_damping[0]
-                bpy.context.active_bone.RobotDesigner.ode.i_s_damper = node.joint.physics[0].ode[0].implicit_spring_damper[0]
-                bpy.context.active_bone.RobotDesigner.ode.cfm = node.joint.physics[0].ode[0].cfm[0]
-                bpy.context.active_bone.RobotDesigner.ode.erp = node.joint.physics[0].ode[0].erp[0]
+                if node.joint.axis[0].dynamics:
+                    rd_dynamics = bpy.context.active_bone.RobotDesigner.joint_dynamics
+                    if node.joint.axis[0].dynamics[0].damping:
+                        rd_dynamics.damping = node.joint.axis[0].dynamics[0].damping[0]
+                    if node.joint.axis[0].dynamics[0].friction:
+                        rd_dynamics.friction = node.joint.axis[0].dynamics[0].friction[0]
+                    if node.joint.axis[0].dynamics[0].spring_reference:
+                        rd_dynamics.spring_reference = node.joint.axis[0].dynamics[0].spring_reference[0]
+                    if node.joint.axis[0].dynamics[0].spring_stiffness:
+                        rd_dynamics.spring_stiffness = node.joint.axis[0].dynamics[0].spring_stiffness[0]
 
         model = bpy.context.active_object
         model_name = model.name
@@ -550,15 +571,16 @@ class Importer(object):
         self.logger.debug("active object matrix world: %s",
                           homo2origin(model.matrix_world))
 
-        segment_world = model.matrix_world * pose_bone.matrix
+        segment_world = model.matrix_world @ pose_bone.matrix
         # segment_world = pose_float2homogeneous(rounded(string_to_list("0 0 0.6 0 0 -1.570796")))*pose_bone.matrix
 
         # import segment physics properties
         if len(node.link.gravity) > 0:
             bpy.context.active_bone.RobotDesigner.linkInfo.gravity = node.link.gravity[0]
             bpy.context.active_bone.RobotDesigner.linkInfo.link_self_collide = node.link.self_collide[0]
-
+        print('bf importing inertia1')
         if len(node.link.inertial) > 0:
+            print('bf importing inertia2')
             i = node.link.inertial[0].inertia[0]
             SelectSegment.run(segment_name=segment_name)
             CreatePhysical.run(frameName=node.link.name)
@@ -566,25 +588,32 @@ class Importer(object):
             # SelectSegment.run(segment_name=segment_name)
             # AssignPhysical.run()
 
+            inertia_name = "PHYS_" + node.link.name
+
             # set mass
-            bpy.data.objects[node.link.name].RobotDesigner.dynamics.mass = node.link.inertial[0].mass[0]
+            bpy.data.objects[inertia_name].RobotDesigner.dynamics.mass = node.link.inertial[0].mass[0]
 
             # set center of mass position
-            inertia_location = string_to_list(node.link.inertial[0].pose[0].value())[0:3]
-            inertia_location[1] = inertia_location[1] - 1.0
-            inertia_rotation = string_to_list(node.link.inertial[0].pose[0].value())[3:]
+            if len(node.link.inertial[0].pose):
+                inertia_location = string_to_list(node.link.inertial[0].pose[0].value())[0:3]
+                inertia_location[1] = inertia_location[1] - 1.0
+                inertia_rotation = string_to_list(node.link.inertial[0].pose[0].value())[3:]
 
-            # bpy.data.objects[node.link.name].location = [inertia_location[1], inertia_location[2], inertia_location[0]]
-            bpy.data.objects[node.link.name].location = inertia_location
-            bpy.data.objects[node.link.name].rotation_euler = inertia_rotation
+                # bpy.data.objects[node.link.name].location = [inertia_location[1], inertia_location[2], inertia_location[0]]
+                bpy.data.objects[inertia_name].location = inertia_location
+                bpy.data.objects[inertia_name].rotation_euler = inertia_rotation
 
             # set inertia
-            bpy.data.objects[node.link.name].RobotDesigner.dynamics.inertiaXX = i.ixx[0]
-            bpy.data.objects[node.link.name].RobotDesigner.dynamics.inertiaXY = i.ixy[0]
-            bpy.data.objects[node.link.name].RobotDesigner.dynamics.inertiaXZ = i.ixz[0]
-            bpy.data.objects[node.link.name].RobotDesigner.dynamics.inertiaYY = i.iyy[0]
-            bpy.data.objects[node.link.name].RobotDesigner.dynamics.inertiaYZ = i.iyz[0]
-            bpy.data.objects[node.link.name].RobotDesigner.dynamics.inertiaZZ = i.izz[0]
+            bpy.data.objects[inertia_name].RobotDesigner.dynamics.inertiaXX = i.ixx[0]
+            bpy.data.objects[inertia_name].RobotDesigner.dynamics.inertiaXY = i.ixy[0]
+            bpy.data.objects[inertia_name].RobotDesigner.dynamics.inertiaXZ = i.ixz[0]
+            bpy.data.objects[inertia_name].RobotDesigner.dynamics.inertiaYY = i.iyy[0]
+            bpy.data.objects[inertia_name].RobotDesigner.dynamics.inertiaYZ = i.iyz[0]
+            bpy.data.objects[inertia_name].RobotDesigner.dynamics.inertiaZZ = i.izz[0]
+
+            # hide if don't show interia selected in GUI
+            if global_properties.display_physics_selection.get(bpy.context.scene) == False:
+                bpy.data.objects[inertia_name].hide_set(True)
 
         model = bpy.context.active_object
         model_name = model.name
@@ -595,7 +624,7 @@ class Importer(object):
         self.logger.debug("active object matrix world: %s",
                           homo2origin(model.matrix_world))
 
-        segment_world = model.matrix_world * pose_bone.matrix
+        segment_world = model.matrix_world @ pose_bone.matrix
         # segment_world = pose_float2homogeneous(rounded(string_to_list("0 0 0.6 0 0 -1.570796")))*pose_bone.matrix
 
         self.logger.debug("[VISUAL] parsed: " + str(len(list(node.link.visual))) + " visual meshes.")
@@ -690,7 +719,7 @@ class Importer(object):
                     # if there are multiple objects in the COLLADA file, they will be selected
                     selected_objects = [i for i in bpy.context.selected_objects]
                     for object in selected_objects:
-                        bpy.context.scene.objects.active = object  # bpy.data.objects[object]
+                        bpy.context.view_layer.objects.active = object  # bpy.data.objects[object]
                         bpy.ops.object.parent_clear(type="CLEAR_KEEP_TRANSFORM")
                     for object in selected_objects:
                         if object.type != 'MESH':
@@ -699,8 +728,8 @@ class Importer(object):
 
                         # Select the object (and deselect others)
                         bpy.ops.object.select_all(False)
-                        bpy.context.scene.objects.active = object  # bpy.data.objects[object]
-                        bpy.context.active_object.select = True
+                        bpy.context.view_layer.objects.active = object  # bpy.data.objects[object]
+                        bpy.context.active_object.select_set(True)
                         self.logger.debug("active object matrix world (from mesh): %s",
                                           homo2origin(bpy.context.active_object.matrix_world))
                         # bpy.context.active_object.matrix_world = pose_float2homogeneous(rounded(string_to_list("0 0 0 0 0 0")))
@@ -710,7 +739,7 @@ class Importer(object):
                         # if len(model.geometry[0].mesh) > 0:
                         bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
                         # after applying transform, matrix world becomes zero again
-                        bpy.context.active_object.matrix_world = segment_world * trafo_sdf * bpy.context.active_object.matrix_world  # * inverse_matrix(bpy.context.active_object.matrix_world)#* \
+                        bpy.context.active_object.matrix_world = segment_world @ trafo_sdf @ bpy.context.active_object.matrix_world  # * inverse_matrix(bpy.context.active_object.matrix_world)#* \
                         #  bpy.context.active_object.matrix_world
                         self.logger.debug("active object matrix world (after transfer): %s",
                                           homo2origin(bpy.context.active_object.matrix_world))
@@ -753,25 +782,48 @@ class Importer(object):
 
                         if model_type == COLLISON:
                             # import surface properties
-                            if len(model.surface):
+                            if model.surface:
                                 surface = bpy.data.objects[assigned_name].RobotDesigner.sdfCollisionProps
                                 surface.restitution_coeff = model.surface[0].bounce[0].restitution_coefficient[0]
                                 surface.threshold = model.surface[0].bounce[0].threshold[0]
-                                surface.coefficient = model.surface[0].friction[0].torsional[0].coefficient[0]
-                                surface.use_patch_radius = model.surface[0].friction[0].torsional[0].use_patch_radius[0]
-                                surface.surface_radius = model.surface[0].friction[0].torsional[0].surface_radius[0]
-                                surface.slip = model.surface[0].friction[0].torsional[0].ode[0].slip[0]
-                                surface.mu = model.surface[0].friction[0].ode[0].mu[0]
-                                surface.mu2 = model.surface[0].friction[0].ode[0].mu2[0]
-                                surface.fdir1 = string_to_list(model.surface[0].friction[0].ode[0].fdir1[0])
-                                surface.slip1 = model.surface[0].friction[0].ode[0].slip1[0]
-                                surface.slip2 = model.surface[0].friction[0].ode[0].slip2[0]
-                                surface.collide_wo_contact = model.surface[0].contact[0].collide_without_contact[0]
-                                surface.collide_wo_contact_bitmask = model.surface[0].contact[0].collide_without_contact_bitmask[0]
-                                surface.collide_bitmask = model.surface[0].contact[0].collide_bitmask[0]
-                                surface.category_bitmask = model.surface[0].contact[0].category_bitmask[0]
-                                surface.poissons_ratio = model.surface[0].contact[0].poissons_ratio[0]
-                                surface.elastic_modulus = model.surface[0].contact[0].elastic_modulus[0]
+
+                                torsional = model.surface[0].friction[0].torsional
+                                if torsional:
+                                    surface.coefficient = torsional[0].coefficient[0]
+                                    surface.use_patch_radius = torsional[0].use_patch_radius[0]
+                                    surface.surface_radius = torsional[0].surface_radius[0]
+                                    surface.slip = torsional[0].ode[0].slip[0]
+
+                                ode = model.surface[0].friction[0].ode
+                                if ode:
+                                    surface.mu = ode[0].mu[0]
+                                    surface.mu2 = ode[0].mu2[0]
+                                    surface.fdir1 = string_to_list(ode[0].fdir1[0])
+                                    surface.slip1 = ode[0].slip1[0]
+                                    surface.slip2 = ode[0].slip2[0]
+
+                                contact = model.surface[0].contact
+                                if contact:
+                                    if contact[0].collide_without_contact:
+                                        surface.collide_wo_contact = contact[0].collide_without_contact[0]
+                                    if contact[0].collide_without_contact_bitmask:
+                                        surface.collide_wo_contact_bitmask = contact[0].collide_without_contact_bitmask[0]
+                                    if contact[0].collide_bitmask:
+                                        surface.collide_bitmask = contact[0].collide_bitmask[0]
+                                    if contact[0].category_bitmask:
+                                        surface.category_bitmask = contact[0].category_bitmask[0]
+                                    if contact[0].poissons_ratio:
+                                        surface.poissons_ratio = contact[0].poissons_ratio[0]
+                                    if contact[0].elastic_modulus:
+                                        surface.elastic_modulus = contact[0].elastic_modulus[0]
+
+                                opensim = model.surface[0].contact[0].opensim
+                                if opensim:
+                                        bpy.data.objects[global_properties.model_name.get(bpy.context.scene)] \
+                                        .RobotDesigner.physics_engine = 'OPENSIM'
+                                        surface.osim_stiffness = opensim[0].stiffness[0]
+                                        surface.osim_dissipation = opensim[0].dissipation[0]
+
                                 surface.soft_cfm = model.surface[0].contact[0].ode[0].soft_cfm[0]
                                 surface.soft_erp = model.surface[0].contact[0].ode[0].soft_erp[0]
                                 surface.kp = model.surface[0].contact[0].ode[0].kp[0]
@@ -882,7 +934,7 @@ class Importer(object):
         bpy.context.active_object.rotation_euler = robot_rotation
 
         # bpy.ops.view3d.view_lock_to_active()
-        bpy.context.active_object.show_x_ray = True
+        bpy.context.active_object.show_in_front = True
 
 
     # @RDOperator.Preconditions(ObjectMode)
@@ -944,7 +996,7 @@ class ImportPlain(RDOperator):
         bl_idname = config.OPERATOR_PREFIX + "import_sdf_plain"
         bl_label = "Import SDF - plain"
 
-        filepath = StringProperty(name="Filename", subtype='FILE_PATH')
+        filepath: StringProperty(name="Filename", subtype='FILE_PATH')
 
         def invoke(self, context, event):
             context.window_manager.fileselect_add(self)
@@ -956,6 +1008,12 @@ class ImportPlain(RDOperator):
             import os
             importer = Importer(self, self.filepath)
             importer.import_file()
+            if importer.MUSCLE_PATH != '[]':
+                bpy.data.objects[global_properties.model_name.get(bpy.context.scene)] \
+                    .RobotDesigner.physics_engine = 'OPENSIM'
+                print('muscle path:', importer.MUSCLE_PATH)
+                osim_importer = OsimImporter(self.filepath, importer.MUSCLE_PATH)
+                osim_importer.import_osim()
             return {'FINISHED'}
 
 
@@ -968,9 +1026,9 @@ class ImportPackage(RDOperator):
 
         # Obligatory class attributes
         bl_idname = config.OPERATOR_PREFIX + "import_sdf_package"
-        bl_label = "Import SDF - ROS Package"
+        bl_label = "Import SDF"
 
-        filepath = StringProperty(name="Filename", subtype='FILE_PATH')
+        filepath: StringProperty(name="Filename", subtype='FILE_PATH')
 
         def invoke(self, context, event):
             context.window_manager.fileselect_add(self)
@@ -984,8 +1042,9 @@ class ImportPackage(RDOperator):
             importer.import_file()
             importer.import_config()
             if importer.MUSCLE_PATH != '[]':
-                print('muscle path:')
-                print(importer.MUSCLE_PATH)
+                bpy.data.objects[global_properties.model_name.get(bpy.context.scene)] \
+                    .RobotDesigner.physics_engine = 'OPENSIM'
+                print('muscle path:', importer.MUSCLE_PATH)
                 osim_importer = OsimImporter(self.filepath, importer.MUSCLE_PATH)
                 osim_importer.import_osim()
             return {'FINISHED'}
@@ -1000,9 +1059,9 @@ class ImportZippedPackage(RDOperator):
 
         # Obligatory class attributes
         bl_idname = config.OPERATOR_PREFIX + "import_sdf_zipped_package"
-        bl_label = "Import SDF - ROS zipped package"
+        bl_label = "Import SDF from zipped folder"
 
-        filepath = StringProperty(name="Filename", subtype='FILE_PATH')
+        filepath: StringProperty(name="Filename", subtype='FILE_PATH')
 
         def invoke(self, context, event):
             context.window_manager.fileselect_add(self)
@@ -1033,6 +1092,12 @@ class ImportZippedPackage(RDOperator):
                     importer = Importer(operator=self, file_path=file_path)
                     importer.import_file()
                     importer.import_config()
+                    if importer.MUSCLE_PATH != '[]':
+                        bpy.data.objects[global_properties.model_name.get(bpy.context.scene)] \
+                            .RobotDesigner.physics_engine = 'OPENSIM'
+                        print('muscle path:', importer.MUSCLE_PATH)
+                        osim_importer = OsimImporter(file_path, importer.MUSCLE_PATH)
+                        osim_importer.import_osim()
                 else:
                     self.report({'ERROR'}, "No SDF file found in package")
                     self.logger.error("No SDF file found in package")

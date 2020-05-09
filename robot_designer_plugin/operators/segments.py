@@ -65,7 +65,7 @@ class SelectSegment(RDOperator):
     bl_idname = config.OPERATOR_PREFIX + "select_segment"
     bl_label = "Select Segment"
 
-    segment_name = StringProperty()
+    segment_name: StringProperty()
 
     @RDOperator.OperatorLogger
     def execute(self, context):
@@ -112,9 +112,9 @@ class RenameSegment(RDOperator):
 
     """
     bl_idname = config.OPERATOR_PREFIX + "rename_segment"
-    bl_label = "Rename active segment"
+    bl_label = "Rename Active Segment"
 
-    new_name = StringProperty(name="Enter new name:")
+    new_name: StringProperty(name="Enter new name:")
 
     @RDOperator.OperatorLogger
     def execute(self, context):
@@ -141,9 +141,9 @@ class InsertNewParentSegment(RDOperator):
 
     """
     bl_idname = config.OPERATOR_PREFIX + "createparentbone"
-    bl_label = "Create new parent Bone"
+    bl_label = "Create New Parent Bone"
 
-    segment_name = StringProperty(name="Enter new parent bone name:")
+    segment_name: StringProperty(name="Enter new parent bone name:")
 
     @classmethod
     def run(cls, segment_name):
@@ -202,9 +202,9 @@ class AssignParentSegment(RDOperator):
 
     """
     bl_idname = config.OPERATOR_PREFIX + "assignparentbone"
-    bl_label = "Assign parent bone"
+    bl_label = "Assign Parent Bone"
 
-    parent_name = StringProperty()
+    parent_name: StringProperty()
 
     @classmethod
     def run(cls, parent_name):
@@ -235,7 +235,7 @@ class ImportBlenderArmature(RDOperator):
     Set :term:`pose` properties and mark all selected bones as known to the robot designer.
     """
     bl_idname = config.OPERATOR_PREFIX + "importnative"
-    bl_label = "(Re)import Bones"
+    bl_label = "(Re)Import Bones"
 
     def execute_on_bone(self, bone):
         self.logger.info("Importing bone %s", bone.name)
@@ -250,7 +250,7 @@ class ImportBlenderArmature(RDOperator):
         bone.RobotDesigner.RD_Bone = False
         parent = bone.parent
         if parent is not None:
-            m = parent.matrix_local.inverted() * bone.matrix_local
+            m = parent.matrix_local.inverted() @ bone.matrix_local
         else:
             m = bone.matrix_local
         euler = m.to_euler()
@@ -284,7 +284,7 @@ class ConvertVertexMapSkinning(RDOperator):
     on the mesh.
     """
     bl_idname = config.OPERATOR_PREFIX + "convert_vertexmap_skinning"
-    bl_label = "Assign selected bones via vertex maps"
+    bl_label = "Assign Selected Bones Via Vertex Maps"
 
     def allow_connect_to_that_bone_because_vertex_weight(self, bone, obj):
         """ There can only be one parent_bone. So in case of multiple VG's we have to decide which one to take."""
@@ -340,9 +340,9 @@ class DeleteSegment(RDOperator):
 
     """
     bl_idname = config.OPERATOR_PREFIX + "deletebone"
-    bl_label = "Delete segment and ALL its children"
+    bl_label = "Delete Segment And ALL Its Children"
 
-    confirmation = BoolProperty(name="Are you sure?")
+    confirmation: BoolProperty(name="Are you sure?")
 
     @RDOperator.OperatorLogger
     def execute(self, context):
@@ -413,7 +413,7 @@ class SetDefaultJointName(RDOperator):
     :term:`operator` for setting joint name to a default name
     """
     bl_idname = config.OPERATOR_PREFIX + "default_joint_name"
-    bl_label = "Set joint name to default name"
+    bl_label = "Set Joint Name to Default Name"
 
     @RDOperator.OperatorLogger
     def execute(self, context):
@@ -428,7 +428,7 @@ class SetDefaultJointNameAll(RDOperator):
     :term:`operator` for setting joint name to a default name for all segments
     """
     bl_idname = config.OPERATOR_PREFIX + "default_joint_name_all"
-    bl_label = "Set joint name to default name for all segments"
+    bl_label = "Set Joint Name to Default Name for All Segments"
 
     @RDOperator.OperatorLogger
     def execute(self, context):
@@ -451,10 +451,10 @@ class CreateNewSegment(RDOperator):
     before might be necessary.
     """
     bl_idname = config.OPERATOR_PREFIX + "create_segment"
-    bl_label = "Create new segment"
+    bl_label = "Create New Segment"
 
     # model_name = StringProperty()
-    segment_name = StringProperty(name="Enter new segment name:")
+    segment_name: StringProperty(name="Enter new segment name:")
 
     # parent_name = StringProperty(default="")
 
@@ -564,11 +564,11 @@ class UpdateSegments(RDOperator):
     If a :term:`segment` name is given it will proceed recursively.
     """
     bl_idname = config.OPERATOR_PREFIX + "udpate_model"
-    bl_label = "update model"
+    bl_label = "Update Model"
 
     # model_name = StringProperty()
-    segment_name = StringProperty(default="")
-    recurse = BoolProperty(default=True)
+    segment_name: StringProperty(default="")
+    recurse: BoolProperty(default=True)
 
     @RDOperator.Postconditions(ModelSelected)
     @RDOperator.OperatorLogger
@@ -606,7 +606,7 @@ class UpdateSegments(RDOperator):
         # Express desired matrix in frame of the Armature
         if editbone.parent is not None:
             transform = editbone.parent.matrix.copy()
-            matrix = transform * matrix
+            matrix = transform @ matrix
 
         # Adjust bone properties to match RD transform specs.
         # Try to move it around rigidly. Keep length.

@@ -49,6 +49,7 @@ from math import radians
 import tempfile
 from pathlib import Path
 import pyxb
+import xml.etree.ElementTree as ET
 
 # ######
 # Blender imports
@@ -64,6 +65,8 @@ from ...core import config, PluginManager, RDOperator
 from ...operators.helpers import ModelSelected, ObjectMode
 from ...operators.model import SelectModel
 from ..osim.osim_export import create_osim, get_muscles
+from ..generic_tools import create_thumbnail, export_rqtez_publisher_muscle, export_rqtez_publisher_controller, \
+        export_rqt_multiplot_muscles, export_rqt_multiplot_jointcontroller
 
 from ...properties.segments import getTransformFromBlender
 from ...properties.globals import global_properties
@@ -97,6 +100,22 @@ def _uri_for_meshes_and_muscles(in_ros_package: bool, abs_file_paths, toplevel_d
         return "model://" + uri.replace(os.path.sep, '/')
     else:
         return "model://" + file_path.replace(os.path.sep, '/')
+
+
+def indent(elem, level=0):
+    i = "\n" + level*"  "
+    if len(elem):
+        if not elem.text or not elem.text.strip():
+            elem.text = i + "  "
+        if not elem.tail or not elem.tail.strip():
+            elem.tail = i
+        for elem in elem:
+            indent(elem, level+1)
+        if not elem.tail or not elem.tail.strip():
+            elem.tail = i
+    else:
+        if level and (not elem.tail or not elem.tail.strip()):
+            elem.tail = i
 
 
 def export_mesh(operator: RDOperator, context, name: str, directory: str, toplevel_dir: str, in_ros_package: bool,
@@ -138,12 +157,12 @@ def export_mesh(operator: RDOperator, context, name: str, directory: str, toplev
 
         model_name = bpy.context.active_object.name
         bpy.ops.object.select_all(action='DESELECT')
-        bpy.data.objects[mesh].select = True
-        bpy.context.scene.objects.active = bpy.data.objects[mesh]
+        bpy.data.objects[mesh].select_set(True)
+        bpy.context.view_layer.objects.active = bpy.data.objects[mesh]
         # bpy.context.active_object.select = True
 
         # get the mesh vertices number
-        bm = bpy.context.scene.objects.active.data
+        bm = bpy.context.view_layer.objects.active.data
         # print("# of vertices=%d" % len(bm.vertices))
         if len(bm.vertices) > 1:
             if '.' in mesh:
@@ -152,11 +171,64 @@ def export_mesh(operator: RDOperator, context, name: str, directory: str, toplev
             else:
                 file_path = os.path.join(directory, bpy.data.objects[mesh].RobotDesigner.fileName + '.dae')
 
-            hide_flag_backup = bpy.context.scene.objects.active.hide
-            bpy.context.scene.objects.active.hide = False  # Blender does not want to export hidden objects.
-            bpy.ops.wm.collada_export(filepath=file_path, apply_modifiers=True, selected=True, use_texture_copies=True)
+            hide_flag_backup = bpy.context.view_layer.objects.active.hide_get()
+            bpy.context.view_layer.objects.active.hide_set(False)  # Blender does not want to export hidden objects.
 
-            bpy.context.scene.objects.active.hide = hide_flag_backup
+            ## bf disconnect
+            bpy.data.objects[mesh].parent = None
+            bpy.ops.wm.collada_export(filepath=file_path, apply_modifiers=True, selected=True, use_texture_copies=True)
+            bpy.data.objects[mesh].parent = bpy.data.objects[model_name]
+
+            ## collada importer does not import library_visual_scene in blender 2.8
+            # tree = ET.parse(source=file_path)
+            # collada = tree.getroot()
+            # if collada.tag[0] == '{':
+            #     uri, ignore, tag = collada.tag[1:].partition("}")
+            #     xmlns = '{' + uri + '}'
+            #     ET.register_namespace('', uri)
+            #     # ET.register_namespace('xsi', 'http://www.w3.org/2001/XMLSchema-instance')
+            # else:
+            #     xmlns = ''
+            #
+            # lib_geometries = collada.find(xmlns + 'library_geometries')
+            # geometry_id = lib_geometries[0].get('id')
+            # mesh_url = '#' + geometry_id
+            #
+            # node_attr = {'id': mesh, 'name': mesh, 'type': 'NODE'}
+            # inst_geo_attr = {'url': mesh_url, 'name': mesh}
+            #
+            # lib_visual = collada.find(xmlns + 'library_visual_scenes')
+            # visual_scene = lib_visual.find(xmlns + 'visual_scene')
+            # if len(visual_scene) == 0:
+            #     node = visual_scene.makeelement('node', node_attr)
+            #     visual_scene.append(node)
+            #     instance = node.makeelement('instance_geometry', inst_geo_attr)
+            #     node.append(instance)
+            #
+            #     collada.set('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance')
+            #
+            #     indent(collada)
+            #     ET.ElementTree(collada).write(file_path, encoding="utf-8", xml_declaration=True)
+            ## collada importer does not import library_visual_scene in blender 2.8
+
+
+            # for elem in collada:
+            #     scene = elem.find(xmlns + 'visual_scene')
+            #     try:
+            #         node = scene.makeelement('node', node_attr)
+            #         scene.append(node)
+            #         instance = node.makeelement('instance_geometry', inst_geo_attr)
+            #         instance.text = None
+            #         node.append(instance)
+            #     except:
+            #         pass
+
+            # collada.set('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance')
+
+            # ET.ElementTree(collada).write(file_path, encoding="utf-8", xml_declaration=True)
+
+
+            bpy.context.view_layer.objects.active.hide_set(hide_flag_backup)
 
             # quick fix for dispersed meshes
             # todo: find appropriate solution
@@ -225,6 +297,11 @@ def create_sdf(operator: RDOperator, context, filepath: str, meshpath: str, topl
         child.joint.physics[0].ode[0].implicit_spring_damper.append(segment.RobotDesigner.ode.i_s_damper)
         child.joint.physics[0].ode[0].cfm.append(segment.RobotDesigner.ode.cfm)
         child.joint.physics[0].ode[0].erp.append(segment.RobotDesigner.ode.erp)
+        child.joint.axis[0].dynamics = [pyxb.BIND()]
+        child.joint.axis[0].dynamics[0].damping.append(segment.RobotDesigner.joint_dynamics.damping)
+        child.joint.axis[0].dynamics[0].friction.append(segment.RobotDesigner.joint_dynamics.friction)
+        child.joint.axis[0].dynamics[0].spring_reference.append(segment.RobotDesigner.joint_dynamics.spring_reference)
+        child.joint.axis[0].dynamics[0].spring_stiffness.append(segment.RobotDesigner.joint_dynamics.spring_stiffness)
 
 
         pose_xyz = list_to_string([i * j for i, j in zip(trafo.translation, blender_scale_factor)])
@@ -294,31 +371,38 @@ def create_sdf(operator: RDOperator, context, filepath: str, meshpath: str, topl
 
 
         # Export individual limits only if set as active in GUI
-        if segment.RobotDesigner.jointMode == 'REVOLUTE':
-            if segment.RobotDesigner.controller.isActive is True:
+        seg = segment.RobotDesigner
+        if seg.jointMode == 'REVOLUTE':
+            if seg.theta.isActive or seg.dynamic_limits.isActive:
                 # child.joint.axis[0].limit.append(sdf_dom.CTD_ANON_59())
                 child.joint.axis[0].limit = [pyxb.BIND()]
-                child.joint.axis[0].limit[0].lower.append((radians(segment.RobotDesigner.theta.min)))
-                child.joint.axis[0].limit[0].upper.append((radians(segment.RobotDesigner.theta.max)))
-                child.joint.axis[0].limit[0].effort.append(segment.RobotDesigner.controller.maxTorque)
-                child.joint.axis[0].limit[0].velocity.append(segment.RobotDesigner.controller.maxVelocity)
+            if seg.theta.isActive:
+                child.joint.axis[0].limit[0].lower.append((radians(seg.theta.min)))
+                child.joint.axis[0].limit[0].upper.append((radians(seg.theta.max)))
+            if seg.dynamic_limits.isActive is True:
+                child.joint.axis[0].limit[0].effort.append(seg.dynamic_limits.maxTorque)
+                child.joint.axis[0].limit[0].velocity.append(seg.dynamic_limits.maxVelocity)
             child.joint.type = 'revolute'
-        if segment.RobotDesigner.jointMode == 'PRISMATIC':
-            if segment.RobotDesigner.controller.isActive is True:
+
+        if seg.jointMode == 'PRISMATIC':
+            if seg.d.isActive or seg.dynamic_limits.isActive:
                 # child.joint.axis[0].limit.append(sdf_dom.CTD_ANON_59())
                 child.joint.axis[0].limit = [pyxb.BIND()]
-                child.joint.axis[0].limit[0].lower.append(segment.RobotDesigner.d.min)
-                child.joint.axis[0].limit[0].upper.append(segment.RobotDesigner.d.max)
-                child.joint.axis[0].limit[0].effort.append(segment.RobotDesigner.controller.maxTorque)
-                child.joint.axis[0].limit[0].velocity.append(segment.RobotDesigner.controller.maxVelocity)
+            if seg.d.isActive:
+                child.joint.axis[0].limit[0].lower.append(seg.d.min)
+                child.joint.axis[0].limit[0].upper.append(seg.d.max)
+            if seg.dynamic_limits.isActive:
+                child.joint.axis[0].limit[0].effort.append(seg.dynamic_limits.maxTorque)
+                child.joint.axis[0].limit[0].velocity.append(seg.dynamic_limits.maxVelocity)
             child.joint.type = 'prismatic'
-        if segment.RobotDesigner.jointMode == 'REVOLUTE2':
+
+        if seg.jointMode == 'REVOLUTE2':
             child.joint.type = 'revolute2'
-        if segment.RobotDesigner.jointMode == 'UNIVERSAL':
+        if seg.jointMode == 'UNIVERSAL':
             child.joint.type = 'universal'
-        if segment.RobotDesigner.jointMode == 'BALL':
+        if seg.jointMode == 'BALL':
             child.joint.type = 'ball'
-        if segment.RobotDesigner.jointMode == 'FIXED':
+        if seg.jointMode == 'FIXED':
             child.joint.type = 'fixed'
 
         operator.logger.info(" joint type'%s'" % child.joint.type)
@@ -339,7 +423,7 @@ def create_sdf(operator: RDOperator, context, filepath: str, meshpath: str, topl
         for mesh in connected_meshes:
             operator.logger.info("Connected mesh name: %s", mesh)
             pose_bone = context.active_object.pose.bones[segment.name]
-            pose = pose_bone.matrix.inverted() * context.active_object.matrix_world.inverted() * \
+            pose = pose_bone.matrix.inverted() @ context.active_object.matrix_world.inverted() @ \
                bpy.data.objects[mesh].matrix_world
 
             # bpy.context.active_object.matrix_world = segment_world * trafo_sdf * bpy.context.active_object.matrix_world  # * inverse_matrix(bpy.context.active_object.matrix_world)#* \
@@ -446,6 +530,14 @@ def create_sdf(operator: RDOperator, context, filepath: str, meshpath: str, topl
                 contact.category_bitmask.append(surface_property.category_bitmask)
                 contact.poissons_ratio.append(surface_property.poissons_ratio)
                 contact.elastic_modulus.append(surface_property.elastic_modulus)
+
+                if bpy.data.objects[
+                    global_properties.model_name.get(bpy.context.scene)].RobotDesigner.physics_engine == 'OPENSIM':
+                    contact.opensim = [pyxb.BIND()]
+                    contact_opensim = contact.opensim[0]
+                    contact_opensim.stiffness.append(surface_property.osim_stiffness)
+                    contact_opensim.dissipation.append(surface_property.osim_dissipation)
+
                 contact.ode = [pyxb.BIND()]
                 contact_ode = contact.ode[0]
                 contact_ode.soft_cfm.append(surface_property.soft_cfm)
@@ -454,8 +546,12 @@ def create_sdf(operator: RDOperator, context, filepath: str, meshpath: str, topl
                 contact_ode.kd.append(surface_property.kd)
                 contact_ode.max_vel.append(surface_property.max_vel)
                 contact_ode.min_depth.append(surface_property.min_depth)
+
                 # add soft contact properties
-                # not yet implemented dart properties.
+                # todo: not yet implemented dart properties.
+                # if bpy.data.objects[
+                #   global_properties.model_name.get(bpy.context.scene)].RobotDesigner.physics_engine == 'DART':
+
 
 
         ### Add Physics
@@ -491,7 +587,7 @@ def create_sdf(operator: RDOperator, context, filepath: str, meshpath: str, topl
             inertial.inertia[0].izz[0] = bpy.data.objects[frame].RobotDesigner.dynamics.inertiaZZ
 
             # set inertial pose
-            pose = pose_bone.matrix.inverted() * context.active_object.matrix_world.inverted() * \
+            pose = pose_bone.matrix.inverted() @ context.active_object.matrix_world.inverted() @ \
                    bpy.data.objects[frame].matrix_world
 
             frame_pose_xyz = list_to_string([i * j for i, j in zip(pose.translation, blender_scale_factor)])
@@ -577,7 +673,24 @@ def create_sdf(operator: RDOperator, context, filepath: str, meshpath: str, topl
     # A link for world. Used for export of root links connected to world
     root.link.name = 'world'
 
-    # todo SDF Plugin
+    if bpy.data.objects[global_properties.model_name.get(bpy.context.scene)].RobotDesigner.physics_engine == 'OPENSIM':
+        # add root geometries to root.link
+        muscles = get_muscles(robot_name, context)
+        if muscles:
+            # add muscles path tag
+            muscle_uri = _uri_for_meshes_and_muscles(
+                in_ros_package,
+                abs_filepaths,
+                toplevel_directory,
+                os.path.join(toplevel_directory, 'muscles.osim'))
+            root.sdf.model[0].muscles.append(muscle_uri)
+
+            # add OpenSim muscle plugin
+            root.sdf.model[0].plugin.append(sdf_dom.plugin())
+            length = len(root.sdf.model[0].plugin)
+            root.sdf.model[0].plugin[length-1].name = "muscle_interface_plugin"
+            root.sdf.model[0].plugin[length-1].filename = "libgazebo_ros_muscle_interface.so"
+
     # build control plugin element
     # if there is a segment which has a controller attached to it: then create controller plugin
     for segment in bpy.context.active_object.data.bones:
@@ -588,28 +701,11 @@ def create_sdf(operator: RDOperator, context, filepath: str, meshpath: str, topl
         elif segment.RobotDesigner.jointController.isActive is True:
             if operator.gazebo:
                 root.sdf.model[0].plugin.append(sdf_dom.plugin())
-                root.control_plugin = root.sdf.model[0].plugin[len(root.sdf.model[0].plugin)-1]
+                root.control_plugin = root.sdf.model[0].plugin[len(root.sdf.model[0].plugin) - 1]
                 root.control_plugin.name = robot_name + "_controller"
                 root.control_plugin.filename = "libgeneric_controller_plugin.so"
                 root.control_plugin.controller = []
                 break
-
-    # add root geometries to root.link
-    muscles = get_muscles(robot_name, context)
-    if muscles:
-        # add muscles path tag
-        muscle_uri = _uri_for_meshes_and_muscles(
-            in_ros_package,
-            abs_filepaths,
-            toplevel_directory,
-            os.path.join(toplevel_directory, 'muscles.osim'))
-        root.sdf.model[0].muscles.append(muscle_uri)
-
-        # add OpenSim muscle plugin
-        root.sdf.model[0].plugin.append(sdf_dom.plugin())
-        length = len(root.sdf.model[0].plugin)
-        root.sdf.model[0].plugin[length-1].name = "muscle_interface_plugin"
-        root.sdf.model[0].plugin[length-1].filename = "libgazebo_ros_muscle_interface.so"
 
     root_segments = [b for b in context.active_object.data.bones if
                  b.parent is None]
@@ -833,16 +929,16 @@ class ExportPlain(RDOperator):
     bl_idname = config.OPERATOR_PREFIX + 'export_to_sdf_plain'
     bl_label = "Export SDF - plain"
 
-    filter_glob = StringProperty(
+    filter_glob: StringProperty(
         default="*.sdf",
         options={'HIDDEN'},
     )
 
-    abs_file_paths = BoolProperty(name="Absolute Filepaths", default=False)
+    abs_file_paths: BoolProperty(name="Absolute Filepaths", default=False)
     package_url = False
 
-    gazebo = BoolProperty(name="Export Gazebo tags", default=True)
-    filepath = StringProperty(name="Filename", subtype='FILE_PATH')
+    gazebo: BoolProperty(name="Export Gazebo tags", default=True)
+    filepath: StringProperty(name="Filename", subtype='FILE_PATH')
 
     @RDOperator.OperatorLogger
     @RDOperator.Postconditions(ModelSelected, ObjectMode)
@@ -859,6 +955,22 @@ class ExportPlain(RDOperator):
         create_osim(self, context, filepath=self.filepath,
                     meshpath=toplevel_dir, toplevel_directory=toplevel_dir,
                     in_ros_package=False, abs_filepaths=self.abs_file_paths)
+
+        # thumbnail export
+        create_thumbnail(toplevel_directory=toplevel_dir)
+
+        # rqt_ez_publisher exports
+        if global_properties.export_rqt_ez_publisher_muscles.get(bpy.context.scene) == True:
+            export_rqtez_publisher_muscle(toplevel_directory=toplevel_dir)
+        if global_properties.export_rqt_ez_publisher_jointcontroller.get(bpy.context.scene) == True:
+            export_rqtez_publisher_controller(toplevel_directory=toplevel_dir)
+
+        # rqt_multiplot exports
+        if global_properties.export_rqt_multiplot_muscles.get(bpy.context.scene) == True:
+            export_rqt_multiplot_muscles(toplevel_directory=toplevel_dir)
+        if global_properties.export_rqt_multiplot_jointcontroller.get(bpy.context.scene) == True:
+            export_rqt_multiplot_jointcontroller(toplevel_directory=toplevel_dir)
+
         return {'FINISHED'}
 
     def invoke(self, context, event):
@@ -874,18 +986,18 @@ class ExportPackage(RDOperator):
     """
 
     bl_idname = config.OPERATOR_PREFIX + 'export_to_sdf_package'
-    bl_label = "Export SDF - ROS package"
+    bl_label = "Export SDF"
 
-    filter_glob = StringProperty(
+    filter_glob: StringProperty(
         default="*.sdf",
         options={'HIDDEN'},
     )
 
-    abs_file_paths = BoolProperty(name="Absolute Filepaths", default=False)
+    abs_file_paths: BoolProperty(name="Absolute Filepaths", default=False)
     package_url = False
 
-    gazebo = BoolProperty(name="Export Gazebo tags", default=True)
-    filepath = StringProperty(name="Filename", subtype='FILE_PATH')
+    gazebo: BoolProperty(name="Export Gazebo tags", default=True)
+    filepath: StringProperty(name="Filename", subtype='FILE_PATH')
 
     @RDOperator.OperatorLogger
     @RDOperator.Postconditions(ModelSelected, ObjectMode)
@@ -902,6 +1014,22 @@ class ExportPackage(RDOperator):
         create_osim(self, context, filepath=self.filepath,
                     meshpath=toplevel_dir, toplevel_directory=toplevel_dir,
                     in_ros_package=False, abs_filepaths=self.abs_file_paths)
+
+        # thumbnail export
+        create_thumbnail(toplevel_directory=toplevel_dir)
+
+        # rqt_ez_publisher exports
+        if global_properties.export_rqt_ez_publisher_muscles.get(bpy.context.scene) == True:
+            export_rqtez_publisher_muscle(toplevel_directory=toplevel_dir)
+        if global_properties.export_rqt_ez_publisher_jointcontroller.get(bpy.context.scene) == True:
+            export_rqtez_publisher_controller(toplevel_directory=toplevel_dir)
+
+        # rqt_multiplot exports
+        if global_properties.export_rqt_multiplot_muscles.get(bpy.context.scene) == True:
+            export_rqt_multiplot_muscles(toplevel_directory=toplevel_dir)
+        if global_properties.export_rqt_multiplot_jointcontroller.get(bpy.context.scene) == True:
+            export_rqt_multiplot_jointcontroller(toplevel_directory=toplevel_dir)
+
         return {'FINISHED'}
 
     def invoke(self, context, event):
@@ -920,18 +1048,18 @@ class ExportZippedPackage(RDOperator):
     """
 
     bl_idname = config.OPERATOR_PREFIX + 'export_to_sdf_package_zipped'
-    bl_label = "Export SDF - ROS zipped package"
+    bl_label = "Export SDF as zipped folder"
 
-    filter_glob = StringProperty(
+    filter_glob: StringProperty(
         default="*.zip",
         options={'HIDDEN'},
     )
 
-    abs_file_paths = BoolProperty(name="Absolute Filepaths", default=False)
+    abs_file_paths: BoolProperty(name="Absolute Filepaths", default=False)
     package_url = False
 
-    gazebo = BoolProperty(name="Export Gazebo tags", default=True)
-    filepath = StringProperty(name="Filename", subtype='FILE_PATH')
+    gazebo: BoolProperty(name="Export Gazebo tags", default=True)
+    filepath: StringProperty(name="Filename", subtype='FILE_PATH')
 
     @RDOperator.OperatorLogger
     @RDOperator.Postconditions(ModelSelected, ObjectMode)
@@ -970,6 +1098,22 @@ class ExportZippedPackage(RDOperator):
             create_osim(self, context, filepath=self.filepath,
                         meshpath=temp_dir, toplevel_directory=temp_dir,
                         in_ros_package=False, abs_filepaths=self.abs_file_paths)
+
+            # thumbnail export
+            create_thumbnail(toplevel_directory=toplevel_dir)
+
+            # rqt_ez_publisher exports
+            if global_properties.export_rqt_ez_publisher_muscles.get(bpy.context.scene) == True:
+                export_rqtez_publisher_muscle(toplevel_directory=toplevel_dir)
+            if global_properties.export_rqt_ez_publisher_jointcontroller.get(bpy.context.scene) == True:
+                export_rqtez_publisher_controller(toplevel_directory=toplevel_dir)
+
+            # rqt_multiplot exports
+            if global_properties.export_rqt_multiplot_muscles.get(bpy.context.scene) == True:
+                export_rqt_multiplot_muscles(toplevel_directory=toplevel_dir)
+            if global_properties.export_rqt_multiplot_jointcontroller.get(bpy.context.scene) == True:
+                export_rqt_multiplot_jointcontroller(toplevel_directory=toplevel_dir)
+
             self.logger.debug(temp_file)
             with zipfile.ZipFile(self.filepath, 'w') as zipf:
                 zipdir(target, zipf)

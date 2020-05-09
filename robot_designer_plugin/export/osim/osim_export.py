@@ -65,7 +65,8 @@ class OsimExporter(object):
                     Millard2012EquilibriumMuscle=[],
                     Millard2012AccelerationMuscle=[],
                     Thelen2003Muscle=[],
-                    RigidTendonMuscle=[]
+                    RigidTendonMuscle=[],
+                    MyoroboticsMuscle=[]
                 )
             ),
             BodySet=[]
@@ -75,6 +76,7 @@ class OsimExporter(object):
             'Millard2012AccelerationMuscle': self.doc.Model.ForceSet.objects.Millard2012AccelerationMuscle,
             'Thelen2003Muscle' : self.doc.Model.ForceSet.objects.Thelen2003Muscle,
             'RigidTendonMuscle' : self.doc.Model.ForceSet.objects.RigidTendonMuscle,
+            'MyoroboticsMuscle' : self.doc.Model.ForceSet.objects.MyoroboticsMuscle
         }
 
     def write_osim_file(self, filename):
@@ -97,6 +99,7 @@ class OsimExporter(object):
             'MILLARD_ACCEL'  : osim_dom.Millard2012AccelerationMuscle,
             'THELEN': osim_dom.Thelen2003Muscle,
             'RIGID_TENDON': osim_dom.RigidTendonMuscle,
+            'MYOROBOTICS': osim_dom.MyoroboticsMuscle
         }
         return muscle_type_to_pyxb_type[
             str(obj.RobotDesigner.muscles.muscleType)]
@@ -110,25 +113,42 @@ class OsimExporter(object):
         # calc muscle length
         bpy.ops.robotdesigner.calc_muscle_length(muscle=m.name)
 
-        m = pyxb_class(
-            name = m.name,
-            GeometryPath=osim_dom.GeometryPath(
-                PathPointSet = pyxb.BIND(
-                    objects = pyxb.BIND(
-                        PathPoint = self._build_pyxb_path_nodes_list(m, context)
+        if m.RobotDesigner.muscles.muscleType in \
+                ['THELEN', 'MILLARD_EQUIL', 'MILLARD_ACCEL', 'RIGID_TENDON', 'MYOROBOTICS_MUSCLE']:
+            m = pyxb_class(
+                name = m.name,
+                GeometryPath=osim_dom.GeometryPath(
+                    PathPointSet = pyxb.BIND(
+                        objects = pyxb.BIND(
+                            PathPoint = self._build_pyxb_path_nodes_list(m, context)
+                        )
+                    ),
+                    PathWrapSet=pyxb.BIND(
+                        objects=pyxb.BIND(
+                            PathWrap=self._build_pyxb_path_wraps_list(m, w, context)
+                        )
                     )
                 ),
-                PathWrapSet=pyxb.BIND(
-                    objects=pyxb.BIND(
-                        PathWrap=self._build_pyxb_path_wraps_list(m, w, context)
+                # TODO: Fix hardcoded values
+                max_isometric_force = m.RobotDesigner.muscles.max_isometric_force,
+                optimal_fiber_length = m.RobotDesigner.muscles.length * 0.9,
+                tendon_slack_length = m.RobotDesigner.muscles.length * 0.1)
+        else:
+            m = pyxb_class(
+                name = m.name,
+                GeometryPath=osim_dom.GeometryPath(
+                    PathPointSet = pyxb.BIND(
+                        objects = pyxb.BIND(
+                            PathPoint = self._build_pyxb_path_nodes_list(m, context)
+                        )
+                    ),
+                    PathWrapSet=pyxb.BIND(
+                        objects=pyxb.BIND(
+                            PathWrap=self._build_pyxb_path_wraps_list(m, w, context)
+                        )
                     )
                 )
-            ),
-            # TODO: Fix hardcoded values
-            max_isometric_force = m.RobotDesigner.muscles.max_isometric_force,
-            optimal_fiber_length = m.RobotDesigner.muscles.length * 0.9,
-            tendon_slack_length = m.RobotDesigner.muscles.length * 0.1
-        )
+            )
         self._add_pyxb_muscle(m, context)
 
     def add_body_set(self, context, wrapping):
@@ -215,7 +235,7 @@ class OsimExporter(object):
         blender_scale_factor = [blender_scale_factor[0], blender_scale_factor[2], blender_scale_factor[1]]
         segment = wrapping.parent_bone
         pose_bone = bpy.context.active_object.pose.bones[segment]
-        pose = pose_bone.matrix.inverted() * bpy.context.active_object.matrix_world.inverted() * \
+        pose = pose_bone.matrix.inverted() @ bpy.context.active_object.matrix_world.inverted() @ \
                bpy.data.objects[wrapping.name].matrix_world
 
         pose_xyz = [i * j for i, j in zip(pose.translation, blender_scale_factor)]
@@ -247,6 +267,9 @@ class OsimExporter(object):
     def _build_pyxb_path_nodes_list(self, m, context):
         def transform_to_pyxb(nd):
             name, parent, (x, y ,z) = nd
+            x = x * bpy.data.objects[context.active_object.name].scale[0]
+            y = y * bpy.data.objects[context.active_object.name].scale[1]
+            z = z * bpy.data.objects[context.active_object.name].scale[2]
             return osim_dom.PathPoint(
                 location = osim_dom.vector3("%f %f %f" % (x, y, z)),
                 body = parent,
@@ -263,18 +286,18 @@ class OsimExporter(object):
             x, y, z = pt.co
             active_model = global_properties.model_name.get(context.scene)
             pose_bone = bpy.data.objects[active_model].pose.bones[parent]
-            pose = pose_bone.matrix.inverted() * bpy.data.objects[active_model].matrix_world.inverted() * \
+            pose = pose_bone.matrix.inverted() @ bpy.data.objects[active_model].matrix_world.inverted() @ \
                    bpy.data.objects[m.name].matrix_world
             vec = mathutils.Vector((x,y,z,1))
             trans = mathutils.Matrix.Translation(vec)
-            pose_rel = pose * trans
+            pose_rel = pose @ trans
 
             # bpy.data.meshes.remove(muscle_mesh, True)
             m.data.bevel_depth = global_properties.muscle_dim.get(context.scene)
             return (name, parent, (pose_rel[0][3], pose_rel[1][3], pose_rel[2][3]))
 
         m.data.bevel_depth = 0
-        muscle_mesh = m.to_mesh(bpy.context.scene, apply_modifiers=True, settings='PREVIEW')
+        muscle_mesh = m.to_mesh()
 
         return map(transform_vertex, enumerate(muscle_mesh.vertices))
 
