@@ -55,7 +55,6 @@ def draw(layout, context):
     box = layout.box()
     row = box.row(align=True)
     row.label(text="Optimization type:")
-    global_properties.typeoptimization.prop(context.scene, row, expand=True)
 
     # box: select the robot population
     global_properties.typeoptimization.prop(context.scene, row, expand=True)
@@ -84,7 +83,7 @@ def draw(layout, context):
 
     if global_properties.typeoptimization.get(context.scene)=='joints':
 
-        row.label("Generate simulation plots:")
+        row.label(text="Generate simulation plots:")
         global_properties.toolbox.prop(context.scene, row, expand=True)
         row = box.row(align=True)
         row.label(text="Ev. Algorithm:")
@@ -133,7 +132,7 @@ def draw(layout, context):
     if box and global_properties.encoding.get(context.scene) == 'real':
         infoBox = InfoBox(box)
         row = box.row()
-        row.label("Selection parameters:")
+        row.label(text="Selection parameters:")
         row = box.row()
         global_properties.selection_rate.prop(context.scene, row)
         row = box.row()

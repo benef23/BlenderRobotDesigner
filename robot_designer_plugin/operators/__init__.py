@@ -38,9 +38,6 @@ from . import api, helpers, collision, dynamics, file, file_tools, model, rigid_
     mesh_generation, sensors, muscles, evolutionaryalgorithm
 
 from importlib import reload
-    mesh_generation, sensors, muscles, evolutionaryalgorithm
-
-from importlib import reload
 
 reload(api)
 reload(helpers)

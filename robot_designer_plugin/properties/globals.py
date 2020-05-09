@@ -281,9 +281,6 @@ class RDGlobals(PropertyGroupHandlerBase):
                    ('meshes', 'Geometries', 'Attach meshes to segments'),
                    ('sensors', 'Sensors', 'Attach sensors to the robot'),
                    ('muscles', 'Muscles', 'Attach muscles to the robot'),
-                   # ('markers', 'Markers', 'Assign markers to bones'),
-<<<<<<< HEAD
-                   # ('controller', 'Controller', 'Modify controller parameter'),
                    ('evolutionaryalgorithm', 'EA', 'Define parameters'),   # Evolutionary Algorithm tab
                    ('files', 'Files', 'Export Armature')]
                    #('world', 'World', 'Set world parameters')],
