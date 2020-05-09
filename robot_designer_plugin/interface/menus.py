@@ -641,7 +641,7 @@ class SelectionRobotsMenu(bpy.types.Menu, BaseMenu):
     """
     :ref:`menu` to select robots.
     """
-    bl_idname = OPERATOR_PREFIX + "robotseamenu"
+    bl_idname = MENU_PREFIX + "robotseamenu"
     bl_label = "Select Robot"
     axis = IntProperty(default=0)
 
