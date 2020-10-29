@@ -605,25 +605,44 @@ def create_sdf(operator: RDOperator, context, filepath: str, meshpath: str, topl
 
         operator.logger.info(" sensor name'%s'" % sensor_names)
 
-        for sensor in sensor_names:
-            active_sensor = bpy.data.objects[sensor]
-            type = active_sensor.RobotDesigner.sensor_type
-            if type == 'CAMERA_SENSOR':
+        for sensor_name in sensor_names:
+            active_sensor = bpy.data.objects[sensor_name]
+            sensor_type = active_sensor.RobotDesigner.sensor_type
+            if sensor_type in ['CAMERA_SENSOR', 'DEPTH_CAMERA_SENSOR']:
                 sensor_sdf = child.add_camera_sensor()
-                sensor_sdf.name = sensor
+                sensor_sdf.name = sensor_name
                 # camera
-                sensor_sdf.type = 'camera'
-                sensor_sdf.camera.name ='left eze'
-                # todo sensor_sdf.horizontal_fov = bpy.data.cameras[sensor].angle_x
+                sensor_sdf.type = sensor_type
+                camera = sensor_sdf.camera[0]
+                camera.name = sensor_name
+                camera.horizontal_fov.append(bpy.context.scene.objects[sensor_name].data.angle_x)
                 # image
-             # todo   sensor_sdf.camera.image.append('imagename')
-            # todo    sensor_sdf.camera.image.width.append(active_sensor.RobotDesigner.cameraSensor.width)
-                # todo   sensor_sdf.camera.image.height = active_sensor.RobotDesigner.cameraSensor.height
-                # todo    sensor_sdf.camera.image.format = active_sensor.RobotDesigner.cameraSensor.format
+                camera.image = [pyxb.BIND()]
+                image = camera.image[0]
+                image.width.append(active_sensor.RobotDesigner.cameraSensor.width)
+                image.height.append(active_sensor.RobotDesigner.cameraSensor.height)
+                image.format.append(active_sensor.RobotDesigner.cameraSensor.format)
+                # clip
+                camera.clip = [pyxb.BIND()]
+                clip = camera.clip[0]
+                clip.near.append(bpy.context.scene.objects[sensor_name].data.clip_start)
+                clip.far.append(bpy.context.scene.objects[sensor_name].data.clip_end)
+                # noise
+                camera.noise = [pyxb.BIND()]
+                noise = camera.noise[0]
+                if bpy.context.scene.objects[sensor_name].RobotDesigner.cameraSensor.noise.type == 'gaussian':
+                    noise.type.append(bpy.context.scene.objects[sensor_name].RobotDesigner.cameraSensor.noise.type)
+                    noise.mean.append(bpy.context.scene.objects[sensor_name].RobotDesigner.cameraSensor.noise.mean)
+                    noise.stddev.append(bpy.context.scene.objects[sensor_name].RobotDesigner.cameraSensor.noise.stddev)
+
+                if sensor_type == 'DEPTH_CAMERA_SENSOR':
+                    camera.depth_camera = [pyxb.BIND()]
+                    camera.depth_camera[0].output.append(
+                        bpy.context.scene.objects['depth_camera'].RobotDesigner.depthCameraSensor.output)
 
 
-            else:
-                'type not found'
+
+
            # elif type == 'CAMERA':   todo other sensor types
             #   sensor_sdf.type = 'camera'
 

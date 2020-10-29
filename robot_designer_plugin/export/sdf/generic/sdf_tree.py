@@ -438,9 +438,9 @@ class SDFTree(object):
         self.link.sensor.append(link_sensor)
         link_sensor.pose.append('0 0 0 0 0 0')
         camera = sdf_dom.camera()
-        link_sensor.append(camera)
-      #  image = sdf_dom.image()
-      #  camera.append(image)
+        link_sensor.camera.append(camera)
+        # image = sdf_dom.camera_image()
+        # camera.camera_image.append(image)
 
         return link_sensor
 
