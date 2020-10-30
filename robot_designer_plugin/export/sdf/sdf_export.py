@@ -611,11 +611,11 @@ def create_sdf(operator: RDOperator, context, filepath: str, meshpath: str, topl
             if sensor_type in ['CAMERA_SENSOR', 'DEPTH_CAMERA_SENSOR']:
                 sensor_sdf = child.add_camera_sensor()
                 sensor_sdf.name = sensor_name
-                # camera
                 sensor_sdf.type = sensor_type
+                # camera
                 camera = sensor_sdf.camera[0]
                 camera.name = sensor_name
-                camera.horizontal_fov.append(bpy.context.scene.objects[sensor_name].data.angle_x)
+                camera.horizontal_fov.append(active_sensor.data.angle_x)
                 # image
                 camera.image = [pyxb.BIND()]
                 image = camera.image[0]
@@ -625,26 +625,68 @@ def create_sdf(operator: RDOperator, context, filepath: str, meshpath: str, topl
                 # clip
                 camera.clip = [pyxb.BIND()]
                 clip = camera.clip[0]
-                clip.near.append(bpy.context.scene.objects[sensor_name].data.clip_start)
-                clip.far.append(bpy.context.scene.objects[sensor_name].data.clip_end)
+                clip.near.append(active_sensor.data.clip_start)
+                clip.far.append(active_sensor.data.clip_end)
                 # noise
                 camera.noise = [pyxb.BIND()]
                 noise = camera.noise[0]
-                if bpy.context.scene.objects[sensor_name].RobotDesigner.cameraSensor.noise.type == 'gaussian':
-                    noise.type.append(bpy.context.scene.objects[sensor_name].RobotDesigner.cameraSensor.noise.type)
-                    noise.mean.append(bpy.context.scene.objects[sensor_name].RobotDesigner.cameraSensor.noise.mean)
-                    noise.stddev.append(bpy.context.scene.objects[sensor_name].RobotDesigner.cameraSensor.noise.stddev)
+                if active_sensor.RobotDesigner.cameraSensor.noise.type == 'gaussian':
+                    noise.type.append(active_sensor.RobotDesigner.cameraSensor.noise.type)
+                    noise.mean.append(active_sensor.RobotDesigner.cameraSensor.noise.mean)
+                    noise.stddev.append(active_sensor.RobotDesigner.cameraSensor.noise.stddev)
 
                 if sensor_type == 'DEPTH_CAMERA_SENSOR':
                     camera.depth_camera = [pyxb.BIND()]
                     camera.depth_camera[0].output.append(
-                        bpy.context.scene.objects['depth_camera'].RobotDesigner.depthCameraSensor.output)
+                        active_sensor.RobotDesigner.depthCameraSensor.output)
+
+            elif sensor_type == 'LASER_SENSOR':
+                sensor_sdf = child.add_laser_sensor()
+                sensor_sdf.name = sensor_name
+                sensor_sdf.type = sensor_type
+                # ray/laser
+                sensor_sdf.ray[0].scan = [pyxb.BIND()]
+                scan = sensor_sdf.ray[0].scan[0]
+                scan.horizontal = [pyxb.BIND()]
+                scan.horizontal[0].samples.append(active_sensor.RobotDesigner.laserSensor.horizontal_samples)
+                # todo: check whether implementation of resolution in either xsd file or
+                #  blender plugin is wrong or introduce conversion method
+                # scan.horizontal[0].resolution.append(active_sensor.RobotDesigner.laserSensor.resolution)
+                scan.vertical = [pyxb.BIND()]
+                scan.vertical[0].samples.append(active_sensor.RobotDesigner.laserSensor.vertical_samples)
+                # todo: complete sensor with missing parameters
+
+            elif sensor_type == 'ALTIMETER_SENSOR':
+                sensor_sdf = child.add_altimeter_sensor()
+                sensor_sdf.name = sensor_name
+                sensor_sdf.type = sensor_type
+                # altimeter
+                # todo: complete xsd file for altimeters, then complete export
+                # todo: eventually change visualization within blender (e.g. little cube)
+
+            elif sensor_type == 'IMU_SENSOR':
+                sensor_sdf = child.add_imu_sensor()
+                sensor_sdf.name = sensor_name
+                sensor_sdf.type = sensor_type
+                # imu
+                imu = sensor_sdf.imu[0]
+                imu.topic.append(active_sensor.RobotDesigner.imuSensor.topic)
+                # # orientation_reference_frame
+                # imu.orientation_reference_frame = [pyxb.BIND()]
+                # o_r_f = imu.orientation_reference_frame[0]
+                # o_r_f.localization.append(active_sensor.RobotDesigner.imuSensor.localization)
+                # o_r_f.custom_rpy.append(active_sensor.RobotDesigner.imuSensor.custom_rpy)
+
+                # angular velocity
+                imu.angular_velocity = [pyxb.BIND()]
+                angular_velocity = imu.angular_velocity[0]
+                # todo: complete and correct imu xsd file according to sdf standard
+                #  (http://sdformat.org/spec?ver=1.7&elem=sensor), then complete export
 
 
 
+           #  todo other sensor types
 
-           # elif type == 'CAMERA':   todo other sensor types
-            #   sensor_sdf.type = 'camera'
 
 
   #      operator.logger.info(" sensor name'%s'" % child.link.sensor.name)

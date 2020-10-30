@@ -444,6 +444,42 @@ class SDFTree(object):
 
         return link_sensor
 
+    def add_laser_sensor(self):
+        """
+        Adds a laser sensor to current segment.
+        """
+        link_sensor = sdf_dom.sensor()
+        self.link.sensor.append(link_sensor)
+        link_sensor.pose.append('0 0 0 0 0 0')
+        laser_sensor = sdf_dom.ray()
+        link_sensor.ray.append(laser_sensor)
+
+        return link_sensor
+
+    def add_altimeter_sensor(self):
+        """
+        Adds an altimeter sensor to current segment.
+        """
+        link_sensor = sdf_dom.sensor()
+        self.link.sensor.append(link_sensor)
+        link_sensor.pose.append('0 0 0 0 0 0')
+        altimeter_sensor = sdf_dom.altimeter()
+        link_sensor.altimeter.append(altimeter_sensor)
+
+        return link_sensor
+
+    def add_imu_sensor(self):
+        """
+        Adds an IMU sensor to current segment.
+        """
+        link_sensor = sdf_dom.sensor()
+        self.link.sensor.append(link_sensor)
+        link_sensor.pose.append('0 0 0 0 0 0')
+        imu_sensor = sdf_dom.imu()
+        link_sensor.imu.append(imu_sensor)
+
+        return link_sensor
+
     def set_defaults(self):
         """
         Adds defaults to missing values.
